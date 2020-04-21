@@ -1,5 +1,5 @@
-pub mod wolfram;
-pub mod tex;
+mod tex;
+mod wolfram;
 
 pub use wolfram_wxf::ToWolfram;
 
