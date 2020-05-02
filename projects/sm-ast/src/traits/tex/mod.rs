@@ -35,6 +35,7 @@ impl ToTex for AST {
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s),
             AST::String(s) => format!("\\text{{{}}}", s),
+            _ => unimplemented!(),
         }
     }
 }

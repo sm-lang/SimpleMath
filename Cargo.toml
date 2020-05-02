@@ -2,6 +2,7 @@
 members = ["projects/*"]
 default-members = [
     "projects/sm-ast",
+    "projects/sm-parser",
 ]
 exclude = [
     "projects/.DS_Store",
@@ -9,3 +10,9 @@ exclude = [
 
 [profile.release]
 lto = true
+
+
+[scripts]
+pest_build = "cargo test --color=always --package sm_parser --lib pre_build::gen_parser --no-fail-fast -- --ignored --exact -Z unstable-options --format=json --show-output"
+pest_fmt   = "rustup run nightly cargo fmt -- --unstable-features"
+pest       = "wee pest_build && wee pest_fmt"

@@ -1,0 +1,113 @@
+program = _{SOI ~ statement* ~ EOI}
+statement = _{
+    SEPARATOR
+  | empty_line{1,}
+  | import_statement
+  | dict_literal
+  | dict_scope
+  | dict_pair
+  | list_scope
+}
+empty_line = _{WHITESPACE* ~ NEWLINE}
+RestOfLine = @{(!NEWLINE ~ ANY)+}
+/*====================================================================================================================*/
+//!#C678DD: Import|As
+import_statement = {Import ~ SYMBOL? ~ StringNormal ~ As ~ SYMBOL}
+Import = @{"import"}
+As = @{"as"}
+/*====================================================================================================================*/
+dict_scope = {dict_head ~ (SEPARATOR? ~ dict_pair)*}
+dict_empty = {"{" ~ "}"}
+dict_head  = {"{" ~ Dot* ~ NameSpace ~ "}"}
+dict_pair  = {NameSpace ~ Set ~ Value}
+/*====================================================================================================================*/
+list_scope = {list_head ~ (SEPARATOR? ~ list_pair)*}
+list_empty = {"[" ~ "]"}
+list_head  = {"[" ~ Dot* ~ NameSpace ~ "]"}
+list_pair  = {
+    Insert ~ dict_pair+
+  | Append ~ Value+
+}
+Insert = @{"*"}
+Append = @{"&"}
+/*====================================================================================================================*/
+dict_literal = {
+    dict_empty
+  | "{" ~ (SEPARATOR? ~dict_pair)+ ~ SEPARATOR? ~ "}"
+}
+list_literal = {
+    list_empty
+  | "[" ~ (SEPARATOR? ~ Value)+ ~ SEPARATOR? ~ "]"
+}
+/*====================================================================================================================*/
+Value = {Byte|Number|Boolean|Null|String|cite_value|dict_literal|list_literal}
+//!#D19A66: Null|Unit
+Null = @{"null"}
+/*====================================================================================================================*/
+///#D19A66
+Boolean = !{True|False}
+True    = @{"true"}
+False   = @{"false"}
+/*====================================================================================================================*/
+///#56B6C2
+cite_value = {Cite ~ NameSpace}
+/*====================================================================================================================*/
+///#D19A66
+Byte     = ${(Byte_BIN|Byte_OCT|Byte_HEX)~ (Underline ~ SYMBOL)?}
+Byte_BIN = ${Zero ~ ("b"|"B") ~ ASCII_BIN_DIGIT+}
+Byte_OCT = ${Zero ~ ("o"|"O") ~ ASCII_OCT_DIGIT+}
+Byte_HEX = ${Zero ~ ("x"|"X") ~ ASCII_HEX_DIGIT+}
+/*====================================================================================================================*/
+//!#D19A66: SignedNumber
+Number       = ${(Exponent|SignedNumber) ~ SYMBOL?}
+SignedNumber = ${Sign? ~ (Decimal|DecimalBad|Integer)}
+Decimal      = ${Integer ~ Dot ~ (Underline? ~ ASCII_DIGIT)*}
+DecimalBad   = ${Integer ~ Dot|Dot ~ (Underline? ~ ASCII_DIGIT)*}
+Integer      = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
+Exponent     =  {SignedNumber ~ ("e"|"E") ~ Sign? ~ ASCII_DIGIT+}
+
+Zero = _{"0"}
+/*====================================================================================================================*/
+//!#3C963C: String
+//!#98C379: StringQuotation|StringAccent|RestOfLine
+//!#D19A66: StringApostrophe
+String        =  {SYMBOL? ~ (StringNormal|StringLine+)}
+StringLine   =  ${Vertical ~(!NEWLINE ~ ANY)*}
+StringNormal  =  {
+    Quotation ~ StringQuotation ~ Quotation
+  | Apostrophe ~ StringApostrophe ~ Apostrophe
+}
+StringApostrophe =  {(Escape ~ (Escape|Apostrophe)|!Apostrophe ~ ANY)*}
+StringQuotation  =  {(Escape ~ (Escape|Quotation)|!Quotation ~ ANY)*}
+
+Accent     = @{"`"}
+Vertical   = @{"|"}
+Apostrophe = @{"'"}
+Quotation  = @{"\""}
+Escape     = @{"\\"}
+/*====================================================================================================================*/
+///#61AFEF
+NameSpace = ${Key ~ (Dot ~ Key)*}
+Key       =  {StringNormal|SYMBOL|Integer}
+SYMBOL    = @{("_"|XID_START) ~ XID_CONTINUE*}
+/*====================================================================================================================*/
+// NEWLINE = @{"\r" ~ "\n"|"\r"|"\n"}
+
+///Gray
+COMMENT          =  {MultiLineComment|LineComment}
+WHITESPACE       = _{NEWLINE|SPACE_SEPARATOR|"\t"}
+LineComment      = ${"%" ~ (!NEWLINE ~ ANY)*}
+MultiLineComment = ${"%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
+
+
+
+Cite = @{"$"}
+
+Dot    = @{"."}
+
+
+Underline  = @{"_"}
+SEPARATOR  = _{","|";"}
+
+Set      = @{"="|":"}
+Sign     = @{"+"|"-"}
