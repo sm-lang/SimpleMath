@@ -1,6 +1,6 @@
 [package]
 name = "sm_parser"
-version = "0.3.0"
+version = "0.1.0"
 authors = ["Aster <galaster@foxmail.com>"]
 description = "Arc Readable Configuration Parser via Pest"
 license = "MPL-2.0"
