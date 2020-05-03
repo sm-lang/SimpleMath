@@ -12,9 +12,7 @@ empty_line = _{WHITESPACE* ~ NEWLINE}
 RestOfLine = @{(!NEWLINE ~ ANY)+}
 /*====================================================================================================================*/
 //!#C678DD: Import|As
-import_statement = {Import ~ SYMBOL? ~ StringNormal ~ As ~ SYMBOL}
-Import = @{"import"}
-As = @{"as"}
+import_statement = {"use" ~ SYMBOL? ~ StringNormal ~ "as" ~ SYMBOL}
 /*====================================================================================================================*/
 dict_scope = {dict_head ~ (SEPARATOR? ~ dict_pair)*}
 dict_empty = {"{" ~ "}"}
@@ -40,17 +38,9 @@ list_literal = {
   | "[" ~ (SEPARATOR? ~ Value)+ ~ SEPARATOR? ~ "]"
 }
 /*====================================================================================================================*/
-Value = {Byte|Number|Boolean|Null|String|cite_value|dict_literal|list_literal}
-//!#D19A66: Null|Unit
-Null = @{"null"}
-/*====================================================================================================================*/
-///#D19A66
-Boolean = !{True|False}
-True    = @{"true"}
-False   = @{"false"}
-/*====================================================================================================================*/
-///#56B6C2
-cite_value = {Cite ~ NameSpace}
+//!#D19A66: Null|Booleans
+Value = {Byte|Number|SpecialValue|String|dict_literal|list_literal}
+SpecialValue = @{"null"|"true"|"false"}
 /*====================================================================================================================*/
 ///#D19A66
 Byte     = ${(Byte_BIN|Byte_OCT|Byte_HEX)~ (Underline ~ SYMBOL)?}

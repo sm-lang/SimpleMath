@@ -6,17 +6,17 @@ pub enum AST {
 
     //
     ///
-    //Function(Box<str>, Vec<AST>),
+    Function(Box<str>, Vec<AST>),
 
     //
     ///
-    Prefix(Box<str>, bool, Box<AST>),
-    Suffix(Box<str>, bool, Box<AST>),
-    Binary(Box<str>, bool, Box<AST>, Box<AST>),
+    Prefix(Box<str>, Box<AST>),
+    Suffix(Box<str>, Box<AST>),
+    Binary(Box<str>, Box<AST>, Box<AST>),
 
     //
     ///
-    //Boolean(bool),
+    Boolean(bool),
     Integer(BigInt),
     Decimal(f64),
     Symbol(Box<str>),
