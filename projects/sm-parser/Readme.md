@@ -17,3 +17,8 @@ a.1
 1...fx   // error
 ```
 
+
+
+def f(x: str = 1, *arg, *kv) {
+
+}

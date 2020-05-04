@@ -9,12 +9,20 @@ impl ToWolfram for AST {
         match (*self).clone() {
             AST::NewLine => WolframValue::Skip,
             //
-            AST::Function(_, _) => unimplemented!(),
+            AST::Function(f, args, _kws) => {
+                let mut v = vec![];
+                for arg in args {
+                    v.push(arg.to_wolfram())
+                }
+                WolframValue::Function(function_map(&f), v)
+
+            },
             //
             AST::Prefix(o, expr) => WolframValue::Function(prefix_map(&o), vec![expr.to_wolfram()]),
             AST::Suffix(o, expr) => WolframValue::Function(suffix_map(&o), vec![expr.to_wolfram()]),
             AST::Binary(o, lhs, rhs) => WolframValue::Function(binary_map(&o), vec![lhs.to_wolfram(), rhs.to_wolfram()]),
             //
+            AST::Null => WolframValue::new_symbol("None"),
             AST::Boolean(b) => {
                 if b {
                     WolframValue::new_symbol("True")
@@ -25,7 +33,7 @@ impl ToWolfram for AST {
             }
             AST::Integer(i) => WolframValue::BigInteger(i),
             AST::Decimal(f) => WolframValue::BigDecimal(Box::from(format!("{}", f))),
-            AST::Symbol(s) => WolframValue::Symbol(s),
+            AST::Symbol(s) => WolframValue::Symbol(s.name),
             AST::String(s) => WolframValue::String(s),
         }
     }

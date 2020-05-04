@@ -16,7 +16,7 @@ pub enum Rule {
     module_block,
     module_tuple,
     ModuleSplit,
-    Import,
+    Use,
     As,
     controlFlow,
     block,
@@ -243,7 +243,7 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn importStatement(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::importStatement, |state| state.restore_on_err(|state| state.sequence(|state| self::Import(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| self::Dot(state).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| self::Dot(state)))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| self::use_alias(state)))).or_else(|state| state.sequence(|state| self::Import(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.restore_on_err(|state| state.sequence(|state| state.sequence(|state| state.optional(|state| self::Dot(state).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| self::Dot(state))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| self::use_module_select(state)))).or_else(|state| state.restore_on_err(|state| self::use_module_string(state)))))))
+                    state.rule(Rule::importStatement, |state| state.restore_on_err(|state| state.sequence(|state| self::Use(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| self::Dot(state).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| self::Dot(state)))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| self::use_alias(state)))).or_else(|state| state.sequence(|state| self::Use(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.restore_on_err(|state| state.sequence(|state| state.sequence(|state| state.optional(|state| self::Dot(state).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| self::Dot(state))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| self::use_module_select(state)))).or_else(|state| state.restore_on_err(|state| self::use_module_string(state)))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -277,8 +277,8 @@ impl ::pest::Parser<Rule> for SMParser {
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
-                pub fn Import(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Import, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("import")))
+                pub fn Use(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Use, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("use")))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1257,7 +1257,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::module_block => rules::module_block(state),
             Rule::module_tuple => rules::module_tuple(state),
             Rule::ModuleSplit => rules::ModuleSplit(state),
-            Rule::Import => rules::Import(state),
+            Rule::Use => rules::Use(state),
             Rule::As => rules::As(state),
             Rule::controlFlow => rules::controlFlow(state),
             Rule::block => rules::block(state),

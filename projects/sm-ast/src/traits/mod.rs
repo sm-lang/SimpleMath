@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 mod tex;
 mod wolfram;
 
