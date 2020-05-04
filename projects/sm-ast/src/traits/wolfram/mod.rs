@@ -1,6 +1,7 @@
 mod symbol_map;
 
 use crate::AST;
+use std::collections::BTreeMap;
 use symbol_map::*;
 use wolfram_wxf::{ToWolfram, WolframValue};
 
@@ -9,14 +10,16 @@ impl ToWolfram for AST {
         match (*self).clone() {
             AST::NewLine => WolframValue::Skip,
             //
-            AST::Function(f, args, _kws) => {
-                let mut v = vec![];
+            AST::Function(f, args, kws) => {
+                let mut vec = vec![];
                 for arg in args {
-                    v.push(arg.to_wolfram())
+                    vec.push(arg.to_wolfram())
                 }
-                WolframValue::Function(function_map(&f), v)
-
-            },
+                for (k, v) in kws {
+                    vec.push(WolframValue::Function(Box::from("Rule"), vec![k.to_wolfram(), v.to_wolfram()]))
+                }
+                WolframValue::Function(function_map(&f), vec)
+            }
             //
             AST::Prefix(o, expr) => WolframValue::Function(prefix_map(&o), vec![expr.to_wolfram()]),
             AST::Suffix(o, expr) => WolframValue::Function(suffix_map(&o), vec![expr.to_wolfram()]),

@@ -1,5 +1,5 @@
 use num::BigInt;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Clone, Debug)]
 pub enum AST {
@@ -8,7 +8,7 @@ pub enum AST {
     //
     /// function call
     /// function(name, *args, **kwargs)
-    Function(Box<str>, Vec<AST>, HashMap<AST, AST>),
+    Function(Box<str>, Vec<AST>, BTreeMap<AST, AST>),
 
     //
     /// prefix operation

@@ -1,5 +1,4 @@
-use sm_ast::{ToTex, ToWolfram, AST};
-use sm_ast::ast::Symbol;
+use sm_ast::{ast::Symbol, ToTex, ToWolfram, AST};
 
 #[test]
 fn test() {

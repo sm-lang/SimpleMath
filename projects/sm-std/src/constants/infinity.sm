@@ -1,6 +1,5 @@
 let const Infinity;
 
-let alias oo  = Infinity;
-let alias inf = Infinity;
+
 
 let const ComplexInfinity;
