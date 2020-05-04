@@ -1,8 +1,8 @@
-use sm_ast::{ast::Symbol, ToTex, ToWolfram, AST};
+use sm_ast::{ToTex, ToWolfram, AST};
 
 #[test]
 fn test() {
-    let a = AST::Symbol(Symbol { name: Box::from("a") });
+    let a = AST::symbol("a");
     let expr = AST::Suffix(Box::from("!"), Box::new(a));
     println!("{}", expr.to_wolfram_string());
     println!("{}", expr.to_tex());

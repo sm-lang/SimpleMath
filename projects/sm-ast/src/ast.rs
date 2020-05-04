@@ -29,7 +29,60 @@ pub enum AST {
     String(Box<str>),
 }
 
-#[derive(Clone, Debug)]
+impl AST {
+    pub fn integer(i: impl Into<BigInt>) -> AST {
+        AST::Integer(i.into())
+    }
+
+    pub fn symbol(s: &str) -> AST {
+        AST::Symbol(Symbol {
+            name: Box::from(s),
+            ..Default::default()
+        })
+    }
+
+    pub fn string(s: impl Into<Box<str>>) -> AST {
+        AST::String(s.into())
+    }
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct Symbol {
     pub name: Box<str>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct Expression {}
+
+pub trait CheckAttributes {
+    fn is_function(&self) -> bool {
+        false
+    }
+    fn is_power(&self) -> bool {
+        false
+    }
+    fn is_number(&self) -> bool {
+        false
+    }
+    fn is_complex(&self) -> bool {
+        false
+    }
+    fn is_integer(&self) -> bool {
+        false
+    }
+    fn is_positive(&self) -> bool {
+        false
+    }
+    fn is_negative(&self) -> bool {
+        false
+    }
+    fn is_zero(&self) -> bool {
+        false
+    }
+    fn is_one(&self) -> bool {
+        false
+    }
+    fn is_negative_one(&self) -> bool {
+        false
+    }
 }

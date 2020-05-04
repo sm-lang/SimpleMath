@@ -1,7 +1,6 @@
 mod symbol_map;
 
 use crate::AST;
-use std::collections::BTreeMap;
 use symbol_map::*;
 use wolfram_wxf::{ToWolfram, WolframValue};
 

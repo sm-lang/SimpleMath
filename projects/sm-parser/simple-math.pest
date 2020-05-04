@@ -85,9 +85,9 @@ Trait = @{"trait"}
 Class = @{"class"}
 /*====================================================================================================================*/
 extendStatement = {
-    Extend ~ Symbol ~ parametric_types? ~ with_trait? ~ short_block
+    Extend ~ Symbol ~ with_trait? ~ short_block
 }
-with_trait = {With ~ Symbol ~ parametric_types?}
+with_trait = {With ~ Symbol}
 
 //!#C678DD: Extend|With
 Extend = @{"extend"}
@@ -106,8 +106,7 @@ Let = @{"let"}
 /*====================================================================================================================*/
 defineStatement = {Def ~ define_terms}
 define_terms = _{
-    assign_pair ~ parametric_types ~ define_parameter ~ type_hint? ~ parametric_types_term? ~ block_or_stmt?
-  | assign_pair ~ define_parameter ~ type_hint? ~ block_or_stmt?
+    assign_pair ~ define_parameter ~ type_hint? ~ block_or_stmt?
 }
 define_parameter = {
     "(" ~ define_pair ~ (Comma ~ define_pair)* ~ Comma? ~ ")"
@@ -123,7 +122,7 @@ annotation = {annotation_call+~statement}
 annotation_call = @{At~(list|apply|Symbol)}
 /*====================================================================================================================*/
 apply = !{
-     generic_type? ~ "(" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~")"
+     "(" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~")"
 }
 apply_kv = {SYMBOL~ Colon ~ expr|expr}
 
@@ -148,10 +147,7 @@ type_expr = _{term~ (TypeInfix ~term)*}
 //type_term = {Prefix* ~ type_node ~ Suffix*}
 //type_node = {"(" ~ type_expr ~ ")"|data}
 type_hint = {Colon ~ type_expr}
-generic_type = {"<" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ">"}
-parametric_types = {"<" ~ parametric_types_pair ~ (Comma ~ parametric_types_pair)* ~ ">"}
-parametric_types_pair = {(Plus|Minus)? ~ SYMBOL}
-parametric_types_term = {Where ~ (expr ~ Colon ~ expr ~ eos?)+}
+
 //TypePrefix = @{Plus|Minus}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
