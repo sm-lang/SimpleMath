@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 
 #[derive(Clone, Debug)]
 pub enum AST {
+    EmptyStatement,
     NewLine,
 
     //
@@ -35,10 +36,7 @@ impl AST {
     }
 
     pub fn symbol(s: &str) -> AST {
-        AST::Symbol(Symbol {
-            name: Box::from(s),
-            ..Default::default()
-        })
+        AST::Symbol(Symbol { name: Box::from(s), ..Default::default() })
     }
 
     pub fn string(s: impl Into<Box<str>>) -> AST {

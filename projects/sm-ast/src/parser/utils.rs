@@ -1,6 +1,6 @@
-use crate::parser::Settings;
+use crate::parser::ParserSettings;
 
-impl Default for Settings {
+impl Default for ParserSettings {
     fn default() -> Self {
         Self { refine: true }
     }

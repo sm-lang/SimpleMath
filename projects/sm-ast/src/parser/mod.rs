@@ -4,7 +4,7 @@ mod parse;
 mod utils;
 
 #[derive(Debug)]
-pub struct Settings {
+pub struct ParserSettings {
     pub refine: bool,
 }
 

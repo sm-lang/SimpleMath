@@ -1,4 +1,7 @@
-use crate::parser::Settings;
+use crate::{
+    parser::{ParserSettings, CLIMBER},
+    ToWolfram, AST,
+};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
     fs::{read_to_string, File},
@@ -14,41 +17,111 @@ macro_rules! debug_cases {
     }};
 }
 
-impl Settings {
-    pub fn format_file(&self, path_from: &str, path_to: &str) -> Result<(), std::io::Error> {
+impl ParserSettings {
+    pub fn parse_file(&self, path_from: &str, path_to: &str) -> Result<(), std::io::Error> {
         let r = read_to_string(path_from)?;
-        let s = self.format(&r);
+        let s = self.parse(&r);
         let mut file = File::create(path_to)?;
-        file.write_all(s.as_bytes())?;
+        file.write_all(&s.to_wolfram_bytes())?;
         return Ok(());
     }
-    pub fn format(&self, text: &str) -> String {
+    pub fn parse(&self, text: &str) -> AST {
         let pairs = SMParser::parse(Rule::program, text).unwrap_or_else(|e| panic!("{}", e));
         let mut code = String::new();
         for pair in pairs {
             match pair.as_rule() {
                 Rule::EOI => continue,
-                Rule::COMMENT => code.push_str(&format!("{}\n", pair.as_str())),
+                Rule::expression => {
+                    self.parse_expression(pair);
+                }
+                Rule::COMMENT => continue,
                 _ => debug_cases!(pair),
             };
         }
         //        println!("{:#?}", codes);
         //        unreachable!();
-        return code;
+        return AST::Null;
     }
 
-    fn format_expression(&self, pairs: Pair<Rule>) -> String {
-        let mut codes = vec![];
+    fn parse_expression(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::COMMENT => {
-                    let c = pair.as_str();
-                    codes.push(format!("% {}", c[1..c.len()].trim()))
+                Rule::expr => {
+                    self.parse_expr(pair);
                 }
                 _ => debug_cases!(pair),
             };
         }
-        return codes.join("");
+        return AST::Null;
     }
 
+    #[rustfmt::skip]
+    fn parse_expr(&self, pairs: Pair<Rule>) -> AST {
+        CLIMBER.climb(
+            pairs.into_inner(),
+            |pair: Pair<Rule>| match pair.as_rule() {
+                Rule::WHITESPACE => AST::EmptyStatement,
+                Rule::expr => self.parse_expr(pair),
+                Rule::term => self.parse_term(pair),
+                Rule::bracket_call => debug_cases!(pair),
+                _ => debug_cases!(pair),
+            },
+            |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
+                _ => AST::Binary(Box::from(op.as_str()), Box::new(lhs), Box::new(rhs))
+            },
+        )
+    }
+
+    fn parse_term(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::node => {
+                    self.parse_node(pair);
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_node(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::data => {
+                    self.parse_data(pair);
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_data(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::Symbol => {
+                    self.parse_symbol(pair);
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_symbol(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::SYMBOL => {
+                    println!("{}", pair.as_str())
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
 }

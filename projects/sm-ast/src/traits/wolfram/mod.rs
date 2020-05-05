@@ -7,7 +7,7 @@ use wolfram_wxf::{ToWolfram, WolframValue};
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
         match (*self).clone() {
-            AST::NewLine => WolframValue::Skip,
+            AST::EmptyStatement | AST::NewLine => WolframValue::Skip,
             //
             AST::Function(f, args, kws) => {
                 let mut vec = vec![];

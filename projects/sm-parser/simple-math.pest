@@ -1,6 +1,6 @@
 program = _{SOI~statement* ~ EOI}
 
-statement = {
+statement = _{
     emptyStatement
   | importStatement ~ eos?
   | classStatement ~ eos?
@@ -130,7 +130,7 @@ apply_kv = {SYMBOL~ Colon ~ expr|expr}
 
 ///#61AFEF
 function_name = {SYMBOL}
-function_module = {(namespace ~ Dot)? ~ (SYMBOL ~ Dot)*}
+function_module = {Dot ~ (SYMBOL ~ Dot)*}
 /*====================================================================================================================*/
 expression = {expr~eos?}
 expr = !{term ~ (Infix ~ term)*}
@@ -211,8 +211,7 @@ LineCommentWarning = ${ "//*" ~ (!NEWLINE ~ ANY)*}
 MultiLineComment = ${ "%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
 /*====================================================================================================================*/
 ///#61AFEF
-Symbol = ${namespace|SYMBOL}
-namespace = ${SYMBOL ~ (Proportion ~ SYMBOL)+}
+Symbol = ${SYMBOL ~ (Proportion ~ SYMBOL)*}
 SYMBOL = @{
     XID_START ~  XID_CONTINUE*
   | Underline ~ XID_CONTINUE+

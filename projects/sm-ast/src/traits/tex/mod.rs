@@ -60,15 +60,3 @@ pub fn expression_height(e: &AST) -> usize {
         _ => 0,
     }
 }
-// Integrate[f,x]
-// $$\int f(x) \,\mathrm{d}x$$
-//
-// Integrate[f,{x,Subscript[x, min],Subscript[x, max]}]
-// $$\iint f(x,y) \,\mathrm{d}x\,\mathrm{d}y$$
-//
-// Integrate[f,{x,Subscript[x, min],Subscript[x, max]},{y,Subscript[y, min],Subscript[y, max]},\[Ellipsis]]
-//
-//
-// Integrate[f,{x,y,\[Ellipsis]}\[Element]reg]
-//
-// $$\int_{x \in \mathbb{R}} f(x) \,\mathrm{d}x$$
