@@ -7,6 +7,8 @@ use std::{
     fs::{read_to_string, File},
     io::Write,
 };
+use num::{BigInt, Num};
+use num::bigint::ParseBigIntError;
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -106,6 +108,16 @@ impl ParserSettings {
                 Rule::Symbol => {
                     self.parse_symbol(pair);
                 }
+                Rule::Boolean => {
+                    return match pair.as_str() {
+                        "true" => AST::Boolean(true),
+                        "false" => AST::Boolean(false),
+                        _ => unreachable!()
+                    };
+                }
+                Rule::Byte => {
+                    return self.parse_byte(pair);
+                }
                 _ => debug_cases!(pair),
             };
         }
@@ -120,6 +132,36 @@ impl ParserSettings {
                     println!("{}", pair.as_str())
                 }
                 _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
+        for pair in pairs.into_inner() {
+            return match pair.as_rule() {
+                Rule::Byte_HEX => {
+                    let s = pair.as_str();
+                    match BigInt::from_str_radix(&s[2..s.len()], 16) {
+                        Ok(o) => AST::Integer(o),
+                        Err(_) => panic!(""),
+                    }
+                }
+                Rule::Byte_OCT => {
+                    let s = pair.as_str();
+                    match BigInt::from_str_radix(&s[2..s.len()], 8) {
+                        Ok(o) => AST::Integer(o),
+                        Err(_) => panic!(""),
+                    }
+                }
+                Rule::Byte_BIN => {
+                    let s = pair.as_str();
+                    match BigInt::from_str_radix(&s[2..s.len()], 2) {
+                        Ok(o) => AST::Integer(o),
+                        Err(_) => panic!(""),
+                    }
+                }
+                _ => unreachable!(),
             };
         }
         return AST::Null;
