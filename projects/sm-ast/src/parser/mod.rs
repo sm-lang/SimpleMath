@@ -5,6 +5,7 @@ mod utils;
 
 #[derive(Debug)]
 pub struct ParserSettings {
+    pub file: String,
     pub refine: bool,
 }
 
@@ -17,3 +18,4 @@ pub const OPERATORS: &[(Rule, u32, Assoc); 5] = &[
 ];
 
 pub static CLIMBER: PrecClimber<Rule> = PrecClimber::new_const(OPERATORS);
+

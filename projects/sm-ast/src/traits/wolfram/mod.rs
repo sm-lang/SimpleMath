@@ -33,7 +33,7 @@ impl ToWolfram for AST {
                     WolframValue::new_symbol("False")
                 }
             }
-            AST::Integer(i) => WolframValue::BigInteger(i),
+            AST::Integer { value,.. } => WolframValue::BigInteger(value),
             AST::Decimal(f) => WolframValue::BigDecimal(Box::from(format!("{}", f))),
             AST::Symbol(s) => WolframValue::Symbol(s.name),
             AST::String(s) => WolframValue::String(s),

@@ -22,7 +22,7 @@ impl ToTex for AST {
                 BracketType::Simple => format!("({} {} {})", lhs.to_tex(), binary_map(&o), rhs.to_tex()),
                 BracketType::Large => format!("\\left({} {} {}\\right)", lhs.to_tex(), binary_map(&o), rhs.to_tex()),
             },
-            AST::Integer(i) => format!("{}", i),
+            AST::Integer { value, .. } => format!("{}", value),
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),
             AST::String(s) => format!("\\text{{{}}}", s),

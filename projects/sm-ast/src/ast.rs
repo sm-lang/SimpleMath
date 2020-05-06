@@ -24,7 +24,10 @@ pub enum AST {
     Null,
     /// true or false
     Boolean(bool),
-    Integer(BigInt),
+    Integer {
+        value: BigInt,
+        position: Option<Position>,
+    },
     Decimal(f64),
     Symbol(Symbol),
     String(Box<str>),
@@ -32,7 +35,10 @@ pub enum AST {
 
 impl AST {
     pub fn integer(i: impl Into<BigInt>) -> AST {
-        AST::Integer(i.into())
+        AST::Integer {
+            value: i.into(),
+            position: None,
+        }
     }
 
     pub fn symbol(s: &str) -> AST {
@@ -42,6 +48,13 @@ impl AST {
     pub fn string(s: impl Into<Box<str>>) -> AST {
         AST::String(s.into())
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct Position {
+    pub file: String,
+    pub start: (usize, usize),
+    pub end: (usize, usize),
 }
 
 #[derive(Clone, Debug, Default)]

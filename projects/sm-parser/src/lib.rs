@@ -17,6 +17,7 @@ pub use pest::{
     prec_climber::{Assoc, Operator, PrecClimber},
     Parser,
 };
+pub use pest::{Span};
 
 #[test]
 fn it_works() {}

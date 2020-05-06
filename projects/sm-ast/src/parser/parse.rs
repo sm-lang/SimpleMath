@@ -2,13 +2,12 @@ use crate::{
     parser::{ParserSettings, CLIMBER},
     ToWolfram, AST,
 };
+use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
     fs::{read_to_string, File},
     io::Write,
 };
-use num::{BigInt, Num};
-use num::bigint::ParseBigIntError;
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -102,17 +101,16 @@ impl ParserSettings {
     }
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Symbol => {
-                    self.parse_symbol(pair);
+                    return self.parse_symbol(pair);
                 }
                 Rule::Boolean => {
                     return match pair.as_str() {
                         "true" => AST::Boolean(true),
                         "false" => AST::Boolean(false),
-                        _ => unreachable!()
+                        _ => unreachable!(),
                     };
                 }
                 Rule::Byte => {
@@ -128,9 +126,7 @@ impl ParserSettings {
         let mut codes = vec![""];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::SYMBOL => {
-                    println!("{}", pair.as_str())
-                }
+                Rule::SYMBOL => println!("{}", pair.as_str()),
                 _ => debug_cases!(pair),
             };
         }
@@ -139,28 +135,21 @@ impl ParserSettings {
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
+            let s = pair.as_str();
+            let p = self.get_position(pair.as_span());
             return match pair.as_rule() {
-                Rule::Byte_HEX => {
-                    let s = pair.as_str();
-                    match BigInt::from_str_radix(&s[2..s.len()], 16) {
-                        Ok(o) => AST::Integer(o),
-                        Err(_) => panic!(""),
-                    }
-                }
-                Rule::Byte_OCT => {
-                    let s = pair.as_str();
-                    match BigInt::from_str_radix(&s[2..s.len()], 8) {
-                        Ok(o) => AST::Integer(o),
-                        Err(_) => panic!(""),
-                    }
-                }
-                Rule::Byte_BIN => {
-                    let s = pair.as_str();
-                    match BigInt::from_str_radix(&s[2..s.len()], 2) {
-                        Ok(o) => AST::Integer(o),
-                        Err(_) => panic!(""),
-                    }
-                }
+                Rule::Byte_HEX => match BigInt::from_str_radix(&s[2..s.len()], 16) {
+                    Ok(o) => AST::Integer { value: o, position: Some(p) },
+                    Err(_) => panic!("Illegal hexadecimal input at {:?}", p),
+                },
+                Rule::Byte_OCT => match BigInt::from_str_radix(&s[2..s.len()], 8) {
+                    Ok(o) => AST::Integer { value: o, position: Some(p) },
+                    Err(_) => panic!("Illegal octal input at {:?}", p),
+                },
+                Rule::Byte_BIN => match BigInt::from_str_radix(&s[2..s.len()], 2) {
+                    Ok(o) => AST::Integer { value: o, position: Some(p) },
+                    Err(_) => panic!("Illegal binary input at {:?}", p),
+                },
                 _ => unreachable!(),
             };
         }
