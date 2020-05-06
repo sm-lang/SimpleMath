@@ -15,9 +15,8 @@ pub use crate::sm_parser::{Rule, SMParser};
 pub use pest::{
     iterators::Pair,
     prec_climber::{Assoc, Operator, PrecClimber},
-    Parser,
+    Parser, Span,
 };
-pub use pest::{Span};
 
 #[test]
 fn it_works() {}

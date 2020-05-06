@@ -5,47 +5,53 @@ use std::collections::BTreeMap;
 pub enum AST {
     EmptyStatement,
     NewLine,
-
+    Expression {
+        base: Box<AST>,
+        eos: bool,
+        pos: Position,
+    },
     //
     /// function call
     /// function(name, *args, **kwargs)
-    Function(Box<str>, Vec<AST>, BTreeMap<AST, AST>),
+    Function(String, Vec<AST>, BTreeMap<AST, AST>),
 
     //
-    /// prefix operation
-    Prefix(Box<str>, Box<AST>),
-    /// suffix operation
-    Suffix(Box<str>, Box<AST>),
-    /// binary operation
-    Binary(Box<str>, Box<AST>, Box<AST>),
+    /// unary operators
+    UnaryOperators {
+        base: Box<AST>,
+        prefix: Vec<String>,
+        suffix: Vec<String>,
+        position: Position,
+    },
+    /// - `InfixOperators`
+    InfixOperators {
+        infix: String,
+        lhs: Box<AST>,
+        rhs: Box<AST>,
+        position: Position,
+    },
 
     //
     /// the source of all evil
     Null,
     /// true or false
     Boolean(bool),
-    Integer {
-        value: BigInt,
-        position: Option<Position>,
-    },
+    Integer(BigInt),
     Decimal(f64),
     Symbol(Symbol),
-    String(Box<str>),
+    String(String),
 }
 
 impl AST {
     pub fn integer(i: impl Into<BigInt>) -> AST {
-        AST::Integer {
-            value: i.into(),
-            position: None,
-        }
+        AST::Integer(i.into())
     }
 
     pub fn symbol(s: &str) -> AST {
         AST::Symbol(Symbol { name: Box::from(s), ..Default::default() })
     }
 
-    pub fn string(s: impl Into<Box<str>>) -> AST {
+    pub fn string(s: impl Into<String>) -> AST {
         AST::String(s.into())
     }
 }

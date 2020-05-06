@@ -59,32 +59,51 @@ impl ParserSettings {
 
     #[rustfmt::skip]
     fn parse_expr(&self, pairs: Pair<Rule>) -> AST {
+        let p = self.get_position(pairs.as_span());
         CLIMBER.climb(
             pairs.into_inner(),
             |pair: Pair<Rule>| match pair.as_rule() {
                 Rule::WHITESPACE => AST::EmptyStatement,
                 Rule::expr => self.parse_expr(pair),
                 Rule::term => self.parse_term(pair),
-                Rule::bracket_call => debug_cases!(pair),
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
-                _ => AST::Binary(Box::from(op.as_str()), Box::new(lhs), Box::new(rhs))
+                _ => AST::InfixOperators {
+                    infix: op.as_str().to_string(),
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
+                    position: p.clone(),
+                }
             },
         )
     }
 
     fn parse_term(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
+        let mut base = AST::Null;
+        let mut prefix = vec![];
+        let mut suffix = vec![];
+        let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::node => {
-                    self.parse_node(pair);
+                    base = self.parse_node(pair);
+                }
+                Rule::Suffix => {
+                    suffix.push(pair.as_str().to_string())
+                }
+                Rule::Prefix => {
+                    prefix.push(pair.as_str().to_string())
                 }
                 _ => debug_cases!(pair),
             };
         }
-        return AST::Null;
+        return AST::UnaryOperators {
+            base: Box::new(base),
+            prefix,
+            suffix,
+            position,
+        };
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
@@ -116,6 +135,9 @@ impl ParserSettings {
                 Rule::Byte => {
                     return self.parse_byte(pair);
                 }
+                Rule::Integer => {
+                    return self.parse_integer(pair);
+                }
                 _ => debug_cases!(pair),
             };
         }
@@ -133,23 +155,38 @@ impl ParserSettings {
         return AST::Null;
     }
 
+
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
             let s = pair.as_str();
-            let p = self.get_position(pair.as_span());
-            return match pair.as_rule() {
-                Rule::Byte_HEX => match BigInt::from_str_radix(&s[2..s.len()], 16) {
-                    Ok(o) => AST::Integer { value: o, position: Some(p) },
-                    Err(_) => panic!("Illegal hexadecimal input at {:?}", p),
-                },
-                Rule::Byte_OCT => match BigInt::from_str_radix(&s[2..s.len()], 8) {
-                    Ok(o) => AST::Integer { value: o, position: Some(p) },
-                    Err(_) => panic!("Illegal octal input at {:?}", p),
-                },
-                Rule::Byte_BIN => match BigInt::from_str_radix(&s[2..s.len()], 2) {
-                    Ok(o) => AST::Integer { value: o, position: Some(p) },
-                    Err(_) => panic!("Illegal binary input at {:?}", p),
-                },
+            // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+            match pair.as_rule() {
+                Rule::Byte_HEX => {
+                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 16) {
+                        return AST::Integer(o);
+                    }
+                }
+                Rule::Byte_OCT => {
+                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 8) {
+                        return AST::Integer(o);
+                    }
+                }
+                Rule::Byte_BIN => {
+                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 2) {
+                        return AST::Integer(o);
+                    }
+                }
+                _ => unreachable!(),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_integer(&self, pairs: Pair<Rule>) -> AST {
+        for pair in pairs.into_inner() {
+            let s = pair.as_str();
+            // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+            match pair.as_rule() {
                 _ => unreachable!(),
             };
         }

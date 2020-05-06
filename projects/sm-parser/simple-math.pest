@@ -132,15 +132,15 @@ apply_kv = {SYMBOL~ Colon ~ expr|expr}
 function_name = {SYMBOL}
 function_module = {Dot ~ (SYMBOL ~ Dot)*}
 /*====================================================================================================================*/
-expression = {expr~eos?}
-expr = !{term ~ (Infix ~ term)*}
-term =  {Prefix* ~ node ~ Suffix*}
-node = {"(" ~ expr ~ ")"|tuple|bracket_call|data}
-tuple = {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"}
-bracket_call = ${data ~ ((!NEWLINE ~ WHITESPACE)* ~ (slice|apply))+}
-bracket_apply = {Symbol ~ dict}
-condition  = _{"(" ~ expr ~ ")"|expr}
-dot_call = {term~ Dot ~ (Integer|Symbol) }
+expression    = {expr~eos?}
+expr          = !{term ~ (Infix ~ term)*}
+term          =  {Prefix* ~ node ~ Suffix*}
+node          =  {"(" ~ expr ~ ")"|tuple|bracket_call|data}
+tuple         =  {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"}
+bracket_call  = ${data ~ ((!NEWLINE ~ WHITESPACE)* ~ (slice|apply))+}
+bracket_apply =  {Symbol ~ dict}
+condition     = _{"(" ~ expr ~ ")"|expr}
+dot_call      =  {term~ Dot ~ (Integer|Symbol) }
 /*====================================================================================================================*/
 //!#E06C75: type_hint|generic_type|parametric_types_pair
 type_expr = _{term~ (TypeInfix ~term)*}
@@ -152,7 +152,7 @@ type_hint = {Colon ~ type_expr}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
 /*====================================================================================================================*/
-data = ${dict|list|Null|Unit|Boolean|Byte|Number|String|Symbol}
+data = ${dict|list|Null|Unit|Boolean|Number|String|Symbol}
 dict = {"{" ~ key_value? ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = {"[" ~ expr? ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -171,18 +171,18 @@ Boolean = !{True|False}
 True    = @{"true"}
 False   = @{"false"}
 /*====================================================================================================================*/
+//!#D19A66: Integer|Decimal|DecimalBad
+Number     = _{Complex|Decimal|DecimalBad|Integer|Byte}
+Decimal    = ${Integer ~ Dot ~ ASCII_DIGIT+}
+DecimalBad = ${Integer ~ Dot|Dot ~ ASCII_DIGIT+}
+Integer    = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
+Complex    = {(Decimal|Integer)~ SYMBOL}
+/*====================================================================================================================*/
 ///#D19A66
 Byte     = ${Byte_BIN|Byte_OCT|Byte_HEX}
 Byte_BIN = ${Zero ~ B ~ (Underline? ~ ASCII_BIN_DIGIT)+}
 Byte_OCT = ${Zero ~ O ~ (Underline? ~ ASCII_OCT_DIGIT)+}
 Byte_HEX = ${Zero ~ X ~ (Underline? ~ ASCII_HEX_DIGIT)+}
-/*====================================================================================================================*/
-//!#D19A66: Integer|Decimal|DecimalBad
-Number     = ${Complex|Decimal|DecimalBad|Integer}
-Decimal    = ${Integer ~ Dot ~ ASCII_DIGIT+}
-DecimalBad = ${Integer ~ Dot|Dot ~ ASCII_DIGIT+}
-Integer    = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
-Complex    = {(Decimal|Integer)~ SYMBOL}
 /*====================================================================================================================*/
 //!#3C963C: String
 //!#98C379: StringText|StringLiteralText
