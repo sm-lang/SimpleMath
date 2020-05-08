@@ -8,7 +8,7 @@ pub enum AST {
     Expression {
         base: Box<AST>,
         eos: bool,
-        pos: Position,
+        position: Position,
     },
     //
     /// function call

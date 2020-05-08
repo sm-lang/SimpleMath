@@ -9,7 +9,7 @@ impl ToWolfram for AST {
         match (*self).clone() {
             AST::EmptyStatement | AST::NewLine => WolframValue::Skip,
             //
-            AST::Expression {..} => unimplemented!(),
+            AST::Expression { base, .. } => base.to_wolfram(),
             //
             AST::Function(f, args, kws) => {
                 let mut vec = vec![];
@@ -22,7 +22,7 @@ impl ToWolfram for AST {
                 WolframValue::Function(function_map(&f), vec)
             }
             //
-            AST::UnaryOperators { base, prefix, suffix, .. } =>{
+            AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let mut v = base.to_wolfram();
                 for o in suffix {
                     v = WolframValue::Function(suffix_map(&o), vec![v])
@@ -30,9 +30,11 @@ impl ToWolfram for AST {
                 for o in prefix {
                     v = WolframValue::Function(prefix_map(&o), vec![v])
                 }
-                return v
-            },
-            AST::InfixOperators{ infix, lhs, rhs, .. }=> WolframValue::Function(binary_map(&infix), vec![lhs.to_wolfram(), rhs.to_wolfram()]),
+                return v;
+            }
+            AST::InfixOperators { infix, lhs, rhs, .. } => {
+                WolframValue::Function(binary_map(&infix), vec![lhs.to_wolfram(), rhs.to_wolfram()])
+            }
             //
             AST::Null => WolframValue::new_symbol("None"),
             AST::Boolean(b) => {

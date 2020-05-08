@@ -8,23 +8,21 @@ impl ToTex for AST {
         match (*self).clone() {
             AST::NewLine => format!("\n"),
             AST::Null => format!("\\\\tt{{null}}"),
-            /*
-            AST::Prefix(o, e) => match check_brackets(vec![&e]) {
-                BracketType::None => format!("{}{}", prefix_map(&o), e.to_tex()),
-                BracketType::Simple => format!("{}({})", prefix_map(&o), e.to_tex()),
-                BracketType::Large => format!("{}\\left({}\\right)", prefix_map(&o), e.to_tex()),
-            },
-            AST::Suffix(o, e) => match check_brackets(vec![&e]) {
-                BracketType::None => format!("{}{}", e.to_tex(), suffix_map(&o)),
-                BracketType::Simple => format!("({}){}", e.to_tex(), suffix_map(&o)),
-                BracketType::Large => format!("\\left({}\\right){}", prefix_map(&o), e.to_tex()),
-            },
-            AST::Binary(o, lhs, rhs) => match check_brackets(vec![&lhs, &rhs]) {
-                BracketType::None => format!("{} {} {}", lhs.to_tex(), binary_map(&o), rhs.to_tex()),
-                BracketType::Simple => format!("({} {} {})", lhs.to_tex(), binary_map(&o), rhs.to_tex()),
-                BracketType::Large => format!("\\left({} {} {}\\right)", lhs.to_tex(), binary_map(&o), rhs.to_tex()),
-            },
-             */
+            AST::Expression { base, eos, .. } => {
+                let s = if eos { ";" } else { "" };
+                format!("{}{}", base.to_tex(), s)
+            }
+            AST::UnaryOperators { base, prefix, suffix, .. } => {
+                let v = base.to_tex();
+                let p = prefix.join(" ");
+                let s = suffix.join(" ");
+                format!("{}{}{}", p, v, s)
+            }
+            AST::InfixOperators { infix, lhs, rhs, .. }=> {
+                let l = lhs.to_tex();
+                let r = rhs.to_tex();
+                format!("{}{}{}", l, binary_map(&infix), r)
+            }
             AST::Integer(i) => format!("{}", i),
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),

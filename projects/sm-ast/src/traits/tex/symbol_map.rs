@@ -1,17 +1,3 @@
-pub fn prefix_map(s: &str) -> Box<str> {
-    let m = match s {
-        _ => s,
-    };
-    Box::from(m)
-}
-
-pub fn suffix_map(s: &str) -> Box<str> {
-    let m = match s {
-        _ => s,
-    };
-    Box::from(m)
-}
-
 pub fn binary_map(s: &str) -> Box<str> {
     let m = match s {
         "+-" => "\\mp",

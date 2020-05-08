@@ -33,7 +33,7 @@ impl ParserSettings {
             match pair.as_rule() {
                 Rule::EOI => continue,
                 Rule::expression => {
-                    self.parse_expression(pair);
+                    return self.parse_expression(pair);
                 }
                 Rule::COMMENT => continue,
                 _ => debug_cases!(pair),
@@ -45,16 +45,19 @@ impl ParserSettings {
     }
 
     fn parse_expression(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
+        let mut eos = false;
+        let mut base = AST::Null;
+        let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::expr => {
-                    self.parse_expr(pair);
+                    base = self.parse_expr(pair);
                 }
+                Rule::eos => eos = true,
                 _ => debug_cases!(pair),
             };
         }
-        return AST::Null;
+        return AST::Expression { base: Box::new(base), eos, position };
     }
 
     #[rustfmt::skip]
@@ -89,21 +92,12 @@ impl ParserSettings {
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
-                Rule::Suffix => {
-                    suffix.push(pair.as_str().to_string())
-                }
-                Rule::Prefix => {
-                    prefix.push(pair.as_str().to_string())
-                }
+                Rule::Suffix => suffix.push(pair.as_str().to_string()),
+                Rule::Prefix => prefix.push(pair.as_str().to_string()),
                 _ => debug_cases!(pair),
             };
         }
-        return AST::UnaryOperators {
-            base: Box::new(base),
-            prefix,
-            suffix,
-            position,
-        };
+        return AST::UnaryOperators { base: Box::new(base), prefix, suffix, position };
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
@@ -111,7 +105,7 @@ impl ParserSettings {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::data => {
-                    self.parse_data(pair);
+                    return self.parse_data(pair);
                 }
                 _ => debug_cases!(pair),
             };
@@ -136,7 +130,10 @@ impl ParserSettings {
                     return self.parse_byte(pair);
                 }
                 Rule::Integer => {
-                    return self.parse_integer(pair);
+                    // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+                    if let Ok(o) = BigInt::from_str_radix(pair.as_str(), 10) {
+                        return AST::Integer(o);
+                    }
                 }
                 _ => debug_cases!(pair),
             };
@@ -154,7 +151,6 @@ impl ParserSettings {
         }
         return AST::Null;
     }
-
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
@@ -176,17 +172,6 @@ impl ParserSettings {
                         return AST::Integer(o);
                     }
                 }
-                _ => unreachable!(),
-            };
-        }
-        return AST::Null;
-    }
-
-    fn parse_integer(&self, pairs: Pair<Rule>) -> AST {
-        for pair in pairs.into_inner() {
-            let s = pair.as_str();
-            // It is impossible to get `from_str_radix` errors due to the constraints of the parser
-            match pair.as_rule() {
                 _ => unreachable!(),
             };
         }

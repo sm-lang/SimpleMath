@@ -132,7 +132,7 @@ apply_kv = {SYMBOL~ Colon ~ expr|expr}
 function_name = {SYMBOL}
 function_module = {Dot ~ (SYMBOL ~ Dot)*}
 /*====================================================================================================================*/
-expression    = {expr~eos?}
+expression    =  {expr~eos?}
 expr          = !{term ~ (Infix ~ term)*}
 term          =  {Prefix* ~ node ~ Suffix*}
 node          =  {"(" ~ expr ~ ")"|tuple|bracket_call|data}
