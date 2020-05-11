@@ -9,12 +9,24 @@ pub struct ParserSettings {
     pub refine: bool,
 }
 
-pub const OPERATORS: &[(Rule, u32, Assoc); 5] = &[
-    (Rule::Plus, 1, Assoc::Left),
-    (Rule::Minus, 1, Assoc::Left),
-    (Rule::Multiply, 2, Assoc::Left),
-    (Rule::Divide, 2, Assoc::Left),
-    (Rule::Power, 3, Assoc::Right),
+///
+/// use Precedence in Mathematica
+pub const OPERATORS: &[(Rule, u32, Assoc); 7] = &[
+    // plus : a + b
+    // minus: a - b
+    (Rule::Plus, 310, Assoc::Left),
+    (Rule::Minus, 310, Assoc::Left),
+    //
+    (Rule::Multiply, 400, Assoc::Left),
+    (Rule::Divide, 470, Assoc::Left),
+    //
+    (Rule::Power, 590, Assoc::Right),
+    // @
+    (Rule::Map, 620, Assoc::Left),
+    // dot: a.b
+    //
+    (Rule::Dot, 900, Assoc::Left),
+    // 1000 = Atom
 ];
 
 pub static CLIMBER: PrecClimber<Rule> = PrecClimber::new_const(OPERATORS);

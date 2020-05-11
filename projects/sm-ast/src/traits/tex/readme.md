@@ -33,10 +33,40 @@ D(a_*b_,x_) := D(a,x)*b + a*D(b,x)
 2 x y
 
 ```js
-Integrate(5*E^(3x),[x,2,a]).(|x_| => Expand(x))
+integrate(5*E^(3x),[x,2,a]).(|x_| => expand(x))
 ```
 
 ```js
-Sum(i, (i, 1, n))
+sum(i, (i, 1, n))
+```
+
+
+sum(a_Expression, b__Tuple)
+
+
+a.map {
+
+}
+
+
+$2 x y$
+
+`sin(x) cos(x)`
+
+`sin(x)cos(x)`
+
+`3 mod 5`
+
+
+`a b if a {b}`
+
+`a*b*if a {b}`
+
+a.map[1]
+
+```s
+@TeXForm {
+	sum(i, (i, 1, n))
+}
 ```
 

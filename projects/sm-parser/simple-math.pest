@@ -22,11 +22,9 @@ block_or_stmt = _{block|Set ~ statement}
 importStatement = {
     Use ~ Dot* ~ use_alias
   | Use ~ Dot* ~ use_module_select
-  | Use ~ use_module_string
 }
 use_alias = !{String ~ As ~ SYMBOL|SYMBOL ~ (ModuleSplit ~ SYMBOL)* ~As~SYMBOL}
 use_module_select = !{SYMBOL ~ (ModuleSplit ~ SYMBOL)* ~(ModuleSplit ~ (module_block|Star))?}
-use_module_string = !{String ~ (ModuleSplit ~ (module_block|Star))?}
 module_block = {"{"~module_tuple~ ( comma_or_semi? ~ module_tuple)* ~comma_or_semi?~"}"}
 module_tuple = {use_alias|use_module_select}
 ModuleSplit= _{Dot|Proportion}
@@ -99,7 +97,7 @@ assign_terms = _{
   | assign_name ~ type_hint? ~ block_or_stmt?
 }
 assign_name = _{assign_pair ~ (Comma ~ assign_pair)* ~ Comma?}
-assign_pair = {Modifier* ~ Symbol}
+assign_pair = {Symbol}
 
 ///#C678DD
 Let = @{"let"}
@@ -138,9 +136,9 @@ term          =  {Prefix* ~ node ~ Suffix*}
 node          =  {"(" ~ expr ~ ")"|tuple|bracket_call|data}
 tuple         =  {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"}
 bracket_call  = ${data ~ ((!NEWLINE ~ WHITESPACE)* ~ (slice|apply))+}
-bracket_apply =  {Symbol ~ dict}
-condition     = _{"(" ~ expr ~ ")"|expr}
 dot_call      =  {term~ Dot ~ (Integer|Symbol) }
+condition     = _{"(" ~ expr ~ ")"|expr}
+
 /*====================================================================================================================*/
 //!#E06C75: type_hint|generic_type|parametric_types_pair
 type_expr = _{term~ (TypeInfix ~term)*}
@@ -177,28 +175,32 @@ Decimal    = ${Integer ~ Dot ~ ASCII_DIGIT+}
 DecimalBad = ${Integer ~ Dot|Dot ~ ASCII_DIGIT+}
 Integer    = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
 Complex    = {(Decimal|Integer)~ SYMBOL}
+Zero       = _{"0"}
 /*====================================================================================================================*/
 ///#D19A66
 Byte     = ${Byte_BIN|Byte_OCT|Byte_HEX}
-Byte_BIN = ${Zero ~ B ~ (Underline? ~ ASCII_BIN_DIGIT)+}
-Byte_OCT = ${Zero ~ O ~ (Underline? ~ ASCII_OCT_DIGIT)+}
-Byte_HEX = ${Zero ~ X ~ (Underline? ~ ASCII_HEX_DIGIT)+}
+Byte_BIN = ${Zero ~ ^"b" ~ (Underline? ~ ASCII_BIN_DIGIT)+}
+Byte_OCT = ${Zero ~ ^"o" ~ (Underline? ~ ASCII_OCT_DIGIT)+}
+Byte_HEX = ${Zero ~ ^"x" ~ (Underline? ~ ASCII_HEX_DIGIT)+}
 /*====================================================================================================================*/
-//!#3C963C: String
-//!#98C379: StringText|StringLiteralText
-String            = ${SYMBOL? ~ (StringNormal|StringLiteral|StringEmpty)}
-StringLiteral     = {StringStart ~ StringLiteralText ~ StringEnd}
-StringNormal      = {Quotation ~ StringText ~ Quotation}
-StringEmpty       = {Quotation{2}|Apostrophe{2}}
-StringLiteralText = {(!(Apostrophe ~ PEEK) ~ ANY)*}
-StringText        = {(Solidus~(Solidus|Quotation)|!Quotation ~ ANY)*}
-StringStart       = @{Apostrophe{1}~PUSH(Apostrophe*)}
-StringEnd         = @{POP ~ Apostrophe{1}}
+///#98C379
+String       = ${SYMBOL? ~ (StringNormal|StringEmpty)}
+StringNormal =  {StringStart ~ StringText ~ StringEnd}
+StringEmpty  =  {Quotation{2}}
+StringText   =  {(!(Quotation ~ PEEK) ~ ANY)*}
+StringStart  = @{Quotation{1}~PUSH(Quotation*)}
+StringEnd    = @{POP ~ Quotation{1}}
+/*====================================================================================================================*/
+///#61AFEF
+Symbol = ${SYMBOL ~ (Proportion ~ SYMBOL)*}
+SYMBOL = @{
+    XID_START ~  XID_CONTINUE*
+  | Underline ~ XID_CONTINUE+
+}
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = {NEWLINE|WHITE_SPACE}
-//!#7F848E: MultiLineComment
-COMMENT = {MultiLineComment|LineCommentSimple|LineCommentTodo|LineCommentFixme|LineCommentWarning}
+COMMENT = _{MultiLineComment|LineCommentSimple|LineCommentTodo|LineCommentFixme|LineCommentWarning}
 ///Gray
 LineCommentSimple = ${ "///" ~ (!NEWLINE ~ ANY)*}
 ///Green
@@ -210,21 +212,6 @@ LineCommentWarning = ${ "//*" ~ (!NEWLINE ~ ANY)*}
 ///Gray
 MultiLineComment = ${ "%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
 /*====================================================================================================================*/
-///#61AFEF
-Symbol = ${SYMBOL ~ (Proportion ~ SYMBOL)*}
-SYMBOL = @{
-    XID_START ~  XID_CONTINUE*
-  | Underline ~ XID_CONTINUE+
-}
-/*====================================================================================================================*/
-Zero = _{"0"}
-X = _{"x"|"X"}
-O = _{"o"|"O"}
-B = _{"b"|"B"}
-/*====================================================================================================================*/
-//!Orange: Modifier
-Keywords = !{If|For}
-Modifier = !{(!(SYMBOL~(Set|Comma|Colon|Semicolon|"{"|"}"|"("|")"|"<"|">")) ~SYMBOL)}
 //!#56B6C2: Prefix|Infix|Postfix
 Prefix = @{
     (Bang|Plus|Minus|Star)

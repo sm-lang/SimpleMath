@@ -9,9 +9,13 @@ impl ToWolfram for AST {
         match (*self).clone() {
             AST::EmptyStatement | AST::NewLine => WolframValue::Skip,
             //
+            AST::Program(s) => {
+                let v: Vec<_> = s.iter().map(|s| s.to_wolfram()).collect();
+                WolframValue::Function(Box::from("CompoundExpression"), v)
+            }
             AST::Expression { base, .. } => base.to_wolfram(),
             //
-            AST::Function(f, args, kws) => {
+            AST::FunctionCall(f, args, kws) => {
                 let mut vec = vec![];
                 for arg in args {
                     vec.push(arg.to_wolfram())
@@ -47,7 +51,7 @@ impl ToWolfram for AST {
             }
             AST::Integer(i) => WolframValue::BigInteger(i),
             AST::Decimal(f) => WolframValue::BigDecimal(Box::from(format!("{}", f))),
-            AST::Symbol(s) => WolframValue::Symbol(s.name),
+            AST::Symbol(s) => WolframValue::Symbol(Box::from(s.name)),
             AST::String(s) => WolframValue::String(Box::from(s)),
         }
     }

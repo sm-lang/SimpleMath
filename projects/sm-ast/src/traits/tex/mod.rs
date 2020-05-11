@@ -18,7 +18,7 @@ impl ToTex for AST {
                 let s = suffix.join(" ");
                 format!("{}{}{}", p, v, s)
             }
-            AST::InfixOperators { infix, lhs, rhs, .. }=> {
+            AST::InfixOperators { infix, lhs, rhs, .. } => {
                 let l = lhs.to_tex();
                 let r = rhs.to_tex();
                 format!("{}{}{}", l, binary_map(&infix), r)
@@ -57,7 +57,7 @@ pub fn expression_height(e: &AST) -> usize {
     // TODO: compare ops
     //       (a + b) * c
     match e {
-        AST::Function(_, _, _) => 1,
+        AST::FunctionCall(_, _, _) => 1,
         _ => 0,
     }
 }

@@ -5,6 +5,8 @@ use std::collections::BTreeMap;
 pub enum AST {
     EmptyStatement,
     NewLine,
+    //
+    Program(Vec<AST>),
     Expression {
         base: Box<AST>,
         eos: bool,
@@ -13,7 +15,7 @@ pub enum AST {
     //
     /// function call
     /// function(name, *args, **kwargs)
-    Function(String, Vec<AST>, BTreeMap<AST, AST>),
+    FunctionCall(String, Vec<AST>, BTreeMap<AST, AST>),
 
     //
     /// unary operators
@@ -48,7 +50,9 @@ impl AST {
     }
 
     pub fn symbol(s: &str) -> AST {
-        AST::Symbol(Symbol { name: Box::from(s), ..Default::default() })
+        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
+        let n = ns.pop().unwrap();
+        AST::Symbol(Symbol { name_space: ns, name: n })
     }
 
     pub fn string(s: impl Into<String>) -> AST {
@@ -65,7 +69,8 @@ pub struct Position {
 
 #[derive(Clone, Debug, Default)]
 pub struct Symbol {
-    pub name: Box<str>,
+    pub name_space: Vec<String>,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Default)]

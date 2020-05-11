@@ -97,20 +97,66 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::UnaryOperators { base: Box::new(base), prefix, suffix, position };
+        return if prefix.len() + suffix.len() == 0 {
+            base
+        }
+        else {
+            AST::UnaryOperators { base: Box::new(base), prefix, suffix, position }
+        };
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::data => {
                     return self.parse_data(pair);
                 }
+                Rule::bracket_call => {
+                    return self.parse_bracket_call(pair);
+                }
                 _ => debug_cases!(pair),
             };
         }
         return AST::Null;
+    }
+
+    fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::data => self.parse_data(pair),
+                Rule::apply => self.parse_apply(pair),
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_apply(&self, pairs: Pair<Rule>) -> AST {
+        let mut codes = vec![""];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::apply_kv => {
+                    let (k, v) = self.parse_apply_kv(pair);
+                    println!("{:?}\n{:?}", k, v)
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::Null;
+    }
+
+    fn parse_apply_kv(&self, pairs: Pair<Rule>) -> (AST, AST) {
+        let (mut key, mut value) = (AST::Null, AST::Null);
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::Colon => continue,
+                Rule::SYMBOL => key = self.parse_symbol(pair),
+                Rule::expr => value = self.parse_expr(pair),
+                _ => unreachable!(),
+            };
+        }
+        return (key, value);
     }
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
@@ -142,10 +188,10 @@ impl ParserSettings {
     }
 
     fn parse_symbol(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
+        let mut codes = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::SYMBOL => println!("{}", pair.as_str()),
+                Rule::SYMBOL => codes.push(pair.as_str()),
                 _ => debug_cases!(pair),
             };
         }
