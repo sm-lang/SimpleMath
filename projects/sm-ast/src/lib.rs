@@ -1,3 +1,5 @@
+#![feature(option_unwrap_none)]
+
 pub mod ast;
 pub mod parser;
 pub mod traits;

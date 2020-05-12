@@ -1,3 +1,5 @@
+use crate::{ast::Symbol, AST};
+
 pub fn prefix_map(s: &str) -> Box<str> {
     let m = match s {
         "+" => "Plus",
@@ -29,13 +31,14 @@ pub fn binary_map(s: &str) -> Box<str> {
     Box::from(m)
 }
 
-pub fn function_map(s: &str) -> Box<str> {
-    let m = match s {
+pub fn function_map(ast: &Symbol) -> Box<str> {
+    let name = ast.name.as_str();
+    let m = match name {
         "sin" => "Sin",
         "cos" => "Cos",
         "tan" => "Tan",
         "cot" => "Cot",
-        _ => s,
+        _ => name,
     };
     Box::from(m)
 }

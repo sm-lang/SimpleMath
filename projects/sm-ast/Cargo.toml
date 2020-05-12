@@ -11,6 +11,7 @@ edition = "2018"
 
 [dependencies]
 num = "0.2"
+bigdecimal = "0.1"
 
 [dependencies.wolfram_wxf]
 version = "0.3.2"

@@ -57,7 +57,7 @@ pub fn expression_height(e: &AST) -> usize {
     // TODO: compare ops
     //       (a + b) * c
     match e {
-        AST::FunctionCall(_, _, _) => 1,
+        AST::FunctionCall { .. } => 1,
         _ => 0,
     }
 }

@@ -1,7 +1,8 @@
+use bigdecimal::BigDecimal;
 use num::BigInt;
 use std::collections::BTreeMap;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AST {
     EmptyStatement,
     NewLine,
@@ -15,7 +16,12 @@ pub enum AST {
     //
     /// function call
     /// function(name, *args, **kwargs)
-    FunctionCall(String, Vec<AST>, BTreeMap<AST, AST>),
+    FunctionCall {
+        name: Symbol,
+        arguments: Vec<AST>,
+        options: BTreeMap<AST, AST>,
+        position: Position,
+    },
 
     //
     /// unary operators
@@ -39,7 +45,7 @@ pub enum AST {
     /// true or false
     Boolean(bool),
     Integer(BigInt),
-    Decimal(f64),
+    Decimal(BigDecimal),
     Symbol(Symbol),
     String(String),
 }
@@ -60,14 +66,14 @@ impl AST {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Position {
     pub file: String,
     pub start: (usize, usize),
     pub end: (usize, usize),
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Symbol {
     pub name_space: Vec<String>,
     pub name: String,

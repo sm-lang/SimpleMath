@@ -5,6 +5,7 @@ use crate::{
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
+    collections::BTreeMap,
     fs::{read_to_string, File},
     io::Write,
 };
@@ -121,29 +122,49 @@ impl ParserSettings {
     }
 
     fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
+        let p = self.get_position(pairs.as_span());
+        let mut head = AST::Null;
+        let mut args = vec![];
+        let mut kws = BTreeMap::new();
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::data => self.parse_data(pair),
-                Rule::apply => self.parse_apply(pair),
-                _ => debug_cases!(pair),
-            };
-        }
-        return AST::Null;
-    }
+                Rule::Symbol => {
+                    head = AST::symbol(pair.as_str());
 
-    fn parse_apply(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![""];
-        for pair in pairs.into_inner() {
-            match pair.as_rule() {
-                Rule::apply_kv => {
-                    let (k, v) = self.parse_apply_kv(pair);
-                    println!("{:?}\n{:?}", k, v)
+                    println!("data: {:?}", head);
+                }
+                Rule::apply => {
+                    (args, kws) = self.parse_apply(pair);
                 }
                 _ => debug_cases!(pair),
             };
         }
+        match head {
+            AST::Symbol(s) => {
+                return AST::FunctionCall { name: s, arguments: args, options: kws, position: p };
+            }
+            _ => unreachable!(),
+        }
         return AST::Null;
+    }
+
+    fn parse_apply(&self, pairs: Pair<Rule>) -> (Vec<AST>, BTreeMap<AST, AST>) {
+        let mut args = vec![];
+        let mut kws = BTreeMap::new();
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::Comma => continue,
+                Rule::apply_kv => {
+                    let (k, v) = self.parse_apply_kv(pair);
+                    match k {
+                        AST::Null => args.push(v),
+                        _ => kws.insert(k, v).unwrap_none(),
+                    }
+                }
+                _ => unreachable!(),
+            };
+        }
+        return (args, kws);
     }
 
     fn parse_apply_kv(&self, pairs: Pair<Rule>) -> (AST, AST) {
@@ -151,7 +172,7 @@ impl ParserSettings {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Colon => continue,
-                Rule::SYMBOL => key = self.parse_symbol(pair),
+                Rule::SYMBOL => key = AST::symbol(pair.as_str()),
                 Rule::expr => value = self.parse_expr(pair),
                 _ => unreachable!(),
             };
@@ -163,7 +184,7 @@ impl ParserSettings {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Symbol => {
-                    return self.parse_symbol(pair);
+                    return AST::symbol(pair.as_str());
                 }
                 Rule::Boolean => {
                     return match pair.as_str() {
@@ -181,17 +202,6 @@ impl ParserSettings {
                         return AST::Integer(o);
                     }
                 }
-                _ => debug_cases!(pair),
-            };
-        }
-        return AST::Null;
-    }
-
-    fn parse_symbol(&self, pairs: Pair<Rule>) -> AST {
-        let mut codes = vec![];
-        for pair in pairs.into_inner() {
-            match pair.as_rule() {
-                Rule::SYMBOL => codes.push(pair.as_str()),
                 _ => debug_cases!(pair),
             };
         }

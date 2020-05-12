@@ -9,7 +9,6 @@ pub struct ParserSettings {
     pub refine: bool,
 }
 
-///
 /// use Precedence in Mathematica
 pub const OPERATORS: &[(Rule, u32, Assoc); 7] = &[
     // plus : a + b
@@ -24,7 +23,6 @@ pub const OPERATORS: &[(Rule, u32, Assoc); 7] = &[
     // @
     (Rule::Map, 620, Assoc::Left),
     // dot: a.b
-    //
     (Rule::Dot, 900, Assoc::Left),
     // 1000 = Atom
 ];

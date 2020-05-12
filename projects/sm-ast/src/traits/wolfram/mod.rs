@@ -15,15 +15,15 @@ impl ToWolfram for AST {
             }
             AST::Expression { base, .. } => base.to_wolfram(),
             //
-            AST::FunctionCall(f, args, kws) => {
+            AST::FunctionCall { name, arguments, options, .. } => {
                 let mut vec = vec![];
-                for arg in args {
+                for arg in arguments {
                     vec.push(arg.to_wolfram())
                 }
-                for (k, v) in kws {
+                for (k, v) in options {
                     vec.push(WolframValue::Function(Box::from("Rule"), vec![k.to_wolfram(), v.to_wolfram()]))
                 }
-                WolframValue::Function(function_map(&f), vec)
+                WolframValue::Function(function_map(&name), vec)
             }
             //
             AST::UnaryOperators { base, prefix, suffix, .. } => {
