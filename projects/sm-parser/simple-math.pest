@@ -168,11 +168,10 @@ True    = @{"true"}
 False   = @{"false"}
 /*====================================================================================================================*/
 //!#D19A66: Integer|Decimal|DecimalBad
-Number     = _{Complex|Decimal|DecimalBad|Integer|Byte}
+Number     = _{Decimal|DecimalBad|Integer|Byte}
 Decimal    = ${Integer ~ Dot ~ ASCII_DIGIT+}
 DecimalBad = ${Integer ~ Dot|Dot ~ ASCII_DIGIT+}
 Integer    = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
-Complex    = {(Decimal|Integer)~ SYMBOL}
 Zero       = _{"0"}
 /*====================================================================================================================*/
 ///#D19A66

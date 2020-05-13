@@ -14,6 +14,9 @@ impl ToWolfram for AST {
                 WolframValue::Function(Box::from("CompoundExpression"), v)
             }
             AST::Expression { base, .. } => base.to_wolfram(),
+            AST::MultiplicativeExpression { expressions: e, .. } => {
+                WolframValue::Function(Box::from("Times"), e.iter().map(AST::to_wolfram).collect())
+            }
             //
             AST::FunctionCall { name, arguments, options, .. } => {
                 let mut vec = vec![];

@@ -94,7 +94,6 @@ pub enum Rule {
     Decimal,
     DecimalBad,
     Integer,
-    Complex,
     Zero,
     Byte,
     Byte_BIN,
@@ -633,7 +632,7 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Number(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    self::Complex(state).or_else(|state| self::Decimal(state)).or_else(|state| self::DecimalBad(state)).or_else(|state| self::Integer(state)).or_else(|state| self::Byte(state))
+                    self::Decimal(state).or_else(|state| self::DecimalBad(state)).or_else(|state| self::Integer(state)).or_else(|state| self::Byte(state))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -649,11 +648,6 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Integer(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::Integer, |state| state.atomic(::pest::Atomicity::Atomic, |state| self::Zero(state).or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_DIGIT(state)))))))))
-                }
-                #[inline]
-                #[allow(non_snake_case, unused_variables)]
-                pub fn Complex(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Complex, |state| state.sequence(|state| self::Decimal(state).or_else(|state| self::Integer(state)).and_then(|state| super::hidden::skip(state)).and_then(|state| self::SYMBOL(state))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1245,7 +1239,6 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::Decimal => rules::Decimal(state),
             Rule::DecimalBad => rules::DecimalBad(state),
             Rule::Integer => rules::Integer(state),
-            Rule::Complex => rules::Complex(state),
             Rule::Zero => rules::Zero(state),
             Rule::Byte => rules::Byte(state),
             Rule::Byte_BIN => rules::Byte_BIN(state),

@@ -1,5 +1,5 @@
 use crate::{
-    parser::{ParserSettings, CLIMBER},
+    parser::{utils::ApplyOrSlice, ParserSettings, CLIMBER},
     ToWolfram, AST,
 };
 use num::{BigInt, Num};
@@ -90,6 +90,7 @@ impl ParserSettings {
         let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
+                Rule::WHITESPACE=>continue,
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
@@ -115,6 +116,9 @@ impl ParserSettings {
                 Rule::bracket_call => {
                     return self.parse_bracket_call(pair);
                 }
+                Rule::space_call => {
+                    return self.parse_space_call(pair);
+                }
                 _ => debug_cases!(pair),
             };
         }
@@ -122,33 +126,57 @@ impl ParserSettings {
     }
 
     fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
-        let p = self.get_position(pairs.as_span());
         let mut head = AST::Null;
-        let mut args = vec![];
-        let mut kws = BTreeMap::new();
+        let mut parts = vec![];
+        let mut stack = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Symbol => {
                     head = AST::symbol(pair.as_str());
-
-                    println!("data: {:?}", head);
                 }
                 Rule::apply => {
-                    (args, kws) = self.parse_apply(pair);
+                    parts.push(self.get_position(pair.as_span()));
+                    stack.push(self.parse_apply(pair))
                 }
                 _ => debug_cases!(pair),
             };
         }
-        match head {
-            AST::Symbol(s) => {
-                return AST::FunctionCall { name: s, arguments: args, options: kws, position: p };
+        for s in stack {
+            let position = parts.pop().unwrap();
+            match s {
+                ApplyOrSlice::Apply(args, kws) => {
+                    head = AST::FunctionCall { name: Box::new(head), arguments: args, options: kws, position }
+                }
+                ApplyOrSlice::Slice => {}
             }
-            _ => unreachable!(),
         }
-        return AST::Null;
+        return head;
     }
 
-    fn parse_apply(&self, pairs: Pair<Rule>) -> (Vec<AST>, BTreeMap<AST, AST>) {
+    fn parse_space_call(&self, pairs: Pair<Rule>) -> AST {
+        let mut stack = vec![];
+        let position = self.get_position(pairs.as_span());
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::WHITESPACE => continue,
+                Rule::Symbol => {
+                    stack.push(AST::symbol(pair.as_str()));
+                }
+                Rule::Integer => {
+                    stack.push(self.parse_integer(pair));
+                }
+
+                _ => debug_cases!(pair),
+            };
+        }
+        println!("{:?}", stack);
+        return AST::MultiplicativeExpression{
+            expressions: stack,
+            position
+        };
+    }
+
+    fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
         let mut args = vec![];
         let mut kws = BTreeMap::new();
         for pair in pairs.into_inner() {
@@ -164,7 +192,7 @@ impl ParserSettings {
                 _ => unreachable!(),
             };
         }
-        return (args, kws);
+        return ApplyOrSlice::Apply(args, kws);
     }
 
     fn parse_apply_kv(&self, pairs: Pair<Rule>) -> (AST, AST) {
@@ -197,11 +225,9 @@ impl ParserSettings {
                     return self.parse_byte(pair);
                 }
                 Rule::Integer => {
-                    // It is impossible to get `from_str_radix` errors due to the constraints of the parser
-                    if let Ok(o) = BigInt::from_str_radix(pair.as_str(), 10) {
-                        return AST::Integer(o);
-                    }
+                    return self.parse_integer(pair);
                 }
+                Rule::Decimal => continue,
                 _ => debug_cases!(pair),
             };
         }
@@ -232,5 +258,13 @@ impl ParserSettings {
             };
         }
         return AST::Null;
+    }
+
+    fn parse_integer(&self, pairs: Pair<Rule>) -> AST {
+        // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+        return match BigInt::from_str_radix(pairs.as_str(), 10) {
+            Ok(o) => AST::Integer(o),
+            Err(..) => AST::Null,
+        };
     }
 }

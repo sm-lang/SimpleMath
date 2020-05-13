@@ -1,4 +1,4 @@
-use crate::{ast::Symbol, AST};
+use crate::{ToWolfram, AST};
 
 pub fn prefix_map(s: &str) -> Box<str> {
     let m = match s {
@@ -31,8 +31,11 @@ pub fn binary_map(s: &str) -> Box<str> {
     Box::from(m)
 }
 
-pub fn function_map(ast: &Symbol) -> Box<str> {
-    let name = ast.name.as_str();
+pub fn function_map(ast: &AST) -> Box<str> {
+    let name = match ast {
+        AST::Symbol(s) => s.name.as_str(),
+        _ => return Box::from(ast.to_wolfram_string()),
+    };
     let m = match name {
         "sin" => "Sin",
         "cos" => "Cos",

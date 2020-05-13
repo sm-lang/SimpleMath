@@ -17,12 +17,15 @@ pub enum AST {
     /// function call
     /// function(name, *args, **kwargs)
     FunctionCall {
-        name: Symbol,
+        name: Box<AST>,
         arguments: Vec<AST>,
         options: BTreeMap<AST, AST>,
         position: Position,
     },
-
+    MultiplicativeExpression {
+        expressions:Vec<AST>,
+        position: Position,
+    },
     //
     /// unary operators
     UnaryOperators {
@@ -73,7 +76,7 @@ pub struct Position {
     pub end: (usize, usize),
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Symbol {
     pub name_space: Vec<String>,
     pub name: String,

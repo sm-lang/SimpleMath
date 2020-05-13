@@ -6,12 +6,17 @@ use symbol_map::*;
 impl ToTex for AST {
     fn to_tex(&self) -> String {
         match (*self).clone() {
+            AST::EmptyStatement => format!(""),
             AST::NewLine => format!("\n"),
             AST::Null => format!("\\\\tt{{null}}"),
             AST::Expression { base, eos, .. } => {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
+            AST::MultiplicativeExpression { expressions, .. } => {
+                let e:Vec<_> = expressions.iter().map(AST::to_tex).collect();
+                return e.join(" ")
+            },
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();
                 let p = prefix.join(" ");
@@ -27,10 +32,18 @@ impl ToTex for AST {
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),
             AST::String(s) => format!("\\text{{{}}}", s),
-            _ => {
-                println!("AST::{:?}=>continue", self);
-                unimplemented!()
+
+            AST::Program(_) => unimplemented!(),
+            AST::FunctionCall { name: _, arguments: _, options: _, .. } => unimplemented!(),
+            AST::Boolean(b) => {
+                if b {
+                    format!("\\\\tt{{true}}")
+                }
+                else {
+                    format!("\\\\tt{{false}}")
+                }
             }
+
         }
     }
 }

@@ -11,7 +11,16 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("sin(in:2,3)");
+    let ast = parser.parse("2 y");
     println!("{}", ast.to_wolfram_string());
     println!("{}", ast.to_tex());
+}
+
+#[test]
+fn test_space_expression() {
+    let parser = ParserSettings::default();
+    let form = parser.parse("2 x y").to_wolfram_string();
+    assert_eq!(form,"Times[2,x,y]");
+    let form = parser.parse("2 -x y").to_wolfram_string();
+    assert_eq!(form,"Subtract[2,Times[x,y]]");
 }
