@@ -1,4 +1,5 @@
 use crate::{
+    ast::Position,
     parser::{utils::ApplyOrSlice, ParserSettings, CLIMBER},
     ToWolfram, AST,
 };
@@ -29,7 +30,7 @@ impl ParserSettings {
     }
     pub fn parse(&self, text: &str) -> AST {
         let pairs = SMParser::parse(Rule::program, text).unwrap_or_else(|e| panic!("{}", e));
-        let mut code = String::new();
+        let mut _code = String::new();
         for pair in pairs {
             match pair.as_rule() {
                 Rule::EOI => continue,
@@ -73,6 +74,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
+                Rule::Dot => self.parse_dot_call(lhs,rhs,p.clone()),
                 _ => AST::InfixOperators {
                     infix: op.as_str().to_string(),
                     lhs: Box::new(lhs),
@@ -90,7 +92,7 @@ impl ParserSettings {
         let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::WHITESPACE=>continue,
+                Rule::WHITESPACE => continue,
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
@@ -123,6 +125,23 @@ impl ParserSettings {
             };
         }
         return AST::Null;
+    }
+
+    fn parse_dot_call(&self, lhs: AST, rhs: AST, position: Position) -> AST {
+        return match rhs {
+            AST::FunctionCall { name, arguments, options, .. } => {
+                let mut args = vec![lhs];
+                args.extend(arguments);
+                AST::FunctionCall { name, arguments: args, options, position }
+            }
+            AST::Symbol(s) => AST::FunctionCall {
+                name: Box::new(AST::Symbol(s)),
+                arguments: vec![lhs],
+                options: Default::default(),
+                position,
+            },
+            _ => unreachable!(),
+        };
     }
 
     fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
@@ -165,15 +184,10 @@ impl ParserSettings {
                 Rule::Integer => {
                     stack.push(self.parse_integer(pair));
                 }
-
                 _ => debug_cases!(pair),
             };
         }
-        println!("{:?}", stack);
-        return AST::MultiplicativeExpression{
-            expressions: stack,
-            position
-        };
+        return AST::MultiplicativeExpression { expressions: stack, position };
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {

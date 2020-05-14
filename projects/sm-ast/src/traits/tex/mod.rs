@@ -1,5 +1,5 @@
+#[allow(unused_must_use)]
 mod symbol_map;
-
 use crate::{ToTex, AST};
 use symbol_map::*;
 
@@ -14,9 +14,9 @@ impl ToTex for AST {
                 format!("{}{}", base.to_tex(), s)
             }
             AST::MultiplicativeExpression { expressions, .. } => {
-                let e:Vec<_> = expressions.iter().map(AST::to_tex).collect();
-                return e.join(" ")
-            },
+                let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
+                e.join(" ")
+            }
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();
                 let p = prefix.join(" ");
@@ -34,7 +34,7 @@ impl ToTex for AST {
             AST::String(s) => format!("\\text{{{}}}", s),
 
             AST::Program(_) => unimplemented!(),
-            AST::FunctionCall { name: _, arguments: _, options: _, .. } => unimplemented!(),
+            AST::FunctionCall { name, arguments, options, .. } => function_map(&name.to_tex(), arguments, options),
             AST::Boolean(b) => {
                 if b {
                     format!("\\\\tt{{true}}")
@@ -43,34 +43,6 @@ impl ToTex for AST {
                     format!("\\\\tt{{false}}")
                 }
             }
-
         }
-    }
-}
-
-pub enum BracketType {
-    None,
-    Simple,
-    Large,
-}
-
-pub fn check_brackets(exprs: Vec<&Box<AST>>) -> BracketType {
-    let mut v = vec![];
-    for e in exprs {
-        v.push(expression_height(&e))
-    }
-    match v.iter().max().unwrap() {
-        0 => BracketType::None,
-        1 => BracketType::Simple,
-        _ => BracketType::Large,
-    }
-}
-
-pub fn expression_height(e: &AST) -> usize {
-    // TODO: compare ops
-    //       (a + b) * c
-    match e {
-        AST::FunctionCall { .. } => 1,
-        _ => 0,
     }
 }

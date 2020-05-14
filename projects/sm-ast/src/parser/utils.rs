@@ -22,6 +22,7 @@ impl ParserSettings {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) enum ApplyOrSlice {
     Apply(Vec<AST>, BTreeMap<AST, AST>),
     Slice,

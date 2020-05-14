@@ -9,6 +9,7 @@ pub struct ParserSettings {
     pub refine: bool,
 }
 
+/// Determines the associativity and priority of operators
 /// use Precedence in Mathematica
 pub const OPERATORS: &[(Rule, u32, Assoc); 7] = &[
     // plus : a + b

@@ -92,7 +92,6 @@ pub enum Rule {
     False,
     Number,
     Decimal,
-    DecimalBad,
     Integer,
     Zero,
     Byte,
@@ -632,17 +631,12 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Number(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    self::Decimal(state).or_else(|state| self::DecimalBad(state)).or_else(|state| self::Integer(state)).or_else(|state| self::Byte(state))
+                    self::Decimal(state).or_else(|state| self::Integer(state)).or_else(|state| self::Byte(state))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Decimal(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Decimal, |state| state.sequence(|state| self::Integer(state).and_then(|state| self::Dot(state)).and_then(|state| self::ASCII_DIGIT(state)).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state))))))
-                }
-                #[inline]
-                #[allow(non_snake_case, unused_variables)]
-                pub fn DecimalBad(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::DecimalBad, |state| state.sequence(|state| self::Integer(state).and_then(|state| self::Dot(state))).or_else(|state| state.sequence(|state| self::Dot(state).and_then(|state| self::ASCII_DIGIT(state)).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1237,7 +1231,6 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::False => rules::False(state),
             Rule::Number => rules::Number(state),
             Rule::Decimal => rules::Decimal(state),
-            Rule::DecimalBad => rules::DecimalBad(state),
             Rule::Integer => rules::Integer(state),
             Rule::Zero => rules::Zero(state),
             Rule::Byte => rules::Byte(state),

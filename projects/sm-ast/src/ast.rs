@@ -23,7 +23,7 @@ pub enum AST {
         position: Position,
     },
     MultiplicativeExpression {
-        expressions:Vec<AST>,
+        expressions: Vec<AST>,
         position: Position,
     },
     //
