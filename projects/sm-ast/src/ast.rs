@@ -26,6 +26,7 @@ pub enum AST {
         expressions: Vec<AST>,
         position: Position,
     },
+    List(Vec<AST>),
     //
     /// unary operators
     UnaryOperators {

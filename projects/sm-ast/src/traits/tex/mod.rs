@@ -17,6 +17,12 @@ impl ToTex for AST {
                 let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
                 e.join(" ")
             }
+            AST::List(v) => {
+                // todo: height = 1
+                let e: Vec<_> = v.iter().map(AST::to_tex).collect();
+                format!("\\\\left\\\\{{{}\\\\right\\\\}}",e.join(", "))
+            },
+
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();
                 let p = prefix.join(" ");

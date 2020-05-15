@@ -1,4 +1,5 @@
 use crate::{ToWolfram, AST};
+use text_utils::capitalize_first_letter;
 
 pub fn prefix_map(s: &str) -> Box<str> {
     let m = match s {
@@ -31,17 +32,13 @@ pub fn binary_map(s: &str) -> Box<str> {
     Box::from(m)
 }
 
-pub fn function_map(ast: &AST) -> Box<str> {
+pub fn function_map(ast: &AST) -> String {
     let name = match ast {
         AST::Symbol(s) => s.name.as_str(),
-        _ => return Box::from(ast.to_wolfram_string()),
+        _ => return ast.to_wolfram_string(),
     };
-    let m = match name {
-        "sin" => "Sin",
-        "cos" => "Cos",
-        "tan" => "Tan",
-        "cot" => "Cot",
-        _ => name,
-    };
-    Box::from(m)
+    match name {
+        "factor" => "FactorInteger".to_string(),
+        _ => capitalize_first_letter(name),
+    }
 }

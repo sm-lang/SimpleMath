@@ -74,7 +74,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
-                Rule::Dot => self.parse_dot_call(lhs,rhs,p.clone()),
+                Rule::Dot => self.parse_dot_call(lhs, rhs, p.clone()),
                 _ => AST::InfixOperators {
                     infix: op.as_str().to_string(),
                     lhs: Box::new(lhs),
@@ -103,8 +103,7 @@ impl ParserSettings {
         }
         return if prefix.len() + suffix.len() == 0 {
             base
-        }
-        else {
+        } else {
             AST::UnaryOperators { base: Box::new(base), prefix, suffix, position }
         };
     }
@@ -225,6 +224,10 @@ impl ParserSettings {
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
+                Rule::list => {
+                    return self.parse_list(pair);
+                }
+
                 Rule::Symbol => {
                     return AST::symbol(pair.as_str());
                 }
@@ -246,6 +249,20 @@ impl ParserSettings {
             };
         }
         return AST::Null;
+    }
+
+    fn parse_list(&self, pairs: Pair<Rule>) -> AST {
+        let mut v = vec![];
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::Comma=>continue,
+                Rule::expr=> {
+                    v.push(self.parse_expr(pair))
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return AST::List(v);
     }
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {

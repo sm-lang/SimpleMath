@@ -26,7 +26,11 @@ impl ToWolfram for AST {
                 for (k, v) in options {
                     vec.push(WolframValue::Function(Box::from("Rule"), vec![k.to_wolfram(), v.to_wolfram()]))
                 }
-                WolframValue::Function(function_map(&name), vec)
+                WolframValue::Function(Box::from(function_map(&name)), vec)
+            }
+            AST::List(v) => {
+                let v: Vec<_> =v.iter().map(|s| s.to_wolfram()).collect();
+                WolframValue::Function(Box::from("List"), v)
             }
             //
             AST::UnaryOperators { base, prefix, suffix, .. } => {

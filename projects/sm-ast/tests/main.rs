@@ -11,7 +11,7 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("sin(3)(5)");
+    let ast = parser.parse("[1,2]");
     println!("{}", ast.to_wolfram_string());
     println!("{}", ast.to_tex());
 }
