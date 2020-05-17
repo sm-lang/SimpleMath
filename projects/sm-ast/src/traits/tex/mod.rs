@@ -20,8 +20,8 @@ impl ToTex for AST {
             AST::List(v) => {
                 // todo: height = 1
                 let e: Vec<_> = v.iter().map(AST::to_tex).collect();
-                format!("\\\\left\\\\{{{}\\\\right\\\\}}",e.join(", "))
-            },
+                format!("\\\\left\\\\{{{}\\\\right\\\\}}", e.join(", "))
+            }
 
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();

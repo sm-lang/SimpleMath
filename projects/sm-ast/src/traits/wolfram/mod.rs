@@ -29,7 +29,7 @@ impl ToWolfram for AST {
                 WolframValue::Function(Box::from(function_map(&name)), vec)
             }
             AST::List(v) => {
-                let v: Vec<_> =v.iter().map(|s| s.to_wolfram()).collect();
+                let v: Vec<_> = v.iter().map(|s| s.to_wolfram()).collect();
                 WolframValue::Function(Box::from("List"), v)
             }
             //

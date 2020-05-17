@@ -35,16 +35,12 @@ As   = @{"as"}
 controlFlow = _{re_control|if_statement|for_statement}
 block = !{"{" ~ statement+ ~ "}"}
 /*====================================================================================================================*/
-if_statement = {if_nested_else|if_nested|if_single_else|if_single}
-if_single = _{If ~ condition ~ block}
-if_nested = _{If ~ condition ~ block ~ else_if_block+}
-if_single_else = _{If ~ condition ~ block ~ if_else_block}
-if_nested_else = _{If ~ condition ~ block ~ else_if_block+ ~ if_else_block}
-else_if_block = _{Else ~ If ~ condition ~ block}
-if_else_block = _{Else ~ block}
-//!#C678DD: If|Else
-If = @{"if"}
-Else = @{"else"}
+if_statement = {
+    "if" ~ ("(" ~ expr ~ ")"|expr) ~ (
+        ("then" ~ block) ~ ("else" ~ block)? ~ ("otherwise" ~ block)?
+    |  "{" ~ statement ~ (Comma ~ statement)? ~ (Comma ~ statement)? ~ Comma? ~ "}"
+    )
+}
 /*====================================================================================================================*/
 for_statement = {For ~ for_in_loop}
 for_in_loop = {SYMBOL~In~expr~block}
@@ -137,7 +133,6 @@ node         =  {"(" ~ expr ~ ")"|tuple|bracket_call|space_call|data}
 tuple        =  {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"|"(" ~ ")"}
 bracket_call = ${(tuple|list|dict|String|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply|slice))+}
 space_call   = ${(bracket_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (bracket_call|Number|Symbol))+}
-condition    = _{"(" ~ expr ~ ")"|expr}
 /*====================================================================================================================*/
 //!#E06C75: type_hint|generic_type|parametric_types_pair
 type_expr = _{term~ (TypeInfix ~term)*}
@@ -149,7 +144,7 @@ type_hint = {Colon ~ type_expr}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
 /*====================================================================================================================*/
-data = ${dict|list|Null|Boolean|Number|String|Symbol}
+data = ${dict|list|SpecialValue|Number|String|Symbol}
 dict = {"{" ~ key_value? ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = {"[" ~ expr? ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -159,25 +154,20 @@ key_valid =!{Integer | SYMBOL | String}
 index_range = !{expr? ~ Colon ~ expr?}
 index_step = !{expr? ~ Colon ~ expr? ~ Colon ~ expr?}
 /*====================================================================================================================*/
-//!#D19A66: Null|Unit
-Null = @{"null"}
-/*====================================================================================================================*/
 ///#D19A66
-Boolean = !{True|False}
-True    = @{"true"}
-False   = @{"false"}
+SpecialValue = @{"null"|"true"|"false"}
 /*====================================================================================================================*/
 //!#D19A66: Integer|Decimal|DecimalBad
 Number  = _{Decimal|Integer|Byte}
 Decimal = ${Integer ~ Dot ~ ASCII_DIGIT+}
-Integer = @{Zero|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
-Zero    = _{"0"}
+Integer = @{"0"|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
 /*====================================================================================================================*/
 ///#D19A66
-Byte     = ${Byte_BIN|Byte_OCT|Byte_HEX}
-Byte_BIN = ${Zero ~ ^"b" ~ (Underline? ~ ASCII_BIN_DIGIT)+}
-Byte_OCT = ${Zero ~ ^"o" ~ (Underline? ~ ASCII_OCT_DIGIT)+}
-Byte_HEX = ${Zero ~ ^"x" ~ (Underline? ~ ASCII_HEX_DIGIT)+}
+Byte = ${
+    ^"0b" ~ (Underline? ~ ASCII_BIN_DIGIT)+
+  | ^"0o" ~ (Underline? ~ ASCII_OCT_DIGIT)+
+  | ^"0x" ~ (Underline? ~ ASCII_HEX_DIGIT)+
+}
 /*====================================================================================================================*/
 ///#98C379
 String       = ${SYMBOL? ~ (StringNormal|StringEmpty)}
