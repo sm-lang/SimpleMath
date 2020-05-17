@@ -103,7 +103,8 @@ impl ParserSettings {
         }
         return if prefix.len() + suffix.len() == 0 {
             base
-        } else {
+        }
+        else {
             AST::UnaryOperators { base: Box::new(base), prefix, suffix, position }
         };
     }
@@ -231,8 +232,9 @@ impl ParserSettings {
                 Rule::Symbol => {
                     return AST::symbol(pair.as_str());
                 }
-                Rule::Boolean => {
+                Rule::SpecialValue => {
                     return match pair.as_str() {
+                        "null" => AST::Null,
                         "true" => AST::Boolean(true),
                         "false" => AST::Boolean(false),
                         _ => unreachable!(),
@@ -255,10 +257,8 @@ impl ParserSettings {
         let mut v = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::Comma=>continue,
-                Rule::expr=> {
-                    v.push(self.parse_expr(pair))
-                }
+                Rule::Comma => continue,
+                Rule::expr => v.push(self.parse_expr(pair)),
                 _ => debug_cases!(pair),
             };
         }
@@ -266,29 +266,16 @@ impl ParserSettings {
     }
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
-        for pair in pairs.into_inner() {
-            let s = pair.as_str();
-            // It is impossible to get `from_str_radix` errors due to the constraints of the parser
-            match pair.as_rule() {
-                Rule::Byte_HEX => {
-                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 16) {
-                        return AST::Integer(o);
-                    }
-                }
-                Rule::Byte_OCT => {
-                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 8) {
-                        return AST::Integer(o);
-                    }
-                }
-                Rule::Byte_BIN => {
-                    if let Ok(o) = BigInt::from_str_radix(&s[2..s.len()], 2) {
-                        return AST::Integer(o);
-                    }
-                }
-                _ => unreachable!(),
-            };
-        }
-        return AST::Null;
+        let s = pairs.as_str();
+        let base = match s.chars().nth(1).unwrap() {
+            'x' | 'X' => 16,
+            'o' | 'O' => 8,
+            'b' | 'B' => 2,
+            _ => unreachable!(),
+        };
+        // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+        let i = BigInt::from_str_radix(&s[2..s.len()], base).unwrap();
+        return AST::Integer(i);
     }
 
     fn parse_integer(&self, pairs: Pair<Rule>) -> AST {
