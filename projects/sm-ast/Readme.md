@@ -66,6 +66,10 @@ iff x > 0 && y > 0 {
 }
 ```
 
+k[x : _Integer?(# > 0 &) : 2] := x^2
+
+k(x_: Integer : 2 ?($ > 0 &)) := x^2
+
 
 f($x: Integer = 2) := x^2
 

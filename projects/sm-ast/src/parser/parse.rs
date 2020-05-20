@@ -140,6 +140,9 @@ impl ParserSettings {
                 options: Default::default(),
                 position,
             },
+            AST::Integer(i) =>{
+                unimplemented!()
+            }
             _ => unreachable!(),
         };
     }

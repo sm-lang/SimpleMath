@@ -20,8 +20,8 @@ block_or_stmt = _{block|Set ~ statement}
 /*====================================================================================================================*/
 //FIXME: 修复 nested using
 importStatement = {
-    Use ~ Dot* ~ use_alias
-  | Use ~ Dot* ~ use_module_select
+    "using" ~ Dot* ~ use_alias
+  | "using" ~ Dot* ~ use_module_select
 }
 use_alias = !{String ~ As ~ SYMBOL|SYMBOL ~ (ModuleSplit ~ SYMBOL)* ~As~SYMBOL}
 use_module_select = !{SYMBOL ~ (ModuleSplit ~ SYMBOL)* ~(ModuleSplit ~ (module_block|Star))?}
@@ -29,7 +29,6 @@ module_block = {"{"~module_tuple~ ( comma_or_semi? ~ module_tuple)* ~comma_or_se
 module_tuple = {use_alias|use_module_select}
 ModuleSplit= _{Dot|Proportion}
 //!#C678DD: Import|As
-Use  = @{"use"}
 As   = @{"as"}
 /*====================================================================================================================*/
 controlFlow = _{re_control|if_statement|for_statement}
@@ -42,11 +41,9 @@ if_statement = {
     )
 }
 /*====================================================================================================================*/
-for_statement = {For ~ for_in_loop}
-for_in_loop = {SYMBOL~In~expr~block}
+for_statement = {"for" ~ for_in_loop}
+for_in_loop = {SYMBOL~"in"~expr~block}
 //!#C678DD: For|In
-For = @{"for"}
-In = @{"in"}
 /*====================================================================================================================*/
 re_control = {
     Return ~ expr
@@ -69,8 +66,8 @@ traitStatement = {Trait ~ assign_pair ~ short_block?}
 short_block = {"{" ~ short_statement* ~ "}"}
 short_statement = {
     emptyStatement
-  | Def? ~ define_terms ~ eos?
-  | Let? ~ assign_terms ~ eos?
+  | "def"? ~ define_terms ~ eos?
+  | "let"? ~ assign_terms ~ eos?
   | short_annotation ~ eos?
 }
 short_annotation = {annotation_call+~short_statement}
@@ -79,26 +76,20 @@ Trait = @{"trait"}
 Class = @{"class"}
 /*====================================================================================================================*/
 extendStatement = {
-    Extend ~ Symbol ~ with_trait? ~ short_block
+    "implement" ~ Symbol ~ with_trait? ~ short_block
 }
-with_trait = {With ~ Symbol}
-
+with_trait = {"with" ~ Symbol}
 //!#C678DD: Extend|With
-Extend = @{"extend"}
-With = @{"with"}
 /*====================================================================================================================*/
-assignStatement = {Let ~ assign_terms}
+assignStatement = {"let" ~ assign_terms}
 assign_terms = _{
     "(" ~ assign_name ~ ")" ~ type_hint? ~ block_or_stmt?
   | assign_name ~ type_hint? ~ block_or_stmt?
 }
 assign_name = _{assign_pair ~ (Comma ~ assign_pair)* ~ Comma?}
 assign_pair = {Symbol}
-
-///#C678DD
-Let = @{"let"}
 /*====================================================================================================================*/
-defineStatement = {Def ~ define_terms}
+defineStatement = {"def" ~ define_terms}
 define_terms = _{
     assign_pair ~ define_parameter ~ type_hint? ~ block_or_stmt?
 }
@@ -107,9 +98,6 @@ define_parameter = {
   | "(" ~ ")"
 }
 define_pair = {SYMBOL ~ type_hint? ~ (Set ~ expr)?}
-//!#C678DD: Def|Where
-Def = @{"def"}
-Where = @{"where"}
 /*====================================================================================================================*/
 //!Orange:annotation_call
 annotation = {annotation_call+~statement}
@@ -144,7 +132,7 @@ type_hint = {Colon ~ type_expr}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
 /*====================================================================================================================*/
-data = ${dict|list|SpecialValue|Number|String|Symbol}
+data = ${dict|list|SpecialValue|Slot|Number|String|Symbol}
 dict = {"{" ~ key_value? ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = {"[" ~ expr? ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -156,14 +144,13 @@ index_step = !{expr? ~ Colon ~ expr? ~ Colon ~ expr?}
 /*====================================================================================================================*/
 ///#D19A66
 SpecialValue = @{"null"|"true"|"false"}
+Slot = ${("$"|"$$")~(SYMBOL|Integer)}
 /*====================================================================================================================*/
-//!#D19A66: Integer|Decimal|DecimalBad
+//!#D19A66: Integer|Decimal|Byte
 Number  = _{Decimal|Integer|Byte}
-Decimal = ${Integer ~ Dot ~ ASCII_DIGIT+}
+Decimal = ${Integer ~ Dot ~ Integer}
 Integer = @{"0"|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
-/*====================================================================================================================*/
-///#D19A66
-Byte = ${
+Byte    = ${
     ^"0b" ~ (Underline? ~ ASCII_BIN_DIGIT)+
   | ^"0o" ~ (Underline? ~ ASCII_OCT_DIGIT)+
   | ^"0x" ~ (Underline? ~ ASCII_HEX_DIGIT)+
@@ -186,32 +173,29 @@ SYMBOL = @{
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = {NEWLINE|WHITE_SPACE}
-COMMENT = _{MultiLineComment|LineCommentSimple|LineCommentTodo|LineCommentFixme|LineCommentWarning}
-///Gray
-LineCommentSimple = ${ "///" ~ (!NEWLINE ~ ANY)*}
-///Green
-LineCommentTodo = ${ "//?" ~ (!NEWLINE ~ ANY)*}
-///Red
-LineCommentFixme = ${ "//!" ~ (!NEWLINE ~ ANY)*}
-///Yellow
-LineCommentWarning = ${ "//*" ~ (!NEWLINE ~ ANY)*}
-///Gray
+COMMENT = _{
+    MultiLineComment
+  | "///" ~ (!NEWLINE ~ ANY)* //normal
+  | "//?" ~ (!NEWLINE ~ ANY)* //todo
+  | "//!" ~ (!NEWLINE ~ ANY)* //fixme
+  | "//*" ~ (!NEWLINE ~ ANY)* //warning
+}
 MultiLineComment = ${ "%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
 /*====================================================================================================================*/
 //!#56B6C2: Prefix|Infix|Postfix
 Prefix = @{
-    (Bang|Plus|Minus|Star)
+    Bang|Plus|Minus|Star
 }
 Suffix = @{
     DoubleBang
-  | (Bang | Question)
+  | Bang | Question
 }
 Infix = _{
     Set
-  | (Plus|Minus)
-  | (Multiply|CenterDot|Kronecker|TensorProduct|Divide|Quotient|Modulo)
+  | Plus|Minus
+  | Multiply|CenterDot|Kronecker|TensorProduct|Divide|Quotient|Modulo
   | Power
-  | (Grater|GraterEqual|Equal)
+  | Grater|GraterEqual|Equal
   | Dot
 }
 
