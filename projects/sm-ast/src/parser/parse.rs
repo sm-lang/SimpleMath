@@ -223,34 +223,16 @@ impl ParserSettings {
     }
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
-        for pair in pairs.into_inner() {
-            match pair.as_rule() {
-                Rule::list => {
-                    return self.parse_list(pair);
-                }
-
-                Rule::Symbol => {
-                    return AST::symbol(pair.as_str());
-                }
-                Rule::SpecialValue => {
-                    return match pair.as_str() {
-                        "null" => AST::Null,
-                        "true" => AST::Boolean(true),
-                        "false" => AST::Boolean(false),
-                        _ => unreachable!(),
-                    };
-                }
-                Rule::Byte => {
-                    return self.parse_byte(pair);
-                }
-                Rule::Integer => {
-                    return self.parse_integer(pair);
-                }
-                Rule::Decimal => continue,
-                _ => debug_cases!(pair),
-            };
+        let pair = pairs.clone().into_inner().nth(0).unwrap();
+        match pair.as_rule() {
+            Rule::list => self.parse_list(pair),
+            Rule::Symbol => AST::symbol(pair.as_str()),
+            Rule::SpecialValue => self.parse_special(pair),
+            Rule::Decimal => unimplemented!(),
+            Rule::Integer => self.parse_integer(pair),
+            Rule::Byte => self.parse_byte(pair),
+            _ => debug_cases!(pair),
         }
-        return AST::Null;
     }
 
     fn parse_list(&self, pairs: Pair<Rule>) -> AST {
@@ -280,9 +262,16 @@ impl ParserSettings {
 
     fn parse_integer(&self, pairs: Pair<Rule>) -> AST {
         // It is impossible to get `from_str_radix` errors due to the constraints of the parser
-        return match BigInt::from_str_radix(pairs.as_str(), 10) {
-            Ok(o) => AST::Integer(o),
-            Err(..) => AST::Null,
-        };
+        let i = BigInt::from_str_radix(pairs.as_str(), 10).unwrap();
+        return AST::Integer(i);
+    }
+
+    fn parse_special(&self, pairs: Pair<Rule>) -> AST {
+        match pairs.as_str() {
+            "null" => AST::Null,
+            "true" => AST::Boolean(true),
+            "false" => AST::Boolean(false),
+            _ => unreachable!(),
+        }
     }
 }
