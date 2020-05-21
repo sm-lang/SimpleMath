@@ -1,19 +1,28 @@
-use crate::evaluate::Context;
+use crate::evaluate::{Context};
 use crate::AST;
-use crate::parser::ParserSettings;
 
-impl Context {
-    pub fn parse(&mut self, s:&str) {
-        let parser = ParserSettings{
-            file: String::from("anonymous"),
-            refine: true
-        };
-        self.ast = parser.parse(s)
-    }
-
-    pub fn forward(&mut self){
-
+impl AST {
+    pub fn forward(&mut self,ctx:&mut Context) {
+        match self {
+            AST::EmptyStatement => {},
+            AST::NewLine => {},
+            AST::Program(_) => {},
+            AST::Expression { base, eos, .. } => {
+                if *eos {
+                    *self = AST::EmptyStatement
+                }
+            },
+            AST::FunctionCall { .. } => {},
+            AST::MultiplicativeExpression { .. } => {},
+            AST::List(v) => {
+                for e in v {
+                    e.forward(ctx)
+                }
+                // v.iter().map(AST::forward).collect();
+            },
+            AST::UnaryOperators { .. } => {},
+            AST::InfixOperators { .. } => {},
+            _ => (),
+        }
     }
 }
-
-

@@ -1,4 +1,5 @@
 use sm_ast::{parser::ParserSettings, ToTex, ToWolfram, AST};
+use sm_ast::evaluate::Runner;
 
 #[test]
 fn test() {
@@ -11,9 +12,14 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("a");
-    println!("{}", ast.to_wolfram_string());
-    println!("{}", ast.to_tex());
+    let ast = parser.parse("1+1");
+    println!("{}", &ast.to_wolfram_string());
+    println!("{}", &ast.to_tex());
+
+    let mut runner = Runner::from(ast);
+    runner.forward();
+    println!("{}", runner.ast.to_wolfram_string());
+    println!("{}", runner.ast.to_tex());
 }
 
 #[test]
