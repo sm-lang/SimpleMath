@@ -184,7 +184,7 @@ MultiLineComment = ${ "%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
 /*====================================================================================================================*/
 //!#56B6C2: Prefix|Infix|Postfix
 Prefix = @{
-    Bang|Plus|Minus|Star
+    Bang|Not|Plus|Minus|Star
 }
 Suffix = @{
     DoubleBang
@@ -300,6 +300,7 @@ Destruct =@{"~="}
 
 DoubleBang =@{"!!"}
 Bang =@{"!"}
+Not  =@{"¬"}
 
 Sharp =@{"#"}
 

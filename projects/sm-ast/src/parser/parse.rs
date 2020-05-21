@@ -112,6 +112,9 @@ impl ParserSettings {
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
+                Rule::expr=>{
+                    return self.parse_expr(pair);
+                },
                 Rule::data => {
                     return self.parse_data(pair);
                 }
@@ -140,7 +143,7 @@ impl ParserSettings {
                 options: Default::default(),
                 position,
             },
-            AST::Integer(i) =>{
+            AST::Integer(_) =>{
                 unimplemented!()
             }
             _ => unreachable!(),

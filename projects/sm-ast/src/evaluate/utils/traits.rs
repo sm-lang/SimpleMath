@@ -28,6 +28,7 @@ impl From<AST> for Runner {
 
 impl Runner {
     pub fn forward(&mut self) {
+        //println!("ok");
         self.ast.forward(&mut self.ctx)
     }
 }

@@ -27,6 +27,7 @@ pub fn binary_map(s: &str) -> Box<str> {
         "*" => "Times",
         "/" => "Divide",
         "//" => "Quotient",
+        "^" => "Power",
         _ => s,
     };
     Box::from(m)
