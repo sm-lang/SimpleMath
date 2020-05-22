@@ -12,7 +12,7 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("2a");
+    let ast = parser.parse("[1, 2].head");
     println!("{}", &ast.to_wolfram_string());
     println!("{}", &ast.to_tex());
 

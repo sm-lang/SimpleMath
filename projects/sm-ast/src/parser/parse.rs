@@ -10,6 +10,7 @@ use std::{
     fs::{read_to_string, File},
     io::Write,
 };
+use std::collections::VecDeque;
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -242,11 +243,11 @@ impl ParserSettings {
     }
 
     fn parse_list(&self, pairs: Pair<Rule>) -> AST {
-        let mut v = vec![];
+        let mut v = VecDeque::new();
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Comma => continue,
-                Rule::expr => v.push(self.parse_expr(pair)),
+                Rule::expr => v.push_front(self.parse_expr(pair)),
                 _ => debug_cases!(pair),
             };
         }
