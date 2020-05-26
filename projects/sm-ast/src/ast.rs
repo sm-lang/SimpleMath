@@ -59,8 +59,11 @@ pub enum AST {
 }
 
 impl AST {
-    pub fn integer(i: impl Into<BigInt>) -> AST {
-        AST::Integer(i.into())
+    pub fn integer(n: impl Into<BigInt>) -> AST {
+        AST::Integer(n.into())
+    }
+    pub fn decimal(n: impl Into<BigDecimal>) -> AST {
+        AST::Decimal(n.into())
     }
 
     pub fn symbol(s: &str) -> AST {
