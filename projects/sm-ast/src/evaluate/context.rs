@@ -1,14 +1,23 @@
-use crate::{evaluate::Context, AST};
+use crate::{evaluate::Context, AST, ToWolfram, ToTex};
 use num::{traits::Pow, ToPrimitive};
+use std::collections::BTreeMap;
+use crate::ast::Symbol;
+use crate::internal;
 
 impl AST {
     pub fn forward(&mut self, ctx: &mut Context) {
         match self {
-            AST::EmptyStatement => {}
-            AST::NewLine => {}
-            AST::Program(_) => {}
             AST::Expression { base, .. } => base.forward(ctx),
-            AST::FunctionCall { .. } => {}
+            AST::FunctionCall { name, ref arguments, ref options, .. } => {
+                name.forward(ctx);
+                match **name {
+                    AST::Symbol(ref s)=>{
+                        *self = evaluate_function(s, arguments, options, ctx)
+                    }
+                    _ => unimplemented!()
+                }
+
+            }
             AST::MultiplicativeExpression { expressions, .. } => {
                 *self = evaluate_multiplicative(&expressions, ctx);
             }
@@ -37,6 +46,30 @@ impl AST {
                 }
             }
             _ => (),
+        }
+    }
+}
+
+fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, _: &mut Context) -> AST {
+    match f.name.as_str() {
+        "wolfram_form" => {
+            AST::string(&args[0].to_wolfram_string())
+        },
+        "tex_form" => {
+            AST::string(&args[0].to_tex())
+        },
+        "first" => {
+            internal::first(&args[0]).unwrap()
+        },
+        "last" => {
+            internal::last(&args[0]).unwrap()
+        },
+        "length" => {
+            internal::length(&args[0]).unwrap()
+        },
+        _ => {
+            println!("{:?}", f);
+            unimplemented!()
         }
     }
 }

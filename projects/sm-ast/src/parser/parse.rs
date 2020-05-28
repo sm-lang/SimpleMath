@@ -244,7 +244,7 @@ impl ParserSettings {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Comma => continue,
-                Rule::expr => v.push_front(self.parse_expr(pair)),
+                Rule::expr => v.push_back(self.parse_expr(pair)),
                 _ => debug_cases!(pair),
             };
         }

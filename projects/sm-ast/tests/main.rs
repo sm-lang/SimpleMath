@@ -11,9 +11,9 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("[1, 2]");
+    let ast = parser.parse("[[1], 2, 3].wolfram_form");
     println!("{}", &ast.to_wolfram_string());
-    println!("{}", &ast.to_tex());
+    println!("{}", &ast);
 
     let mut runner = Runner::from(ast);
     runner.forward();

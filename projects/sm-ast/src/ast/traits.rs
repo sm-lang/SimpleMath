@@ -44,7 +44,7 @@ impl Display for AST {
             AST::Integer(n) => write!(f, "{}", n),
             AST::Decimal(_) => unimplemented!(),
             AST::Symbol(_) => unimplemented!(),
-            AST::String(_) => unimplemented!(),
+            AST::String(s) => write!(f, "{}", s),
             _ => write!(f, "{:?}", self),
         }
     }
