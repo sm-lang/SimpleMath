@@ -11,14 +11,14 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("[1, 2].head");
+    let ast = parser.parse("[1, 2]");
     println!("{}", &ast.to_wolfram_string());
     println!("{}", &ast.to_tex());
 
     let mut runner = Runner::from(ast);
     runner.forward();
     println!("{}", runner.ast.to_wolfram_string());
-    println!("{}", runner.ast.to_tex());
+    println!("{}", runner.ast);
 }
 
 #[test]

@@ -1,4 +1,4 @@
-use crate::{AST, SMResult};
+use crate::{SMResult, AST};
 
 pub fn floor(expr: &AST) -> SMResult<AST> {
     match expr {

@@ -2,6 +2,7 @@ use crate::{
     ast::{Position, Symbol},
     AST,
 };
+use itertools::Itertools;
 use std::{
     fmt,
     fmt::{Display, Formatter},
@@ -19,10 +20,19 @@ impl Default for Position {
     }
 }
 
+#[allow(unused_must_use)]
 impl Display for AST {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
             AST::Null => write!(f, "null"),
+            AST::Expression { base, eos, .. } => {
+                write!(f, "{}", base);
+                if *eos { write!(f, ";") } else { write!(f, "") }
+            }
+            AST::List(v) => {
+                let list = v.iter().map(|e| format!("{}", e)).collect_vec();
+                write!(f, "[{}]", list.join(", "))
+            }
             AST::Boolean(b) => {
                 if *b {
                     write!(f, "true")

@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use cached::proc_macro::cached;
 use num::{BigInt, BigUint, One, Zero};
 

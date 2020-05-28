@@ -14,6 +14,7 @@ num = "0.2"
 bigdecimal = "0.1.2"
 text-utils = "0.2.5"
 cached = "0.18"
+itertools = "0.9"
 
 [dependencies.wolfram_wxf]
 version = "0.3.2"
