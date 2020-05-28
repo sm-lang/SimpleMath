@@ -1,21 +1,16 @@
-use num::{BigInt, Zero};
-use num::BigUint;
 use cached::proc_macro::cached;
-
-const ZERO: BigUint = BigUint::from(0usize);
-const ONE: BigUint = BigUint::from(1usize);
-const TWO: BigUint = BigUint::from(2usize);
+use num::{BigInt, BigUint, One, Zero};
 
 //#[cached(size = 255)]
 fn fibonacci_u(n: BigUint) -> BigUint {
-    if n == Zero::zero(){
-
+    if n == BigUint::zero() {
+        n
     }
-
-
-    match n {
-        ZERO | ONE => n,
-        _ => fibonacci_u(n.clone() - ONE) + fibonacci_u(n - TWO)
+    else if n == BigUint::one() {
+        n
+    }
+    else {
+        fibonacci_u(n.clone() - BigUint::one()) + fibonacci_u(n - BigUint::one() - BigUint::one())
     }
 }
 
@@ -25,9 +20,14 @@ pub fn fibonacci_int(n: &BigInt) -> BigInt {
 
 //#[cached(size = 255)]
 fn factorial_u(n: BigUint) -> BigUint {
-    match n {
-        ZERO | ONE => ONE,
-        _ => n.clone() * factorial_u(n - ONE)
+    if n == BigUint::zero() {
+        BigUint::one()
+    }
+    else if n == BigUint::one() {
+        BigUint::one()
+    }
+    else {
+        n.clone() * factorial_u(n - BigUint::one())
     }
 }
 

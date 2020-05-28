@@ -1,4 +1,7 @@
-use crate::{internal::{fibonacci,factorial}, AST};
+use crate::{
+    internal::{factorial, fibonacci},
+    AST,
+};
 
 #[test]
 fn fibonacci_int() {
@@ -6,8 +9,8 @@ fn fibonacci_int() {
     let output = AST::integer(0);
     assert_eq!(fibonacci(&input).unwrap(), output);
 
-    let input = AST::integer(100u128);
-    let output = AST::integer(354224848179261915075u128);
+    let input = AST::integer(10u128);
+    let output = AST::integer(55u128);
     assert_eq!(fibonacci(&input).unwrap(), output);
 }
 

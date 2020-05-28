@@ -71,3 +71,21 @@ pub fn take(expr: &AST) -> SMResult<AST> {
         _ => unimplemented!(),
     }
 }
+
+pub fn join(expr: &AST) -> SMResult<AST> {
+    match expr {
+        _ => unimplemented!(),
+    }
+}
+
+pub fn concat(expr: &AST) -> SMResult<AST> {
+    match expr {
+        _ => unimplemented!(),
+    }
+}
+
+pub fn flatten(expr: &AST) -> SMResult<AST> {
+    match expr {
+        _ => unimplemented!(),
+    }
+}
