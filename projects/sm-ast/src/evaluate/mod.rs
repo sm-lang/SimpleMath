@@ -8,9 +8,4 @@ pub struct Runner {
     ctx: Context,
 }
 
-pub struct Context {
-
-}
-
-
-
+pub struct Context {}

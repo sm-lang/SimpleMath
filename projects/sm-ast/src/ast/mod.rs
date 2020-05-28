@@ -1,6 +1,7 @@
 use bigdecimal::BigDecimal;
 use num::BigInt;
 use std::collections::{BTreeMap, VecDeque};
+mod traits;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AST {
@@ -84,12 +85,11 @@ pub struct Position {
     pub end: (usize, usize),
 }
 
-#[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Symbol {
     pub name_space: Vec<String>,
     pub name: String,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Expression {}
-

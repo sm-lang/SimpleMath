@@ -17,9 +17,9 @@ impl ToTex for AST {
                 let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
                 e.join(" ")
             }
-            AST::AdditiveExpression  { expressions, .. } => {
-            let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
-            e.join(" + ")
+            AST::AdditiveExpression { expressions, .. } => {
+                let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
+                e.join(" + ")
             }
             AST::List(v) => {
                 // todo: height = 1

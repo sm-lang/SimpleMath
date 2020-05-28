@@ -6,11 +6,10 @@ use crate::{
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, VecDeque},
     fs::{read_to_string, File},
     io::Write,
 };
-use std::collections::VecDeque;
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -113,9 +112,9 @@ impl ParserSettings {
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::expr=>{
+                Rule::expr => {
                     return self.parse_expr(pair);
-                },
+                }
                 Rule::data => {
                     return self.parse_data(pair);
                 }
@@ -144,9 +143,7 @@ impl ParserSettings {
                 options: Default::default(),
                 position,
             },
-            AST::Integer(_) =>{
-                unimplemented!()
-            }
+            AST::Integer(_) => unimplemented!(),
             _ => unreachable!(),
         };
     }

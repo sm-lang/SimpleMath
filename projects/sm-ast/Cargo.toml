@@ -13,10 +13,17 @@ edition = "2018"
 num = "0.2"
 bigdecimal = "0.1.2"
 text-utils = "0.2.5"
+cached = "0.18"
 
 [dependencies.wolfram_wxf]
 version = "0.3.2"
+default-features = false
 features = []
+
+# [dependencies.derive_more]
+# version = "0.99.0"
+# default-features = false
+# features = ["from", "display"]
 
 [dependencies.sm_parser]
 version = "0.1.0"

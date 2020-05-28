@@ -1,17 +1,36 @@
-use num::{Zero, One, BigInt, ToPrimitive};
+use num::{BigInt, Zero};
 use num::BigUint;
+use cached::proc_macro::cached;
 
-fn fibonacci_add(n: i32, acc: BigUint, curr: BigUint) -> BigUint {
-    if n <= 0 {
-        acc
+const ZERO: BigUint = BigUint::from(0usize);
+const ONE: BigUint = BigUint::from(1usize);
+const TWO: BigUint = BigUint::from(2usize);
+
+//#[cached(size = 255)]
+fn fibonacci_u(n: BigUint) -> BigUint {
+    if n == Zero::zero(){
+
     }
-    else{
-        fibonacci_add(n - 1, &acc + curr, acc)
+
+
+    match n {
+        ZERO | ONE => n,
+        _ => fibonacci_u(n.clone() - ONE) + fibonacci_u(n - TWO)
     }
 }
 
-
 pub fn fibonacci_int(n: &BigInt) -> BigInt {
-    let u = fibonacci_add(n.to_i32().unwrap(), Zero::zero(), One::one());
-    return BigInt::from(u)
+    BigInt::from(fibonacci_u(n.to_biguint().unwrap()))
+}
+
+//#[cached(size = 255)]
+fn factorial_u(n: BigUint) -> BigUint {
+    match n {
+        ZERO | ONE => ONE,
+        _ => n.clone() * factorial_u(n - ONE)
+    }
+}
+
+pub fn factorial_int(n: &BigInt) -> BigInt {
+    BigInt::from(factorial_u(n.to_biguint().unwrap()))
 }

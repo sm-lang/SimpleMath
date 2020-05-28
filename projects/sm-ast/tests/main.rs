@@ -1,5 +1,4 @@
-use sm_ast::{parser::ParserSettings, ToTex, ToWolfram, AST};
-use sm_ast::evaluate::Runner;
+use sm_ast::{evaluate::Runner, parser::ParserSettings, ToTex, ToWolfram, AST};
 
 #[test]
 fn test() {

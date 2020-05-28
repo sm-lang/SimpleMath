@@ -1,6 +1,5 @@
-
-mod traits;
 mod check_attributes;
+mod traits;
 
 pub trait CheckAttributes {
     fn is_function(&self) -> bool {
@@ -43,5 +42,3 @@ pub trait CheckAttributes {
         false
     }
 }
-
-

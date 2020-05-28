@@ -181,7 +181,7 @@ If You distribute Covered Software in Executable Form then:
 You may create and distribute a Larger Work under terms of Your choice,
 provided that You also comply with the requirements of this License for
 the Covered Software. If the Larger Work is a combination of Covered
-Software with a work governed by one or more Secondary Licenses, and the
+Software with a work governed by ONE or more Secondary Licenses, and the
 Covered Software is not Incompatible With Secondary Licenses, this
 License permits You to additionally distribute such Covered Software
 under the terms of such Secondary License(s), so that the recipient of
@@ -200,7 +200,7 @@ the extent required to remedy known factual inaccuracies.
 #### 3.5. Application of Additional Terms
 
 You may choose to offer, and to charge a fee for, warranty, support,
-indemnity or liability obligations to one or more recipients of Covered
+indemnity or liability obligations to ONE or more recipients of Covered
 Software. However, You may do so only on Your own behalf, and not on
 behalf of any Contributor. You must make it absolutely clear that any
 such warranty, support, indemnity, or liability obligation is offered by
@@ -311,7 +311,7 @@ shall not be used to construe this License against a Contributor.
 #### 10.1. New Versions
 
 Mozilla Foundation is the license steward. Except as provided in Section
-10.3, no one other than the license steward has the right to modify or
+10.3, no ONE other than the license steward has the right to modify or
 publish new versions of this License. Each version will be given a
 distinguishing version number.
 
@@ -340,7 +340,7 @@ notice described in Exhibit B of this License must be attached.
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+    file, You can obtain ONE at http://mozilla.org/MPL/2.0/.
 
 If it is not possible or desirable to put the notice in a particular
 file, then You may include the notice in a location (such as a LICENSE
