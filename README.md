@@ -1,4 +1,6 @@
-Rust Template Project
-=====================
+Simple Math
+===========
 
-Rust template project for monorepo
+A computer algebra system (CAS) written in Rust.
+
+

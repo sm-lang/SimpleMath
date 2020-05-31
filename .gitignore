@@ -10,3 +10,7 @@
 # Rust
 target/**/*
 Cargo.lock
+
+
+# Mathematica
+*.nb

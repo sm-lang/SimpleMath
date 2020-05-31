@@ -7,6 +7,7 @@ default-members = [
 exclude = [
     "projects/.DS_Store",
     "projects/sm-std",
+    "projects/sm-playground",
 ]
 
 [profile.release]
