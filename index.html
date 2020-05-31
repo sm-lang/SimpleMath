@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!-- KaTeX requires the use of the HTML5 doctype. Without it, KaTeX may not render properly -->
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+            crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+</head>
+
+<body>
+<label for="">Input: </label><input type="textbox" name="width"><br>
+<button onClick="calculateArea()">Evaluate</button><br>
+<label for="">Output: </label><input type="textbox" name="height"><br>
+
+
+<label for="output">TeXForm: </label>
+<div id="demo-output"></div>
+</body>
+
+<script>
+    function calculateArea() {
+        const base = document.getElementsByName('width')[0].value;
+        document.getElementsByName('height')[0].value = "6a^2";
+        katex.render("6a^2", document.getElementById('demo-output'), {
+            throwOnError: false
+        });
+    }
+</script>
+
+<style>
+
+</style>
+
+</html>
