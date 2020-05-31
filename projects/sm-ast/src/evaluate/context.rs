@@ -67,6 +67,12 @@ fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, _: &mut
         "length" => {
             internal::length(&args[0]).unwrap()
         },
+        "factorial"=> {
+            internal::factorial(&args[0]).unwrap()
+        },
+        "fibonacci"=> {
+            internal::fibonacci(&args[0]).unwrap()
+        },
         _ => {
             println!("{:?}", f);
             unimplemented!()
