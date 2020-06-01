@@ -13,11 +13,27 @@
 
 <body>
     <main>
-        <button onClick="calculateArea()">Evaluate</button><br>
-        <textarea id="demo-input" spellcheck="false">expand((1+x)^2)</textarea>
-        <pre><code id="demo-output" class="language-js">1 + 2 x + x^2</code></pre>
-        <label for="output">TeXForm: </label>
-        <div id="demo-tex"></div>
+        <div class="cell">
+            <button onClick="calculateArea()">Evaluate</button>
+            <button onClick="calculateArea()">Copy Raw</button>
+            <button onClick="calculateArea()">Copy Out</button>
+            <button onClick="calculateArea()">Copy TeX</button><br>
+            <textarea id="demo-input" spellcheck="false" rows="4">2a*3b</textarea>
+            <pre><code id="demo-output" class="language-js">6a^2</code></pre>
+            <label for="output">TeXForm: </label>
+            <div id="demo-tex">$$6a^2$$</div>
+        </div>
+        <hr>
+        <div class="cell">
+            <button onClick="calculateArea()">Evaluate</button>
+            <button onClick="calculateArea()">Copy Raw</button>
+            <button onClick="calculateArea()">Copy Out</button>
+            <button onClick="calculateArea()">Copy TeX</button><br>
+            <textarea id="demo-input" spellcheck="false" rows="4">expand((1+x)^2)</textarea>
+            <pre><code id="demo-output" class="language-js">1 + 2 x + x^2</code></pre>
+            <label for="output">TeXForm: </label>
+            <div id="demo-tex">$$1 + 2 x + x^2$$</div>
+        </div>
     </main>
 </body>
 
@@ -38,6 +54,10 @@
         margin: auto;
     }
 
+    hr {
+        margin-top: 50px;
+    }
+
     textarea {
         margin: 0;
         overflow: auto;
@@ -52,6 +72,7 @@
         background: #f1f1f1;
         color: #6e6b5e;
         padding: 0.5em;
+        white-space: normal;
     }
 
     pre>.buttons {
