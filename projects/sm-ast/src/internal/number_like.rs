@@ -29,3 +29,9 @@ pub fn chop(expr: &AST) -> SMResult<AST> {
         _ => unimplemented!(),
     }
 }
+
+pub fn factor_integer(expr: &AST) -> SMResult<AST> {
+    match expr {
+        _ => unimplemented!(),
+    }
+}
