@@ -129,3 +129,8 @@ max(a_,b_) := if a > b {
 
 
 
+大写是容器, 需要转化为 Iterator 执行
+Range
+
+小写是函数, 立即生效
+range
