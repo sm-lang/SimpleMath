@@ -9,6 +9,8 @@ pub use dict_like::*;
 pub use elementary::*;
 mod container;
 pub use container::*;
+mod random;
+pub use random::*;
 
 #[cfg(test)]
 mod tests;
