@@ -11,7 +11,7 @@ fn test() {
 #[test]
 fn test_parse() {
     let parser = ParserSettings::default();
-    let ast = parser.parse("[[1], 2, 3].wolfram_form");
+    let ast = parser.parse("[[1], Nothing, Sequence(2, 3)]");
     println!("{}", &ast.to_wolfram_string());
     println!("{}", &ast);
 

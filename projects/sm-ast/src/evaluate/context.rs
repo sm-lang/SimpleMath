@@ -1,6 +1,6 @@
 use crate::{evaluate::Context, AST, ToWolfram, ToTex};
 use num::{traits::Pow, ToPrimitive};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 use crate::ast::Symbol;
 use crate::internal;
 
@@ -22,9 +22,23 @@ impl AST {
                 *self = evaluate_multiplicative(&expressions, ctx);
             }
             AST::List(v) => {
+                let mut new = VecDeque::new();
                 for e in v {
-                    e.forward(ctx)
+                    e.forward(ctx);
+                    match e {
+                        AST::Symbol(ref s)=>{
+                            if s.name == "Nothing" {
+                                continue
+                            }
+                            else {
+                                new.push_back(e.clone())
+                            }
+                        },
+                        _ =>new.push_back(e.clone())
+                    }
+
                 }
+                *self = AST::List(new);
                 // v.iter().map(AST::forward).collect();
             }
             AST::UnaryOperators { .. } => {}
@@ -50,7 +64,7 @@ impl AST {
     }
 }
 
-fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, _: &mut Context) -> AST {
+fn evaluate_function(f: &Symbol, args:&Vec<AST>,_kws: &BTreeMap<AST,AST>, _: &mut Context) -> AST {
     match f.name.as_str() {
         "wolfram_form" => {
             AST::string(&args[0].to_wolfram_string())
