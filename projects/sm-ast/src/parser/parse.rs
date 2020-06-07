@@ -199,6 +199,7 @@ impl ParserSettings {
         let mut kws = BTreeMap::new();
         for pair in pairs.into_inner() {
             match pair.as_rule() {
+                Rule::WHITESPACE=>continue,
                 Rule::Comma => continue,
                 Rule::apply_kv => {
                     let (k, v) = self.parse_apply_kv(pair);

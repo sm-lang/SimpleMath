@@ -1,3 +1,5 @@
+use crate::AST;
+
 mod check_attributes;
 mod traits;
 
@@ -40,5 +42,22 @@ pub trait CheckAttributes {
     }
     fn is_null(&self) -> bool {
         false
+    }
+}
+
+pub fn check_symbol_alias(node: &AST, rhs:&str) ->bool{
+    match node {
+        AST::Symbol(s) => {
+            s.name == rhs
+        },
+        AST::FunctionCall { name,.. } => {
+            match *name.clone() {
+                AST::Symbol(s) => {
+                    s.name == rhs
+                },
+                _ =>false
+            }
+        },
+        _ => false,
     }
 }

@@ -3,6 +3,7 @@ use num::{traits::Pow, ToPrimitive};
 use std::collections::{BTreeMap, VecDeque};
 use crate::ast::Symbol;
 use crate::internal;
+use crate::evaluate::check_symbol_alias;
 
 impl AST {
     pub fn forward(&mut self, ctx: &mut Context) {
@@ -25,17 +26,13 @@ impl AST {
                 let mut new = VecDeque::new();
                 for e in v {
                     e.forward(ctx);
-                    match e {
-                        AST::Symbol(ref s)=>{
-                            if s.name == "Nothing" {
-                                continue
-                            }
-                            else {
-                                new.push_back(e.clone())
-                            }
-                        },
-                        _ =>new.push_back(e.clone())
+                    if check_symbol_alias(e, "Nothing") {
+                        continue
                     }
+                    else  {
+                        new.push_back(e.clone())
+                    }
+
 
                 }
                 *self = AST::List(new);
