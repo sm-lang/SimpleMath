@@ -1,19 +1,25 @@
 use crate::{evaluate::Context, AST, ToWolfram, ToTex};
 use num::{traits::Pow, ToPrimitive};
 use std::collections::{BTreeMap, VecDeque};
-use crate::ast::Symbol;
+use crate::ast::{Symbol, Position};
 use crate::internal;
 use crate::evaluate::check_symbol_alias;
+use crate::evaluate::utils::check_function_name;
 
 impl AST {
     pub fn forward(&mut self, ctx: &mut Context) {
         match self {
             AST::Expression { base, .. } => base.forward(ctx),
-            AST::FunctionCall { name, ref arguments, ref options, .. } => {
+            AST::FunctionCall { name, ref arguments, ref options, ref position } => {
                 name.forward(ctx);
                 match **name {
                     AST::Symbol(ref s)=>{
-                        *self = evaluate_function(s, arguments, options, ctx)
+                        if s.name == "Sequence" {
+                            ()
+                        }
+                        else {
+                            *self = evaluate_function(s, arguments, options, position.clone(), ctx)
+                        }
                     }
                     _ => unimplemented!()
                 }
@@ -26,11 +32,32 @@ impl AST {
                 let mut new = VecDeque::new();
                 for e in v {
                     e.forward(ctx);
-                    if check_symbol_alias(e, "Nothing") {
-                        continue
-                    }
-                    else  {
-                        new.push_back(e.clone())
+                    match e {
+                        AST::Symbol(ref s)=>{
+                            if s.name == "Nothing" {
+                                continue
+                            }
+                            else {
+                                new.push_back(e.clone())
+                            }
+                        },
+                        AST::FunctionCall { name, arguments,.. }=>{
+                            match *name.clone() {
+                                AST::Symbol(s)=>{
+                                    if s.name == "Sequence" {
+                                        for a in arguments{
+                                            a.forward(ctx);
+                                            new.push_back(a.clone())
+                                        }
+                                    }
+                                    else {
+                                        new.push_back(e.clone())
+                                    }
+                                },
+                                _ =>new.push_back(e.clone())
+                            }
+                        }
+                        _ =>new.push_back(e.clone())
                     }
 
 
@@ -61,7 +88,7 @@ impl AST {
     }
 }
 
-fn evaluate_function(f: &Symbol, args:&Vec<AST>,_kws: &BTreeMap<AST,AST>, _: &mut Context) -> AST {
+fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, position:Position,_: &mut Context) -> AST {
     match f.name.as_str() {
         "wolfram_form" => {
             AST::string(&args[0].to_wolfram_string())

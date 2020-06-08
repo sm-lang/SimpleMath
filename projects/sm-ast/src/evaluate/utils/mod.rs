@@ -50,6 +50,12 @@ pub fn check_symbol_alias(node: &AST, rhs:&str) ->bool{
         AST::Symbol(s) => {
             s.name == rhs
         },
+        _ => false,
+    }
+}
+
+pub fn check_function_name(node: &AST, rhs:&str) ->bool{
+    match node {
         AST::FunctionCall { name,.. } => {
             match *name.clone() {
                 AST::Symbol(s) => {
