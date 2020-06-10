@@ -1,6 +1,6 @@
 use bigdecimal::BigDecimal;
 use num::BigInt;
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::BTreeMap;
 mod traits;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -31,7 +31,7 @@ pub enum AST {
         expressions: Vec<AST>,
         position: Position,
     },
-    List(VecDeque<AST>),
+    List(Vec<AST>),
     //
     /// unary operators
     UnaryOperators {

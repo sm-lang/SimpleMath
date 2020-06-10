@@ -19,7 +19,6 @@ fn test_parse() {
     runner.forward();
     println!("{}", runner.ast);
     println!("{}", runner.ast.to_wolfram_string());
-
 }
 
 #[test]

@@ -1,4 +1,4 @@
-use crate::{AST, SMResult};
+use crate::{SMResult, AST};
 
 pub fn range(expr: &AST) -> SMResult<AST> {
     match expr {

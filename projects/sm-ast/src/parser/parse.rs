@@ -6,7 +6,7 @@ use crate::{
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
-    collections::{BTreeMap, VecDeque},
+    collections::BTreeMap,
     fs::{read_to_string, File},
     io::Write,
 };
@@ -199,7 +199,7 @@ impl ParserSettings {
         let mut kws = BTreeMap::new();
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::WHITESPACE=>continue,
+                Rule::WHITESPACE => continue,
                 Rule::Comma => continue,
                 Rule::apply_kv => {
                     let (k, v) = self.parse_apply_kv(pair);
@@ -241,11 +241,11 @@ impl ParserSettings {
     }
 
     fn parse_list(&self, pairs: Pair<Rule>) -> AST {
-        let mut v = VecDeque::new();
+        let mut v = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Comma => continue,
-                Rule::expr => v.push_back(self.parse_expr(pair)),
+                Rule::expr => v.push(self.parse_expr(pair)),
                 _ => debug_cases!(pair),
             };
         }

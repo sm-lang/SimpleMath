@@ -1,9 +1,13 @@
-use crate::{evaluate::Context, AST, ToWolfram, ToTex};
+use crate::{
+    ast::{Position, Symbol},
+    evaluate::Context,
+    internal, ToTex, ToWolfram, AST,
+};
 use num::{traits::Pow, ToPrimitive};
-use std::collections::{BTreeMap, VecDeque};
-use crate::ast::{Symbol, Position};
-use crate::internal;
+use std::collections::BTreeMap;
+use crate::evaluate::utils::is_container;
 
+// todo: remove redundant forward
 impl AST {
     pub fn forward(&mut self, ctx: &mut Context) {
         match self {
@@ -11,23 +15,19 @@ impl AST {
             AST::FunctionCall { name, ref arguments, ref options, ref position } => {
                 name.forward(ctx);
                 match **name {
-                    AST::Symbol(ref s)=>{
-                        if s.name == "Sequence" {
-                            ()
-                        }
-                        else {
+                    AST::Symbol(ref s) => {
+                        if !is_container(&s.name) {
                             *self = evaluate_function(s, arguments, options, position.clone(), ctx)
                         }
                     }
-                    _ => unimplemented!()
+                    _ => unimplemented!(),
                 }
-
             }
             AST::MultiplicativeExpression { expressions, .. } => {
                 *self = evaluate_multiplicative(&expressions, ctx);
             }
             AST::List(v) => {
-                *self = AST::List(evaluate_list_omit(v,ctx));
+                *self = AST::List(evaluate_list_omit(v, ctx));
             }
             AST::UnaryOperators { .. } => {}
             AST::InfixOperators { infix, lhs, rhs, .. } => {
@@ -52,62 +52,46 @@ impl AST {
     }
 }
 
-fn evaluate_list_omit(v: &mut VecDeque<AST>,ctx:&mut Context)->VecDeque<AST>{
-    let mut new = VecDeque::with_capacity(v.len());
+fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
+    let mut new = Vec::with_capacity(v.len());
     for e in v {
         e.forward(ctx);
         match e {
-            AST::Symbol(ref s)=>{
+            AST::Symbol(ref s) => {
                 if s.name == "Nothing" {
-                    continue
+                    continue;
                 }
                 else {
-                    new.push_back(e.clone())
-                }
-            },
-            AST::FunctionCall { name, arguments,.. }=>{
-                match *name.clone() {
-                    AST::Symbol(s)=>{
-                        if s.name == "Sequence" {
-                            let args = evaluate_list_omit(&mut VecDeque::from(arguments.clone()),ctx);
-                            new.extend(args)
-                        }
-                        else {
-                            new.push_back(e.clone())
-                        }
-                    },
-                    _ =>new.push_back(e.clone())
+                    new.push(e.clone())
                 }
             }
-            _ =>new.push_back(e.clone())
+            AST::FunctionCall { name, arguments, .. } => match *name.clone() {
+                AST::Symbol(s) => {
+                    if s.name == "Sequence" {
+                        let args = evaluate_list_omit(arguments, ctx);
+                        new.extend(args)
+                    }
+                    else {
+                        new.push(e.clone())
+                    }
+                }
+                _ => new.push(e.clone()),
+            },
+            _ => new.push(e.clone()),
         }
     }
     return new;
 }
 
-fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, position:Position,_: &mut Context) -> AST {
+fn evaluate_function(f: &Symbol, args: &Vec<AST>, _kws: &BTreeMap<AST, AST>, _position: Position, _: &mut Context) -> AST {
     match f.name.as_str() {
-        "wolfram_form" => {
-            AST::string(&args[0].to_wolfram_string())
-        },
-        "tex_form" => {
-            AST::string(&args[0].to_tex())
-        },
-        "first" => {
-            internal::first(&args[0]).unwrap()
-        },
-        "last" => {
-            internal::last(&args[0]).unwrap()
-        },
-        "length" => {
-            internal::length(&args[0]).unwrap()
-        },
-        "factorial"=> {
-            internal::factorial(&args[0]).unwrap()
-        },
-        "fibonacci"=> {
-            internal::fibonacci(&args[0]).unwrap()
-        },
+        "wolfram_form" => AST::string(&args[0].to_wolfram_string()),
+        "tex_form" => AST::string(&args[0].to_tex()),
+        "first" => internal::first(&args[0]).unwrap(),
+        "last" => internal::last(&args[0]).unwrap(),
+        "length" => internal::length(&args[0]).unwrap(),
+        "factorial" => internal::factorial(&args[0]).unwrap(),
+        "fibonacci" => internal::fibonacci(&args[0]).unwrap(),
         _ => {
             println!("{:?}", f);
             unimplemented!()
