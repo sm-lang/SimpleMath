@@ -3,8 +3,6 @@ use num::{traits::Pow, ToPrimitive};
 use std::collections::{BTreeMap, VecDeque};
 use crate::ast::{Symbol, Position};
 use crate::internal;
-use crate::evaluate::check_symbol_alias;
-use crate::evaluate::utils::check_function_name;
 
 impl AST {
     pub fn forward(&mut self, ctx: &mut Context) {
@@ -29,41 +27,7 @@ impl AST {
                 *self = evaluate_multiplicative(&expressions, ctx);
             }
             AST::List(v) => {
-                let mut new = VecDeque::new();
-                for e in v {
-                    e.forward(ctx);
-                    match e {
-                        AST::Symbol(ref s)=>{
-                            if s.name == "Nothing" {
-                                continue
-                            }
-                            else {
-                                new.push_back(e.clone())
-                            }
-                        },
-                        AST::FunctionCall { name, arguments,.. }=>{
-                            match *name.clone() {
-                                AST::Symbol(s)=>{
-                                    if s.name == "Sequence" {
-                                        for a in arguments{
-                                            a.forward(ctx);
-                                            new.push_back(a.clone())
-                                        }
-                                    }
-                                    else {
-                                        new.push_back(e.clone())
-                                    }
-                                },
-                                _ =>new.push_back(e.clone())
-                            }
-                        }
-                        _ =>new.push_back(e.clone())
-                    }
-
-
-                }
-                *self = AST::List(new);
-                // v.iter().map(AST::forward).collect();
+                *self = AST::List(evaluate_list_omit(v,ctx));
             }
             AST::UnaryOperators { .. } => {}
             AST::InfixOperators { infix, lhs, rhs, .. } => {
@@ -86,6 +50,39 @@ impl AST {
             _ => (),
         }
     }
+}
+
+fn evaluate_list_omit(v: &mut VecDeque<AST>,ctx:&mut Context)->VecDeque<AST>{
+    let mut new = VecDeque::with_capacity(v.len());
+    for e in v {
+        e.forward(ctx);
+        match e {
+            AST::Symbol(ref s)=>{
+                if s.name == "Nothing" {
+                    continue
+                }
+                else {
+                    new.push_back(e.clone())
+                }
+            },
+            AST::FunctionCall { name, arguments,.. }=>{
+                match *name.clone() {
+                    AST::Symbol(s)=>{
+                        if s.name == "Sequence" {
+                            let args = evaluate_list_omit(&mut VecDeque::from(arguments.clone()),ctx);
+                            new.extend(args)
+                        }
+                        else {
+                            new.push_back(e.clone())
+                        }
+                    },
+                    _ =>new.push_back(e.clone())
+                }
+            }
+            _ =>new.push_back(e.clone())
+        }
+    }
+    return new;
 }
 
 fn evaluate_function(f: &Symbol, args:&Vec<AST>,kws: &BTreeMap<AST,AST>, position:Position,_: &mut Context) -> AST {
