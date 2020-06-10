@@ -3,11 +3,11 @@ members = ["projects/*"]
 default-members = [
     "projects/sm-ast",
     "projects/sm-parser",
+    "projects/sm-playground",
 ]
 exclude = [
     "projects/.DS_Store",
     "projects/sm-std",
-    "projects/sm-playground",
 ]
 
 [profile.release]
