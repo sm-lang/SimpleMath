@@ -1,0 +1,22 @@
+[package]
+name = "sm_playground"
+publish = false
+version = "0.0.1"
+authors = ["Aster <galaster@foxmail.com>"]
+description = "Arc Readable Configuration Parser via Pest"
+license = "MPL-2.0"
+readme = "README.md"
+repository = "https://github.com/Moe-Net/arc-rs"
+exclude = ["/tests/*"]
+edition = "2018"
+
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.67"
+
+[dependencies.sm_ast]
+version = "0.1.0"
+path = "../sm-ast"
