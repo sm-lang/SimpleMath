@@ -7,5 +7,13 @@
         "push": "wee test && git push",
         "reset": "git reset Head~ --soft",
         "pub": "cargo-publish-all --yes --allow-dirty",
+
+        "pest:build": "cargo test --color=always --package sm_parser --lib pre_build::gen_parser --no-fail-fast -- --ignored --exact -Z unstable-options --format=json --show-output",
+        "pest:fmt": "cargo fmt --package sm_parser",
+        "pest": "wee pest:build && wee pest:fmt -t",
+
+        "gh:new" : "git subtree push --prefix projects/sm-playground origin gh-pages",
+
+        "book": "mdbook watch projects/sm-book --open"
     }
 }

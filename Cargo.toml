@@ -8,17 +8,8 @@ default-members = [
 exclude = [
     "projects/.DS_Store",
     "projects/sm-std",
+    "projects/sm-book",
 ]
 
 [profile.release]
 lto = true
-
-[workspace.metadata.scripts]
-
-[scripts]
-pest_build = "cargo test --color=always --package sm_parser --lib pre_build::gen_parser --no-fail-fast -- --ignored --exact -Z unstable-options --format=json --show-output"
-pest_fmt   = "rustup run nightly cargo fmt -- --unstable-features"
-pest       = "wee pest_build && wee pest_fmt"
-
-fmt = "cargo fmt"
-gh = "git subtree push --prefix projects/sm-playground origin gh-pages"
