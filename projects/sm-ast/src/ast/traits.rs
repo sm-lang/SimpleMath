@@ -7,6 +7,28 @@ use std::{
     fmt,
     fmt::{Display, Formatter},
 };
+use num::{BigInt, Zero, One};
+use bigdecimal::BigDecimal;
+use crate::ast::CheckAttributes;
+
+impl AST {
+    pub fn integer(n: impl Into<BigInt>) -> AST {
+        AST::Integer(n.into())
+    }
+    pub fn decimal(n: impl Into<BigDecimal>) -> AST {
+        AST::Decimal(n.into())
+    }
+
+    pub fn symbol(s: &str) -> AST {
+        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
+        let n = ns.pop().unwrap();
+        AST::Symbol(Symbol { name_space: ns, name: n })
+    }
+
+    pub fn string(s: impl Into<String>) -> AST {
+        AST::String(s.into())
+    }
+}
 
 impl Default for Symbol {
     fn default() -> Self {
@@ -64,5 +86,29 @@ impl Display for Symbol {
 impl Display for Position {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.file)
+    }
+}
+
+impl CheckAttributes for AST{
+    fn is_zero(&self)->bool {
+        match self{
+            AST::Integer(i) => {i.is_zero()},
+            AST::Decimal(n) => {n.is_zero()},
+            _ => false
+        }
+    }
+    fn is_one(&self)->bool {
+        match self{
+            AST::Integer(i) => {i.is_one()},
+            AST::Decimal(n) => {n.is_one()},
+            _ => false
+        }
+    }
+}
+
+pub fn is_container(s: &str) -> bool {
+    match s {
+        "Sequence" | "List" | "Range" => true,
+        _ => false
     }
 }

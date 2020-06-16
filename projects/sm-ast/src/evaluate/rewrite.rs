@@ -9,11 +9,11 @@ use crate::evaluate::utils::is_container;
 
 // todo: remove redundant forward
 impl AST {
-    pub fn forward(&mut self, ctx: &mut Context) {
+    pub fn rewrite(&mut self, ctx: &mut Context) {
         match self {
-            AST::Expression { base, .. } => base.forward(ctx),
+            AST::Expression { base, .. } => base.rewrite(ctx),
             AST::FunctionCall { name, ref arguments, ref options, ref position } => {
-                name.forward(ctx);
+                name.rewrite(ctx);
                 match **name {
                     AST::Symbol(ref s) => {
                         if !is_container(&s.name) {
@@ -31,8 +31,8 @@ impl AST {
             }
             AST::UnaryOperators { .. } => {}
             AST::InfixOperators { infix, lhs, rhs, .. } => {
-                lhs.forward(ctx);
-                rhs.forward(ctx);
+                lhs.rewrite(ctx);
+                rhs.rewrite(ctx);
                 // ,  `Vec<&mut Box<AST>>` ->  `&mut [AST]`
                 match infix.as_str() {
                     "+" => {
@@ -55,7 +55,7 @@ impl AST {
 fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
     let mut new = Vec::with_capacity(v.len());
     for e in v {
-        e.forward(ctx);
+        e.rewrite(ctx);
         match e {
             AST::Symbol(ref s) => {
                 if s.name == "Nothing" {

@@ -59,22 +59,45 @@ pub enum AST {
     String(String),
 }
 
-impl AST {
-    pub fn integer(n: impl Into<BigInt>) -> AST {
-        AST::Integer(n.into())
+pub trait CheckAttributes {
+    fn is_function(&self) -> bool {
+        false
     }
-    pub fn decimal(n: impl Into<BigDecimal>) -> AST {
-        AST::Decimal(n.into())
+    fn is_string(&self) -> bool {
+        false
     }
-
-    pub fn symbol(s: &str) -> AST {
-        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
-        let n = ns.pop().unwrap();
-        AST::Symbol(Symbol { name_space: ns, name: n })
+    fn is_power(&self) -> bool {
+        false
     }
-
-    pub fn string(s: impl Into<String>) -> AST {
-        AST::String(s.into())
+    fn is_number(&self) -> bool {
+        false
+    }
+    fn is_complex(&self) -> bool {
+        false
+    }
+    fn is_integer(&self) -> bool {
+        false
+    }
+    fn is_positive(&self) -> bool {
+        false
+    }
+    fn is_negative(&self) -> bool {
+        false
+    }
+    fn is_zero(&self) -> bool {
+        false
+    }
+    fn is_one(&self) -> bool {
+        false
+    }
+    fn is_negative_one(&self) -> bool {
+        false
+    }
+    fn is_boolean(&self) -> bool {
+        false
+    }
+    fn is_null(&self) -> bool {
+        false
     }
 }
 
