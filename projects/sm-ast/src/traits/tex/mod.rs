@@ -13,11 +13,11 @@ impl ToTex for AST {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
-            AST::MultiplicativeExpression { expressions, .. } => {
+            AST::MultiplicativeExpression { terms: expressions, .. } => {
                 let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
                 e.join(" ")
             }
-            AST::AdditiveExpression { expressions, .. } => {
+            AST::AdditiveExpression { terms: expressions, .. } => {
                 let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
                 e.join(" + ")
             }

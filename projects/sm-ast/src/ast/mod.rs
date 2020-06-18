@@ -24,11 +24,11 @@ pub enum AST {
         position: Position,
     },
     MultiplicativeExpression {
-        expressions: Vec<AST>,
+        terms: Vec<AST>,
         position: Position,
     },
     AdditiveExpression {
-        expressions: Vec<AST>,
+        terms: Vec<AST>,
         position: Position,
     },
     List(Vec<AST>),

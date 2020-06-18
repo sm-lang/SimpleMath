@@ -191,7 +191,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::MultiplicativeExpression { expressions: stack, position };
+        return AST::MultiplicativeExpression { terms: stack, position };
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {

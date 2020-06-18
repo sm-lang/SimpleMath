@@ -14,10 +14,10 @@ impl ToWolfram for AST {
                 WolframValue::Function(Box::from("CompoundExpression"), v)
             }
             AST::Expression { base, .. } => base.to_wolfram(),
-            AST::AdditiveExpression { expressions, .. } => {
+            AST::AdditiveExpression { terms: expressions, .. } => {
                 WolframValue::Function(Box::from("Plus"), expressions.iter().map(AST::to_wolfram).collect())
             }
-            AST::MultiplicativeExpression { expressions, .. } => {
+            AST::MultiplicativeExpression { terms: expressions, .. } => {
                 WolframValue::Function(Box::from("Times"), expressions.iter().map(AST::to_wolfram).collect())
             }
             //

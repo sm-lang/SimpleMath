@@ -16,7 +16,7 @@ fn test_parse() {
     println!("{}", ast.to_wolfram_string());
 
     let mut runner = Runner::from(ast);
-    runner.forward();
+    runner.evaluate();
     println!("{}", runner.ast);
     println!("{}", runner.ast.to_wolfram_string());
 }

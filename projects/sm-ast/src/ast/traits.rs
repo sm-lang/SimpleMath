@@ -58,8 +58,7 @@ impl Display for AST {
             AST::Boolean(b) => {
                 if *b {
                     write!(f, "true")
-                }
-                else {
+                } else {
                     write!(f, "false")
                 }
             }
@@ -76,8 +75,7 @@ impl Display for Symbol {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         if self.name_space.len() == 0 {
             write!(f, "{}", self.name)
-        }
-        else {
+        } else {
             write!(f, "{}::{}", self.name_space.join("::"), self.name)
         }
     }
@@ -89,18 +87,36 @@ impl Display for Position {
     }
 }
 
-impl CheckAttributes for AST{
-    fn is_zero(&self)->bool {
-        match self{
-            AST::Integer(i) => {i.is_zero()},
-            AST::Decimal(n) => {n.is_zero()},
+impl CheckAttributes for AST {
+    fn is_string(&self) -> bool {
+        match &self {
+            AST::String(..) => true,
+            _ => false,
+        }
+    }
+    fn is_boolean(&self) -> bool {
+        match &self {
+            AST::Boolean(..) => true,
+            _ => false,
+        }
+    }
+    fn is_null(&self) -> bool {
+        match &self {
+            AST::Null => true,
+            _ => false,
+        }
+    }
+    fn is_zero(&self) -> bool {
+        match self {
+            AST::Integer(i) => { i.is_zero() }
+            AST::Decimal(n) => { n.is_zero() }
             _ => false
         }
     }
-    fn is_one(&self)->bool {
-        match self{
-            AST::Integer(i) => {i.is_one()},
-            AST::Decimal(n) => {n.is_one()},
+    fn is_one(&self) -> bool {
+        match self {
+            AST::Integer(i) => { i.is_one() }
+            AST::Decimal(n) => { n.is_one() }
             _ => false
         }
     }
