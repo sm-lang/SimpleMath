@@ -94,18 +94,6 @@ impl CheckAttributes for AST {
             _ => false,
         }
     }
-    fn is_boolean(&self) -> bool {
-        match &self {
-            AST::Boolean(..) => true,
-            _ => false,
-        }
-    }
-    fn is_null(&self) -> bool {
-        match &self {
-            AST::Null => true,
-            _ => false,
-        }
-    }
     fn is_zero(&self) -> bool {
         match self {
             AST::Integer(i) => { i.is_zero() }
@@ -118,6 +106,18 @@ impl CheckAttributes for AST {
             AST::Integer(i) => { i.is_one() }
             AST::Decimal(n) => { n.is_one() }
             _ => false
+        }
+    }
+    fn is_boolean(&self) -> bool {
+        match &self {
+            AST::Boolean(..) => true,
+            _ => false,
+        }
+    }
+    fn is_null(&self) -> bool {
+        match &self {
+            AST::Null => true,
+            _ => false,
         }
     }
 }

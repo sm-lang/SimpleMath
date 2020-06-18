@@ -2,6 +2,7 @@ use crate::AST;
 
 mod rewrite;
 mod utils;
+#[allow(dead_code)]
 mod forward;
 mod traits;
 
