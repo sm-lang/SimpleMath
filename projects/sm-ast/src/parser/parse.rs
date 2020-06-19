@@ -1,6 +1,6 @@
 use crate::{
     ast::Position,
-    parser::{utils::ApplyOrSlice, ParserSettings, CLIMBER},
+    parser::{ParserSettings, CLIMBER},
     ToWolfram, AST,
 };
 use num::{BigInt, Num};
@@ -10,6 +10,7 @@ use std::{
     fs::{read_to_string, File},
     io::Write,
 };
+use crate::parser::ApplyOrSlice;
 
 macro_rules! debug_cases {
     ($i:ident) => {{

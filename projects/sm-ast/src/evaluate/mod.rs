@@ -1,4 +1,4 @@
-use crate::AST;
+use crate::parser::ParserSettings;
 
 mod rewrite;
 mod utils;
@@ -8,7 +8,7 @@ mod traits;
 
 #[derive(Debug, Clone)]
 pub struct Runner {
-    pub ast: AST,
+    parser: ParserSettings,
     ctx: Context,
 }
 

@@ -1,6 +1,5 @@
-use crate::{ast::Position, parser::ParserSettings, AST};
+use crate::{ast::Position, parser::ParserSettings};
 use sm_parser::Span;
-use std::collections::BTreeMap;
 
 impl Default for ParserSettings {
     fn default() -> Self {
@@ -14,8 +13,4 @@ impl ParserSettings {
     }
 }
 
-#[allow(dead_code)]
-pub(crate) enum ApplyOrSlice {
-    Apply(Vec<AST>, BTreeMap<AST, AST>),
-    Slice,
-}
+

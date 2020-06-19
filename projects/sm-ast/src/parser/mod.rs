@@ -1,12 +1,20 @@
 use sm_parser::{Assoc, PrecClimber, Rule};
+use crate::AST;
+use std::collections::BTreeMap;
 
 mod parse;
-mod utils;
+mod traits;
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct ParserSettings {
     pub file: String,
     pub refine: bool,
+}
+
+#[allow(dead_code)]
+pub(crate) enum ApplyOrSlice {
+    Apply(Vec<AST>, BTreeMap<AST, AST>),
+    Slice,
 }
 
 /// Determines the associativity and priority of operators

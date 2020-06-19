@@ -1,15 +1,23 @@
-use crate::{AST, Runner, Context};
+use crate::{ Runner, SMResult};
+use crate::parser::ParserSettings;
 
-impl From<AST> for Runner {
-    fn from(ast: AST) -> Self {
-        let ctx = Context::default();
-        Self { ast, ctx }
+
+impl Default for Runner {
+    fn default() -> Self {
+        Self {
+            parser: ParserSettings {
+                file: String::from("anonymous"),
+                refine: true,
+            },
+            ctx: Default::default(),
+        }
     }
 }
 
 impl Runner {
-    pub fn evaluate(&mut self){
-        let refined  = self.ast.rewrite();
-        self.ast = refined
+    pub fn evaluate(&mut self, input: &str) -> SMResult<()> {
+        let parsed = self.parser.parse(input);
+        let refined = parsed.rewrite();
+        Ok(())
     }
 }
