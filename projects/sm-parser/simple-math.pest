@@ -172,7 +172,7 @@ SYMBOL = @{
 }
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
-WHITESPACE = {NEWLINE|WHITE_SPACE}
+WHITESPACE = _{NEWLINE|WHITE_SPACE}
 COMMENT = _{
     MultiLineComment
   | "///" ~ (!NEWLINE ~ ANY)* //normal

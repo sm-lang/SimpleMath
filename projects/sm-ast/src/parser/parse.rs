@@ -1,8 +1,4 @@
-use crate::{
-    ast::Position,
-    parser::{ParserSettings, CLIMBER},
-    ToWolfram, AST,
-};
+use crate::{ast::Position, parser::{ParserSettings, CLIMBER}, ToWolfram, AST, SMResult};
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
@@ -22,29 +18,26 @@ macro_rules! debug_cases {
 }
 
 impl ParserSettings {
-    pub fn parse_file(&self, path_from: &str, path_to: &str) -> Result<(), std::io::Error> {
+    pub fn parse_file(&self, path_from: &str, path_to: &str) -> SMResult<()> {
         let r = read_to_string(path_from)?;
-        let s = self.parse(&r);
+        let s = self.parse(&r)?;
         let mut file = File::create(path_to)?;
         file.write_all(&s.to_wolfram_bytes())?;
         return Ok(());
     }
-    pub fn parse(&self, text: &str) -> AST {
-        let pairs = SMParser::parse(Rule::program, text).unwrap_or_else(|e| panic!("{}", e));
-        let mut _code = String::new();
+    pub fn parse(&self, text: &str) -> SMResult<AST> {
+        let pairs = SMParser::parse(Rule::program, text)?;
         for pair in pairs {
             match pair.as_rule() {
                 Rule::EOI => continue,
                 Rule::expression => {
-                    return self.parse_expression(pair);
+                    return Ok(self.parse_expression(pair));
                 }
                 Rule::COMMENT => continue,
                 _ => debug_cases!(pair),
             };
         }
-        //        println!("{:#?}", codes);
-        //        unreachable!();
-        return AST::Null;
+        return Ok(AST::Null);
     }
 
     fn parse_expression(&self, pairs: Pair<Rule>) -> AST {
@@ -66,34 +59,36 @@ impl ParserSettings {
     #[rustfmt::skip]
     fn parse_expr(&self, pairs: Pair<Rule>) -> AST {
         let p = self.get_position(pairs.as_span());
+
         CLIMBER.climb(
             pairs.into_inner(),
             |pair: Pair<Rule>| match pair.as_rule() {
-                Rule::WHITESPACE => AST::EmptyStatement,
                 Rule::expr => self.parse_expr(pair),
                 Rule::term => self.parse_term(pair),
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
                 Rule::Dot => self.parse_dot_call(lhs, rhs, p.clone()),
-                _ => AST::InfixOperators {
-                    infix: op.as_str().to_string(),
-                    lhs: Box::new(lhs),
-                    rhs: Box::new(rhs),
-                    position: p.clone(),
+                _ => {
+                    AST::InfixOperators {
+                        infix: op.as_str().to_string(),
+                        lhs: Box::new(lhs),
+                        rhs: Box::new(rhs),
+                        position: p.clone(),
+                    }
                 }
             },
         )
     }
 
     fn parse_term(&self, pairs: Pair<Rule>) -> AST {
+
         let mut base = AST::Null;
         let mut prefix = vec![];
         let mut suffix = vec![];
         let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::WHITESPACE => continue,
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
@@ -104,8 +99,7 @@ impl ParserSettings {
         }
         return if prefix.len() + suffix.len() == 0 {
             base
-        }
-        else {
+        } else {
             AST::UnaryOperators { base: Box::new(base), prefix, suffix, position }
         };
     }

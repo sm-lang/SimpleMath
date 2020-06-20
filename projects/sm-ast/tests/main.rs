@@ -12,7 +12,7 @@ fn test() {
 fn test_parse() {
     let input = "[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]";
     let parser = ParserSettings::default();
-    let ast = parser.parse(input);
+    let ast = parser.parse(input).unwrap();
     println!("{}", ast);
     println!("{}", ast.to_wolfram_string());
 }
@@ -20,9 +20,9 @@ fn test_parse() {
 #[test]
 fn test_space_expression() {
     let parser = ParserSettings::default();
-    let form = parser.parse("2 x y").to_wolfram_string();
+    let form = parser.parse("2 x y").unwrap().to_wolfram_string();
     assert_eq!(form, "Times[2,x,y]");
-    let form = parser.parse("2 -x y").to_wolfram_string();
+    let form = parser.parse("2 -x y").unwrap().to_wolfram_string();
     assert_eq!(form, "Subtract[2,Times[x,y]]");
 }
 
@@ -32,7 +32,7 @@ fn test_add() {
     let _engine = Runner::default();
 
     let parser = ParserSettings::default();
-    let ast = parser.parse("0 + 1 + a + c");
+    let ast = parser.parse("0 + 1 + 2 x").unwrap();
     println!("{}", ast);
     println!("{}", ast.to_wolfram_string());
 

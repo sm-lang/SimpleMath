@@ -17,7 +17,7 @@ impl Default for Runner {
 impl Runner {
     pub fn evaluate(&mut self, input: &str) -> SMResult<()> {
         let parsed = self.parser.parse(input);
-        let refined = parsed.rewrite();
+        let refined = parsed.unwrap().rewrite();
         Ok(())
     }
 }

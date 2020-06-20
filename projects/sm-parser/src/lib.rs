@@ -13,6 +13,7 @@ mod pre_build;
 mod sm_parser;
 pub use crate::sm_parser::{Rule, SMParser};
 pub use pest::{
+    error::Error,
     iterators::Pair,
     prec_climber::{Assoc, Operator, PrecClimber},
     Parser, Span,

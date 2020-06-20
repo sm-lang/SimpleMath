@@ -570,7 +570,7 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn WHITESPACE(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::WHITESPACE, |state| state.atomic(::pest::Atomicity::Atomic, |state| self::NEWLINE(state).or_else(|state| self::WHITE_SPACE(state))))
+                    state.atomic(::pest::Atomicity::Atomic, |state| self::NEWLINE(state).or_else(|state| self::WHITE_SPACE(state)))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
