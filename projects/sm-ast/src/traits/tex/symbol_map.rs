@@ -49,7 +49,7 @@ pub fn check_brackets(exprs: &Vec<AST>) -> BracketType {
 }
 
 pub fn expression_height(e: &AST) -> usize {
-    // TODO: compare ops.md
+    // TODO: compare precedence.md
     //       (a + b) * c
     match e {
         AST::FunctionCall { .. } => 1,

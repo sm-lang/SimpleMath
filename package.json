@@ -14,6 +14,6 @@
 
         "gh:new" : "git subtree push --prefix projects/sm-playground origin gh-pages",
 
-        "book": "mdbook watch projects/sm-book --open"
+        "book": "vuepress dev projects/sm-book/docs"
     }
 }

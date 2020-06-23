@@ -11,6 +11,8 @@
 target/**/*
 Cargo.lock
 
+# Javascript
+node_modules
 
 # Mathematica
 *.nb
