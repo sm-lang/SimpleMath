@@ -1,4 +1,10 @@
+## Constant
 
+
+
+| Operator | Namespace | Name | Mathematica |
+| :------: | --------: | ---: | :---------- |
+|   `∞`    |           |      |             |
 
 
 ## Prefix
@@ -12,8 +18,8 @@
 | Operator | Name | Precedence | Mathematica |
 | :------: | ---: | ---------: | :---------- |
 |   `?`    |      |            |             |
-|   `°`    |
-
+|   `°`    |      |            | Degree      |
+|⊺
 
 ## Infix
 
@@ -49,24 +55,37 @@
 |   `|>`   |                ? |         70 | Postfix `//`      |
 |   `->`   |                ? |        120 | Rule `//`         |
 |   `:>`   |                ? |        120 | RuleDelayed `//`  |
+|    `√`     |
+|    `∧`     |
+|    `∨`     |
+|    `∩`     |
+|    `∪`     |
+|⊻
+|⊼
+|⊽
+
 
 ## Infix
 
-| Operator | Name | Precedence | Mathematica |
-| :------: | ---: | ---------: | :---------- |
-|   `?=`   |      |            |             |
-|   `:=`   |
-|   `=`    |
-|   `+=`   |
-|   `-=`   |
-|   `*=`   |
-|   `/=`   |
-|   `^=`   |
+| Operator | Name | Precedence | Mathematica  |
+| :------: | ---: | ---------: | :----------- |
+|   `?=`   |    ? |            |              |
+|   `:=`   |    ? |            |              |
+|   `=`    |    ? |            |              |
+|   `+=`   |      |            | AddTo        |
+|   `-=`   |      |            | SubtractFrom |
+|   `*=`   |      |            | TimesBy      |
+|   `/=`   |      |            | DivideBy     |
+|   `^=`   |      |            |              |
+|    ≈     |
 
-## Infix
+## Special
 
-|  Operator  | Name | Mathematica |
-| :--------: | ---: | :---------- |
-| `@Symbol`  |      |             |
-| `$Symbol`  |
-| `$$Symbol` |
+| Operator | Name | Mathematica |
+| :------: | ---: | :---------- |
+|   `@s`   |      |             |
+|   `#`    |
+|   `##`   |
+|   `x_`   |
+|  `x__`   |
+|  `x___`  |
