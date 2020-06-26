@@ -54,14 +54,14 @@ a_DoubleAnyThing + 0 := 2a 无法成立
 - pipeline: `|>`
   - 直接在
 
-```sm
+```
 [1, 2, 3].first       # ok
 [1, 2, 3] |> first    # ok
 [1, 2, 3].first()     # ok
 [1, 2, 3] |> first()  # error
 ```
 
-```sm
+```
 [1, 2, 3].sort_by(N)
 # List::sort_by(N, [1, 2, 3])
 [1, 2, 3] |> sort_by(N)
