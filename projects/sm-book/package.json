@@ -3,8 +3,8 @@
     "license": "MPL-2.0",
     "scripts": {
         "start": "vuepress dev docs",
-        "update": "yarn upgrade-interactive --latest",
-        "test": "yarn install && yarn start",
+        "update": "wee upgrade-interactive --latest",
+        "test": "wee install && yarn start",
         "build": "vuepress build docs",
         "deploy": "vuepress build docs"
     },

@@ -26,7 +26,6 @@ Following [json migration tutorial](https://github.com/Moe-Net/Arc-Language/blob
 | DictMark | `[dict.path]`       | Scope            |
 | ListMark | `<list.path>`       | Scope            |
 
-![](./test/showtime.png)
 
 ## Comparing
 Compare with other readable formats

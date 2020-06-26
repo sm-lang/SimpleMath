@@ -23,8 +23,6 @@
 | DictMark | `[dict.path]`       | Scope            |
 | ListMark | `<list.path>`       | Scope            |
 
-![](../test/showtime.png)
-
 ## How to Start
 
 Try vscode support: [VScode - ARC](https://github.com/GalAster/vscode-arc/tree/master)
