@@ -83,6 +83,7 @@ pub enum Rule {
     StringEnd,
     Symbol,
     SYMBOL,
+    Output,
     WHITESPACE,
     COMMENT,
     MultiLineComment,
@@ -111,6 +112,7 @@ pub enum Rule {
     GraterEqual,
     Less,
     Grater,
+    Pipeline,
     Equivalent,
     NotEquivalent,
     Equal,
@@ -142,7 +144,6 @@ pub enum Rule {
     Ellipsis,
     LogicXor,
     MapAll,
-    Output,
     Concat,
     Destruct,
     DoubleBang,
@@ -520,7 +521,7 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Integer(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Integer, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("0").or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_DIGIT(state)))))))))
+                    state.rule(Rule::Integer, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("0").or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -566,6 +567,11 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[allow(non_snake_case, unused_variables)]
                 pub fn SYMBOL(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::SYMBOL, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| self::XID_START(state).and_then(|state| state.repeat(|state| self::XID_CONTINUE(state)))).or_else(|state| state.sequence(|state| self::Underline(state).and_then(|state| self::XID_CONTINUE(state)).and_then(|state| state.repeat(|state| self::XID_CONTINUE(state)))))))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Output(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Output, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("¶").and_then(|state| state.repeat(|state| state.match_string("¶")).or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -706,6 +712,11 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Grater(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::Grater, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string(">")))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Pipeline(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Pipeline, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("|>")))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -861,11 +872,6 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[allow(non_snake_case, unused_variables)]
                 pub fn MapAll(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::MapAll, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("//@")))
-                }
-                #[inline]
-                #[allow(non_snake_case, unused_variables)]
-                pub fn Output(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Output, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("%%")))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1066,6 +1072,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::StringEnd => rules::StringEnd(state),
             Rule::Symbol => rules::Symbol(state),
             Rule::SYMBOL => rules::SYMBOL(state),
+            Rule::Output => rules::Output(state),
             Rule::WHITESPACE => rules::WHITESPACE(state),
             Rule::COMMENT => rules::COMMENT(state),
             Rule::MultiLineComment => rules::MultiLineComment(state),
@@ -1094,6 +1101,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::GraterEqual => rules::GraterEqual(state),
             Rule::Less => rules::Less(state),
             Rule::Grater => rules::Grater(state),
+            Rule::Pipeline => rules::Pipeline(state),
             Rule::Equivalent => rules::Equivalent(state),
             Rule::NotEquivalent => rules::NotEquivalent(state),
             Rule::Equal => rules::Equal(state),
@@ -1125,7 +1133,6 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::Ellipsis => rules::Ellipsis(state),
             Rule::LogicXor => rules::LogicXor(state),
             Rule::MapAll => rules::MapAll(state),
-            Rule::Output => rules::Output(state),
             Rule::Concat => rules::Concat(state),
             Rule::Destruct => rules::Destruct(state),
             Rule::DoubleBang => rules::DoubleBang(state),

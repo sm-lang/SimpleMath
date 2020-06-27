@@ -149,7 +149,7 @@ Slot = ${("$"|"$$")~(SYMBOL|Integer)}
 //!#D19A66: Integer|Decimal|Byte
 Number  = _{Decimal|Integer|Byte}
 Decimal = ${Integer ~ Dot ~ Integer}
-Integer = @{"0"|ASCII_NONZERO_DIGIT ~ (Underline? ~ ASCII_DIGIT)*}
+Integer = @{"0"|ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 Byte    = ${
     ^"0b" ~ (Underline? ~ ASCII_BIN_DIGIT)+
   | ^"0o" ~ (Underline? ~ ASCII_OCT_DIGIT)+
@@ -170,6 +170,8 @@ SYMBOL = @{
     XID_START ~  XID_CONTINUE*
   | Underline ~ XID_CONTINUE+
 }
+Output =@{"¶"+ | "¶" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
+
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = _{NEWLINE|WHITE_SPACE}
@@ -230,7 +232,7 @@ LessEqual =@{"<="}
 GraterEqual =@{">="}
 Less =@{"<"}
 Grater =@{">"}
-
+Pipeline = @{"|>"}
 
 
 Equivalent =@{"==="}
@@ -291,8 +293,6 @@ Ellipsis =@{"..."|"…"} // U+2026
 
 LogicXor =@{"⊕"} //U+2295
 MapAll =@{"//@"}
-
-Output =@{"%%"}
 
 Concat =@{"~~"}
 Destruct =@{"~="}

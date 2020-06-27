@@ -10,3 +10,10 @@ Try Online: [PlayGround](https://galaster.github.io/SimpleMath/)
 - expr: expand
 - integer: factor, factorial, fibonacci
 - list: head, first, last, length
+
+
+
+|Icon| |
+|:-| 
+| 📑| License
+| 🖋| Syntax change
