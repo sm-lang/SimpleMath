@@ -13,10 +13,11 @@ const locale_cn = {
     sidebar: {
         "/cn/": [
             {
-                title: '教程',
+                title: '入门',
                 collapsable: false,
                 children: [
-                    ['basic/', '基本语法'],
+                    ['basic/', '安装与运行'],
+                    ['basic/literal', '基本语法'],
                     ['basic/precedence', '运算优先级'],
                 ]
             },
@@ -89,9 +90,9 @@ module.exports = {
                 theme: 'monokai',
                 langs: [
                     {
-                        id: 'arc',
-                        scopeName: 'source.arc',
-                        path: path.resolve(__dirname, 'public/arc.tmLanguage.json'),
+                        id: 'sm',
+                        scopeName: 'source.sm',
+                        path: path.resolve(__dirname, 'public/sm.tmLanguage.json'),
                         aliases: []
                     }
                 ]

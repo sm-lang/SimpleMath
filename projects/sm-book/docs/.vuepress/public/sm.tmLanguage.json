@@ -1,0 +1,278 @@
+{
+    "version": "v0.4.0",
+    "scopeName": "source.sm",
+    "uuid": "77108132-b3a9-4456-b8e6-05fca177371b",
+    "information_for_contributors": [
+        "aster: galaster@foxmail.com"
+    ],
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#string"
+        },
+        {
+            "include": "#number"
+        },
+        {
+            "include": "#symbol"
+        },
+        {
+            "include": "#operators"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "patterns": [
+                {
+                    "name": "comment.block.sm",
+                    "begin": "(%%%)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.block.sm"
+                        }
+                    },
+                    "end": "(%%%)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.block.sm"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "text.html.markdown"
+                        }
+                    ]
+                },
+                {
+                    "name": "comment.line.sm",
+                    "match": "(%).*$\\n?",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.line.sm"
+                        }
+                    }
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "match": "\\b(using|macro|let|def|as)\\b",
+                    "name": "keyword.control.definition.sm"
+                },
+                {
+                    "match": "\\b(if|iff)\\b",
+                    "name": "keyword.control.sm"
+                },
+                {
+                    "match": "¶[¶0-9]*",
+                    "name": "variable.parameter.input.ts"
+                },
+                {
+                    "match": "⁋[⁋0-9]*",
+                    "name": "variable.parameter.output.ts"
+                },
+                {
+                    "match": "(##|#[0-9a-zA-Z]*|&)",
+                    "name": "variable.parameter.lambda.ts"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "(===?|=!=|<=|>=|<>|<|>)",
+                    "name": "keyword.operator.comparison.sm"
+                },
+                {
+                    "match": "(\\|>|->|:>|/@|@@@|@@|@)",
+                    "name": "keyword.operator.apply.sm"
+                },
+                {
+                    "match": "(-|\\+|\\*|\\/|\\^)",
+                    "name": "keyword.operator.arithmetic.sm"
+                },
+                {
+                    "match": "(\\?=|:=|=)",
+                    "name": "keyword.operator.assignment.sm"
+                },
+                {
+                    "match": "(!|¬)",
+                    "name": "keyword.operator.infix.sm"
+                },
+                {
+                    "match": "(\\?|°)",
+                    "name": "keyword.operator.logical.sm"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "(?<!\\w)(0x[0-9a-fA-F]+)(_[A-Za-z][A-Za-z0-9_]*)?(?!\\w)",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.hex.sm"
+                        },
+                        "2": {
+                            "name": "keyword.control.handler.byte.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<!\\w)(0o[0-7]+)(_[A-Za-z][A-Za-z0-9_]*)?(?!\\w)",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.oct.sm"
+                        },
+                        "2": {
+                            "name": "keyword.control.handler.byte.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<!\\w)(0b[01]+)(_[A-Za-z][A-Za-z0-9_]*)?(?!\\w)",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.bin.sm"
+                        },
+                        "2": {
+                            "name": "keyword.control.handler.byte.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "([\\+\\-]?(0|([1-9](([0-9]|_[0-9])+)?))(?:(?:\\.(0|([1-9](([0-9]|_[0-9])+)?)))?\\*\\*[\\+\\-]?[1-9]_?[0-9]*|(?:\\.[0-9_]*)))",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.decimal.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "([\\+\\-]?(0|[1-9][0-9]*))",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.integer.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "(¯|¨)",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.control.sm"
+                        }
+                    }
+                }
+            ]
+        },
+        "string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.block.sm",
+                    "begin": "([A-Za-z_][A-Za-z0-9_]*)?\\s*(''')",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.handler.string.sm"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.string.block.sm"
+                        }
+                    },
+                    "end": "(''')",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.block.sm"
+                        }
+                    }
+                },
+                {
+                    "name": "string.quoted.block.sm",
+                    "begin": "([A-Za-z_][A-Za-z0-9_]*)?\\s*(\"\"\")",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.handler.string.sm"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.string.block.sm"
+                        }
+                    },
+                    "end": "(\"\"\")",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.block.sm"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "\\\\([btnfr\"\\\\\\n/ ]|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})",
+                            "name": "constant.character.escape.sm"
+                        },
+                        {
+                            "match": "\\\\[^btnfr/\"\\\\\\n]",
+                            "name": "invalid.illegal.escape.sm"
+                        }
+                    ]
+                },
+                {
+                    "match": "([A-Za-z_][A-Za-z0-9_]*)?\\s*(\\'[^'\\\\]*(?:\\\\.[^'\\\\]*)*\\')",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.handler.string.sm"
+                        },
+                        "2": {
+                            "name": "string.quoted.single.sm"
+                        }
+                    }
+                },
+                {
+                    "match": "([A-Za-z_][A-Za-z0-9_]*)?\\s*(\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\")",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.handler.string.sm"
+                        },
+                        "2": {
+                            "name": "string.quoted.single.sm"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "\\\\([btnfr\"\\\\\\n/ ]|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})",
+                            "name": "constant.character.escape.sm"
+                        },
+                        {
+                            "match": "\\\\[^btnfr/\"\\\\\\n]",
+                            "name": "invalid.illegal.escape.sm"
+                        }
+                    ]
+                }
+            ]
+        },
+        "symbol": {
+            "patterns": [
+                {
+                    "match": "(^@[a-zA-Z][_0-9a-zA-Z]*)",
+                    "name": "variable.parameter.macro.ts"
+                },
+                {
+                    "match": "(\\$[a-zA-Z][_0-9a-zA-Z]*)",
+                    "name": "variable.parameter.macro.ts"
+                },
+                {
+                    "match": "([_a-zA-Z][_0-9a-zA-Z]*)",
+                    "name": "entity.name.function.sm"
+                },
+                {
+                    "match": "(::)",
+                    "name": "entity.name.function.namespace.sm"
+                }
+            ]
+        }
+    }
+}
