@@ -1,16 +1,8 @@
-use crate::{ Runner, SMResult};
-use crate::parser::ParserSettings;
-
+use crate::{parser::ParserSettings, Runner, SMResult};
 
 impl Default for Runner {
     fn default() -> Self {
-        Self {
-            parser: ParserSettings {
-                file: String::from("anonymous"),
-                refine: true,
-            },
-            ctx: Default::default(),
-        }
+        Self { parser: ParserSettings { file: String::from("anonymous"), refine: true }, ctx: Default::default() }
     }
 }
 

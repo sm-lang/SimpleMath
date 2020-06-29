@@ -1,10 +1,10 @@
 use crate::parser::ParserSettings;
 
-mod rewrite;
-mod utils;
 #[allow(dead_code)]
 mod forward;
+mod rewrite;
 mod traits;
+mod utils;
 
 #[derive(Debug, Clone)]
 pub struct Runner {
@@ -14,4 +14,3 @@ pub struct Runner {
 
 #[derive(Debug, Clone, Default)]
 pub struct Context {}
-

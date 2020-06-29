@@ -1,7 +1,8 @@
-use crate::{AST, Context, internal};
-use num::ToPrimitive;
-use num::traits::Pow;
-use crate::ast::{Symbol, Position};
+use crate::{
+    ast::{Position, Symbol},
+    internal, Context, AST,
+};
+use num::{traits::Pow, ToPrimitive};
 use std::collections::BTreeMap;
 
 fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
@@ -12,7 +13,8 @@ fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
             AST::Symbol(ref s) => {
                 if s.name == "Nothing" {
                     continue;
-                } else {
+                }
+                else {
                     new.push(e.clone())
                 }
             }
@@ -21,7 +23,8 @@ fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
                     if s.name == "Sequence" {
                         let args = evaluate_list_omit(arguments, ctx);
                         new.extend(args)
-                    } else {
+                    }
+                    else {
                         new.push(e.clone())
                     }
                 }

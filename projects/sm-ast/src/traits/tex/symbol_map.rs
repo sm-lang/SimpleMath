@@ -1,4 +1,5 @@
-use crate::AST;
+use crate::{traits::tex::BoxArea, ToTex, AST};
+use itertools::Itertools;
 use std::{collections::BTreeMap, fmt::Write};
 
 pub enum BracketType {
@@ -17,23 +18,43 @@ pub fn binary_map(s: &str) -> Box<str> {
 }
 
 pub fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String {
-    let mut out = String::new();
     match s {
-        "sin" | "cos" => {
-            write!(out, "\\\\{}", s);
-            write!(out, "{}", omit_brackets_function(args));
+        "sin" | "cos" => format!(out, "\\\\{}", omit_brackets_function(&args)),
+        _ => {
+            println!("Unknown function: {}", s);
+            format!(out, "\\\\{}", args)
         }
-        _ => println!("Unknown function: {}", s),
-    };
-    return out;
+    }
 }
 
-fn omit_brackets_function(args: Vec<AST>) -> String {
-    match check_brackets(&args) {
-        BracketType::None => String::new(),
-        BracketType::Simple => String::new(),
-        BracketType::Large => String::new(),
+fn omit_brackets_function(args: &Vec<AST>) -> String {
+    let mut out = String::new();
+    if args.len() > 1 {
+        let mut max = 1;
+        for i in args {
+            let h = i.height();
+            if h > max {
+                max = h
+            }
+        }
+        // must use bracts
+        // find largest height
+        if max > 1 {
+            write!(out, "\\left(");
+        }
+        else {
+            write!(out, "(");
+        }
+        let t = args.iter().map(|e| e.to_tex()).collect_vec();
+        write!(out, "{}", t.join(", "));
+        if max > 1 {
+            write!(out, "\\right)");
+        }
+        else {
+            write!(out, ")");
+        }
     }
+    return out;
 }
 
 pub fn check_brackets(exprs: &Vec<AST>) -> BracketType {

@@ -1,7 +1,9 @@
 #[allow(unused_must_use)]
 mod symbol_map;
+mod utils;
 use crate::{ToTex, AST};
 use symbol_map::*;
+pub use utils::BoxArea;
 
 impl ToTex for AST {
     fn to_tex(&self) -> String {
