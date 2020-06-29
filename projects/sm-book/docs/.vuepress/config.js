@@ -19,6 +19,7 @@ const locale_cn = {
                     ['basic/', '安装与运行'],
                     ['basic/literal', '基本语法'],
                     ['basic/precedence', '运算优先级'],
+                    ['basic/questions', '疑难解答'],
                 ]
             },
         ],

@@ -170,7 +170,8 @@ SYMBOL = @{
     XID_START ~  XID_CONTINUE*
   | Underline ~ XID_CONTINUE+
 }
-Output =@{"¶"+ | "¶" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
+Input =@{"¶"+ | "¶" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
+Output =@{"⁋"+ | "⁋" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}

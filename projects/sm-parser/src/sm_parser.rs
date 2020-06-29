@@ -83,6 +83,7 @@ pub enum Rule {
     StringEnd,
     Symbol,
     SYMBOL,
+    Input,
     Output,
     WHITESPACE,
     COMMENT,
@@ -570,8 +571,13 @@ impl ::pest::Parser<Rule> for SMParser {
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
+                pub fn Input(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Input, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("¶").and_then(|state| state.repeat(|state| state.match_string("¶")).or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
                 pub fn Output(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Output, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("¶").and_then(|state| state.repeat(|state| state.match_string("¶")).or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))))
+                    state.rule(Rule::Output, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("⁋").and_then(|state| state.repeat(|state| state.match_string("⁋")).or_else(|state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state)))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1072,6 +1078,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::StringEnd => rules::StringEnd(state),
             Rule::Symbol => rules::Symbol(state),
             Rule::SYMBOL => rules::SYMBOL(state),
+            Rule::Input => rules::Input(state),
             Rule::Output => rules::Output(state),
             Rule::WHITESPACE => rules::WHITESPACE(state),
             Rule::COMMENT => rules::COMMENT(state),
