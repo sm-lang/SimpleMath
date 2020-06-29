@@ -1,5 +1,24 @@
 
 
+## Symbol
+
+```sm
+a
+a1
+a_1
+sin
+```
+
+## String
+
+```sm
+single = "single line"
+multiline = """
+line one
+line two
+"""
+```
+
 
 ## Numbers
 
@@ -15,9 +34,10 @@
 
 ## REPL only
 
-
-¶ 1 + 1
-⁋ 2
+```sm
+¶1: 1 + 1
+⁋1: 2
+```
 
 - 输入
   - 上个输入 `¶`
@@ -30,4 +50,39 @@
   - 上上个输出 `⁋⁋`
   - 上上上个输出 `⁋⁋⁋` 以此类推
 
+## Function
 
+```sm
+f @ x
+x.f
+x |> f
+```
+
+
+## Lambda
+
+```sm
+#
+#1
+##
+f = #.1 + #2 + 3&
+```
+
+## Macro
+
+```sm
+@TeXForm {sin(1 + 1)}
+TeXForm@sin(1 + 1)
+```
+
+## Special
+
+| Operator | Name | Mathematica |
+| :------: | ---: | :---------- |
+|   `@s`   |      |             |
+|   `x_`   |
+|  `x__`   |
+|  `x___`  |
+
+
+§
