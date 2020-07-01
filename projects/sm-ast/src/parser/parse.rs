@@ -1,4 +1,8 @@
-use crate::{ast::Position, parser::{ParserSettings, CLIMBER}, ToWolfram, AST, SMResult};
+use crate::{
+    ast::Position,
+    parser::{ApplyOrSlice, ParserSettings, CLIMBER},
+    SMResult, ToWolfram, AST,
+};
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
@@ -6,7 +10,6 @@ use std::{
     fs::{read_to_string, File},
     io::Write,
 };
-use crate::parser::ApplyOrSlice;
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -82,7 +85,6 @@ impl ParserSettings {
     }
 
     fn parse_term(&self, pairs: Pair<Rule>) -> AST {
-
         let mut base = AST::Null;
         let mut prefix = vec![];
         let mut suffix = vec![];
@@ -97,11 +99,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return if prefix.len() + suffix.len() == 0 {
-            base
-        } else {
-            AST::UnaryOperators { base: Box::new(base), prefix, suffix, position }
-        };
+        return if prefix.len() + suffix.len() == 0 { base } else { AST::UnaryOperators { base: Box::new(base), prefix, suffix, position } };
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
@@ -132,12 +130,7 @@ impl ParserSettings {
                 args.extend(arguments);
                 AST::FunctionCall { name, arguments: args, options, position }
             }
-            AST::Symbol(s) => AST::FunctionCall {
-                name: Box::new(AST::Symbol(s)),
-                arguments: vec![lhs],
-                options: Default::default(),
-                position,
-            },
+            AST::Symbol(s) => AST::FunctionCall { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
             AST::Integer(_) => unimplemented!(),
             _ => unreachable!(),
         };
@@ -162,9 +155,7 @@ impl ParserSettings {
         for s in stack {
             let position = parts.pop().unwrap();
             match s {
-                ApplyOrSlice::Apply(args, kws) => {
-                    head = AST::FunctionCall { name: Box::new(head), arguments: args, options: kws, position }
-                }
+                ApplyOrSlice::Apply(args, kws) => head = AST::FunctionCall { name: Box::new(head), arguments: args, options: kws, position },
                 ApplyOrSlice::Slice => {}
             }
         }

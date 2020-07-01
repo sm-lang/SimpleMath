@@ -19,39 +19,43 @@ pub fn binary_map(s: &str) -> Box<str> {
 
 pub fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String {
     match s {
-        "sin" | "cos" => format!(out, "\\\\{}", omit_brackets_function(&args)),
+        "sin" | "cos" => format!("\\\\{}", omit_brackets_function(&args)),
+        "arcsin" | "arccos" => format!("\\\\operatername{}", omit_brackets_function(&args)),
         _ => {
             println!("Unknown function: {}", s);
-            format!(out, "\\\\{}", args)
+            format!("\\\\{:?}", args)
         }
     }
 }
 
 fn omit_brackets_function(args: &Vec<AST>) -> String {
     let mut out = String::new();
-    if args.len() > 1 {
-        let mut max = 1;
-        for i in args {
-            let h = i.height();
-            if h > max {
-                max = h
+    match args.len() {
+        0 => write!(out, "()")?,
+        1 => write!(out, "{}", args[0].to_tex())?,
+        _ => {
+            // must use bracts
+            let mut max = 1;
+            for i in args {
+                let h = i.height();
+                if h > max {
+                    max = h
+                }
             }
-        }
-        // must use bracts
-        // find largest height
-        if max > 1 {
-            write!(out, "\\left(");
-        }
-        else {
-            write!(out, "(");
-        }
-        let t = args.iter().map(|e| e.to_tex()).collect_vec();
-        write!(out, "{}", t.join(", "));
-        if max > 1 {
-            write!(out, "\\right)");
-        }
-        else {
-            write!(out, ")");
+            if max > 1 {
+                write!(out, "\\left(")?;
+            }
+            else {
+                write!(out, "(")?;
+            }
+            let t = args.iter().map(|e| e.to_tex()).collect_vec();
+            write!(out, "{}", t.join(", "))?;
+            if max > 1 {
+                write!(out, "\\right)")?;
+            }
+            else {
+                write!(out, ")")?;
+            }
         }
     }
     return out;

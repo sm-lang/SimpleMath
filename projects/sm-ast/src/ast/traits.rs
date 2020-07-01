@@ -1,15 +1,14 @@
 use crate::{
-    ast::{Position, Symbol},
+    ast::{CheckAttributes, Position, Symbol},
     AST,
 };
+use bigdecimal::BigDecimal;
 use itertools::Itertools;
+use num::{BigInt, One, Zero};
 use std::{
     fmt,
     fmt::{Display, Formatter},
 };
-use num::{BigInt, Zero, One};
-use bigdecimal::BigDecimal;
-use crate::ast::CheckAttributes;
 
 impl AST {
     pub fn integer(n: impl Into<BigInt>) -> AST {
@@ -58,7 +57,8 @@ impl Display for AST {
             AST::Boolean(b) => {
                 if *b {
                     write!(f, "true")
-                } else {
+                }
+                else {
                     write!(f, "false")
                 }
             }
@@ -73,11 +73,7 @@ impl Display for AST {
 
 impl Display for Symbol {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        if self.name_space.len() == 0 {
-            write!(f, "{}", self.name)
-        } else {
-            write!(f, "{}::{}", self.name_space.join("::"), self.name)
-        }
+        if self.name_space.len() == 0 { write!(f, "{}", self.name) } else { write!(f, "{}::{}", self.name_space.join("::"), self.name) }
     }
 }
 
@@ -96,16 +92,16 @@ impl CheckAttributes for AST {
     }
     fn is_zero(&self) -> bool {
         match self {
-            AST::Integer(i) => { i.is_zero() }
-            AST::Decimal(n) => { n.is_zero() }
-            _ => false
+            AST::Integer(i) => i.is_zero(),
+            AST::Decimal(n) => n.is_zero(),
+            _ => false,
         }
     }
     fn is_one(&self) -> bool {
         match self {
-            AST::Integer(i) => { i.is_one() }
-            AST::Decimal(n) => { n.is_one() }
-            _ => false
+            AST::Integer(i) => i.is_one(),
+            AST::Decimal(n) => n.is_one(),
+            _ => false,
         }
     }
     fn is_boolean(&self) -> bool {
@@ -125,6 +121,6 @@ impl CheckAttributes for AST {
 pub fn is_container(s: &str) -> bool {
     match s {
         "Sequence" | "List" | "Range" => true,
-        _ => false
+        _ => false,
     }
 }

@@ -12,5 +12,3 @@ impl ParserSettings {
         Position { file: self.file.clone(), start: s.start_pos().line_col(), end: s.end_pos().line_col() }
     }
 }
-
-

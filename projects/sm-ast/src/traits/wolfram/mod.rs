@@ -46,9 +46,7 @@ impl ToWolfram for AST {
                 }
                 return v;
             }
-            AST::InfixOperators { infix, lhs, rhs, .. } => {
-                WolframValue::Function(binary_map(&infix), vec![lhs.to_wolfram(), rhs.to_wolfram()])
-            }
+            AST::InfixOperators { infix, lhs, rhs, .. } => WolframValue::Function(binary_map(&infix), vec![lhs.to_wolfram(), rhs.to_wolfram()]),
             //
             AST::Null => WolframValue::new_symbol("None"),
             AST::Boolean(b) => {

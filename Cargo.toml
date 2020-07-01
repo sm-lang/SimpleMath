@@ -4,6 +4,7 @@ default-members = [
     "projects/sm-ast",
     "projects/sm-parser",
     "projects/sm-playground",
+    "projects/sm-wrapper",
 ]
 exclude = [
     "projects/.DS_Store",

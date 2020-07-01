@@ -1,11 +1,14 @@
+use sm_ast::{parser::ParserSettings, Runner, SMError, ToTex, AST};
 use wasm_bindgen::prelude::*;
-use sm_ast::parser::ParserSettings;
-use sm_ast::{Runner, ToTex};
-
 
 fn forward(input: &str) -> Runner {
     let parser = ParserSettings::default();
-    let mut runner = Runner::from(parser.parse(input));
+
+    let mut runner = match parser.parse(input) {
+        Ok(o) => Runner::from(o),
+        Err(e) => {}
+    };
+
     runner.forward();
     return runner;
 }

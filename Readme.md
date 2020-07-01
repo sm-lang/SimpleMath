@@ -3,17 +3,15 @@ Simple Math
 
 A computer algebra system (CAS) written in Rust.
 
-Try Online: [PlayGround](https://galaster.github.io/SimpleMath/)
+- Try Online: [PlayGround](https://galaster.github.io/SimpleMath/)
+- Document: [SM Language](https://sm-lang.netlify.app/)
 
 ### Functions
 
-- expr: expand
-- integer: factor, factorial, fibonacci
-- list: head, first, last, length
 
-
-
-|Icon| |
-|:-| 
-| 📑| License
-| 🖋| Syntax change
+| Icon |               |
+| :--- | :------------ |
+| 📑    | License       |
+| 🖋    | Syntax change |
+| 📖    | Document      |
+| 🔧    | Bug fix       |

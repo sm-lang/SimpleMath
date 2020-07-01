@@ -1,11 +1,11 @@
-use sm_parser::{Assoc, PrecClimber, Rule};
 use crate::AST;
+use sm_parser::{Assoc, PrecClimber, Rule};
 use std::collections::BTreeMap;
 
 mod parse;
 mod traits;
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct ParserSettings {
     pub file: String,
     pub refine: bool,

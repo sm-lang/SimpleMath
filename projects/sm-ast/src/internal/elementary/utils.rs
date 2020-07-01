@@ -1,37 +1,59 @@
-#[allow(unused_imports)]
-use cached::proc_macro::cached;
-use num::{BigInt, BigUint, One, Zero};
+use lazy_static::lazy_static;
+use num::BigInt;
+use std::collections::BTreeMap;
 
-//#[cached(size = 255)]
-fn fibonacci_u(n: BigUint) -> BigUint {
-    if n == BigUint::zero() {
-        n
-    }
-    else if n == BigUint::one() {
-        n
-    }
-    else {
-        fibonacci_u(n.clone() - BigUint::one()) + fibonacci_u(n - BigUint::one() - BigUint::one())
-    }
+// ```wl
+// TemplateApply[
+// "cache.insert(`1`,BigInt::from(`2`));\n",
+// {#, Fibonacci[#]}
+// ]&
+// %/@Join[Range[0,9],PowerRange[10,100,10]]
+// %//StringJoin//CopyToClipboard
+// ```
+lazy_static! {
+    static ref FIBONACCI_U_CACHE: BTreeMap<usize, BigInt> = {
+        let mut cache = BTreeMap::new();
+        cache.insert(0, BigInt::from(0));
+        cache.insert(1, BigInt::from(1));
+        cache.insert(2, BigInt::from(1));
+        cache.insert(3, BigInt::from(2));
+        cache.insert(4, BigInt::from(3));
+        cache.insert(5, BigInt::from(5));
+        cache.insert(6, BigInt::from(8));
+        cache.insert(7, BigInt::from(13));
+        cache.insert(8, BigInt::from(21));
+        cache.insert(9, BigInt::from(34));
+        cache.insert(10, BigInt::from(55));
+        cache.insert(100, BigInt::from(354224848179261915075));
+        return cache;
+    };
 }
 
-pub fn fibonacci_int(n: &BigInt) -> BigInt {
-    BigInt::from(fibonacci_u(n.to_biguint().unwrap()))
+#[test]
+fn fibonacci_u() {
+    println!("{:?}", FIBONACCI_U_CACHE.get(&0))
 }
 
-//#[cached(size = 255)]
-fn factorial_u(n: BigUint) -> BigUint {
-    if n == BigUint::zero() {
-        BigUint::one()
-    }
-    else if n == BigUint::one() {
-        BigUint::one()
-    }
-    else {
-        n.clone() * factorial_u(n - BigUint::one())
-    }
+lazy_static! {
+    static ref FACTORIAL_U_CACHE: BTreeMap<usize, BigInt> = {
+        let mut cache = BTreeMap::new();
+        cache.insert(0, BigInt::from(1));
+        cache.insert(1, BigInt::from(1));
+        cache.insert(2, BigInt::from(2));
+        cache.insert(3, BigInt::from(6));
+        cache.insert(4, BigInt::from(24));
+        cache.insert(5, BigInt::from(120));
+        cache.insert(6, BigInt::from(720));
+        cache.insert(7, BigInt::from(5040));
+        cache.insert(8, BigInt::from(40320));
+        cache.insert(9, BigInt::from(362880));
+        cache.insert(10, BigInt::from(3628800));
+
+        return cache;
+    };
 }
 
-pub fn factorial_int(n: &BigInt) -> BigInt {
-    BigInt::from(factorial_u(n.to_biguint().unwrap()))
+#[test]
+fn factorial_u() {
+    println!("{:?}", FACTORIAL_U_CACHE.get(&0))
 }
