@@ -1,6 +1,6 @@
 use crate::{traits::tex::BoxArea, ToTex, AST};
 use itertools::Itertools;
-use std::{collections::BTreeMap, fmt::Write};
+use std::{collections::BTreeMap};
 
 pub enum BracketType {
     None,
@@ -31,8 +31,8 @@ pub fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String
 fn omit_brackets_function(args: &Vec<AST>) -> String {
     let mut out = String::new();
     match args.len() {
-        0 => write!(out, "()")?,
-        1 => write!(out, "{}", args[0].to_tex())?,
+        0 => out.push_str("()"),
+        1 => out.push_str( &format!("{}", args[0].to_tex())),
         _ => {
             // must use bracts
             let mut max = 1;
@@ -43,18 +43,18 @@ fn omit_brackets_function(args: &Vec<AST>) -> String {
                 }
             }
             if max > 1 {
-                write!(out, "\\left(")?;
+                out.push_str( "\\left(");
             }
             else {
-                write!(out, "(")?;
+                out.push_str( "(");
             }
             let t = args.iter().map(|e| e.to_tex()).collect_vec();
-            write!(out, "{}", t.join(", "))?;
+            out.push_str( &format!("{}", t.join(", ")));
             if max > 1 {
-                write!(out, "\\right)")?;
+                out.push_str( "\\right)");
             }
             else {
-                write!(out, ")")?;
+                out.push_str( ")");
             }
         }
     }

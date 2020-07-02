@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use num::BigInt;
 use std::collections::BTreeMap;
+use std::sync::Mutex;
 
 // ```wl
 // TemplateApply[
@@ -11,7 +12,7 @@ use std::collections::BTreeMap;
 // %//StringJoin//CopyToClipboard
 // ```
 lazy_static! {
-    static ref FIBONACCI_U_CACHE: BTreeMap<usize, BigInt> = {
+    pub static ref FIBONACCI_U_CACHE: Mutex<BTreeMap<usize, BigInt>> = {
         let mut cache = BTreeMap::new();
         cache.insert(0, BigInt::from(0));
         cache.insert(1, BigInt::from(1));
@@ -24,18 +25,32 @@ lazy_static! {
         cache.insert(8, BigInt::from(21));
         cache.insert(9, BigInt::from(34));
         cache.insert(10, BigInt::from(55));
-        cache.insert(100, BigInt::from(354224848179261915075));
-        return cache;
+        cache.insert(100, BigInt::from(354224848179261915075u128));
+        return Mutex::new(cache)
     };
 }
 
+
+fn fibonacci_u(u:usize)->BigInt {
+    let mut cache = FIBONACCI_U_CACHE.lock().unwrap();
+    match cache.get(&u) {
+        Some(s) => {
+            return s.clone()
+        },
+        None => {
+            let new = fibonacci_u(u-1) + fibonacci_u(u-2);
+            cache.insert(u,new).unwrap()
+        },
+    }
+}
+
 #[test]
-fn fibonacci_u() {
-    println!("{:?}", FIBONACCI_U_CACHE.get(&0))
+fn fibonacci_u_test() {
+    println!("{}", fibonacci_u(100))
 }
 
 lazy_static! {
-    static ref FACTORIAL_U_CACHE: BTreeMap<usize, BigInt> = {
+    pub static ref FACTORIAL_U_CACHE: Mutex<BTreeMap<usize, BigInt>> = {
         let mut cache = BTreeMap::new();
         cache.insert(0, BigInt::from(1));
         cache.insert(1, BigInt::from(1));
@@ -48,12 +63,24 @@ lazy_static! {
         cache.insert(8, BigInt::from(40320));
         cache.insert(9, BigInt::from(362880));
         cache.insert(10, BigInt::from(3628800));
-
-        return cache;
+        return Mutex::new(cache)
     };
 }
 
+fn factorial_u(u:usize)->BigInt {
+    let mut cache = FIBONACCI_U_CACHE.lock().unwrap();
+    match cache.get(&u) {
+        Some(s) => {
+            return s.clone()
+        },
+        None => {
+            let new = BigInt::from(u) * factorial_u(u-1);
+            cache.insert(u,new).unwrap()
+        },
+    }
+}
+
 #[test]
-fn factorial_u() {
-    println!("{:?}", FACTORIAL_U_CACHE.get(&0))
+fn factorial_u_test() {
+    println!("{}", factorial_u(1000))
 }
