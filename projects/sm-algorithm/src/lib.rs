@@ -1,6 +1,6 @@
-mod prime;
 mod gamma;
 mod linear;
-mod error;
+mod prime;
+mod result;
 
-pub use error::{Error, Out};
+pub use result::Output;
