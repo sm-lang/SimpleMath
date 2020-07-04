@@ -37,14 +37,14 @@ fn factorial_test() {
     println!("{}", factorial(&BigInt::from(100)))
 }
 
-pub fn factorial_mod(){
+pub fn factorial_mod() {
     unimplemented!()
 }
 
-pub fn factorial_digits(){
+pub fn factorial_digits() {
     unimplemented!()
 }
 
-pub fn factorial_tail_zero(){
+pub fn factorial_tail_zero() {
     unimplemented!()
 }

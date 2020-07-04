@@ -12,5 +12,6 @@ edition = "2018"
 
 [dependencies]
 num = "0.2"
+primal = "0.3"
 
 [dev-dependencies]

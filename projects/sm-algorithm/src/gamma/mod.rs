@@ -1,5 +1,6 @@
+mod binomial;
 mod factorial;
 mod factorial2;
-mod binomial;
+mod gamma;
 
-pub use factorial::{factorial, factorial_u};
+pub use factorial::*;
