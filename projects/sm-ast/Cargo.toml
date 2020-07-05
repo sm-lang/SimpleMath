@@ -31,6 +31,11 @@ version = "0.1.0"
 path = "../sm-parser"
 features = []
 
+[dependencies.sm_algorithm]
+version = "0.1.0"
+path = "../sm-algorithm"
+features = []
+
 [dev-dependencies]
 
 [features]

@@ -2,16 +2,11 @@ use crate::Output;
 use num::{BigInt, BigUint, Integer, One, ToPrimitive, Zero};
 use std::collections::BTreeMap;
 
-pub fn fibonacci(n: &BigInt) -> Output {
+pub fn fibonacci_i(n: &BigInt) -> Output {
     match n.to_isize() {
         Some(s) => {
             let u = fibonacci_fast_u(s as usize);
-            if s < 0 && s.is_even() {
-                Output::from(-u)
-            }
-            else {
-                Output::from(u)
-            }
+            if s < 0 && s.is_even() { Output::from(-u) } else { Output::from(u) }
         }
         None => Output::OverFlow,
     }

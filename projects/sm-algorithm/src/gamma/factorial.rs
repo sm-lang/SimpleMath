@@ -14,18 +14,18 @@ use num::{BigUint, One};
 
 /// TODO:  Parallel Prime Swing Algorithm
 /// http://www.luschny.de/math/factorial/FastFactorialFunctions.htm
-pub fn factorial_u(n: usize) -> BigUint {
+pub fn factorial_fold_u(n: usize) -> BigUint {
     (1..=n).fold(BigUint::one(), |a, b| a * b)
 }
 
-pub fn factorial(n: &BigInt) -> Output {
+pub fn factorial_i(n: &BigInt) -> Output {
     match n.to_isize() {
         Some(s) => {
             if s < 0 {
                 Output::ComplexInfinity
             }
             else {
-                Output::from(factorial_u(s as usize))
+                Output::from(factorial_fold_u(s as usize))
             }
         }
         None => Output::OverFlow,
@@ -34,7 +34,7 @@ pub fn factorial(n: &BigInt) -> Output {
 
 #[test]
 fn factorial_test() {
-    println!("{}", factorial(&BigInt::from(100)))
+    println!("{}", factorial_i(&BigInt::from(100)))
 }
 
 pub fn factorial_mod() {

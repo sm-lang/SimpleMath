@@ -4,11 +4,13 @@ use std::{
     fmt::{Display, Formatter},
 };
 
+/// something like result but flat
 #[derive(Debug)]
 pub enum Output {
     Integer(BigInt),
     OverFlow,
     ComplexInfinity,
+    IOError(String),
 }
 
 impl Display for Output {
@@ -17,6 +19,7 @@ impl Display for Output {
             Output::Integer(i) => write!(f, "{}", i),
             Output::OverFlow => write!(f, "OverFlow"),
             Output::ComplexInfinity => write!(f, "ComplexInfinity"),
+            Output::IOError(s) => write!(f, "IOError: {}", s),
         }
     }
 }

@@ -1,6 +1,6 @@
 use sm_ast::{parser::ParserSettings, Runner, SMError, ToTex, AST};
 use wasm_bindgen::prelude::*;
-
+/*
 fn forward(input: &str) -> Runner {
     let parser = ParserSettings::default();
 
@@ -22,3 +22,4 @@ pub fn result(input: &str) -> String {
 pub fn result_tex(input: &str) -> String {
     format!("{}", forward(input).ast.to_tex())
 }
+*/
