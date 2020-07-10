@@ -3,4 +3,4 @@ mod factorial;
 mod factorial2;
 mod gamma;
 
-pub use factorial::{*};
+pub use factorial::*;

@@ -1,5 +1,5 @@
 use crate::{SMError, SMResult, AST};
-use sm_algorithm::{factorial_i, Output, fibonacci_i};
+use sm_algorithm::{factorial_i, fibonacci_i, Output};
 
 pub fn sqrt(expr: &AST) -> SMResult<AST> {
     match expr {
@@ -75,7 +75,7 @@ pub fn factorial(expr: &AST) -> SMResult<AST> {
 
 pub fn fibonacci(expr: &AST) -> SMResult<AST> {
     match expr {
-        AST::Integer(n) => match fibonacci_i(n){
+        AST::Integer(n) => match fibonacci_i(n) {
             Output::Integer(n) => Ok(AST::integer(n)),
             Output::OverFlow => Ok(AST::symbol("std::constant::OverFlow")),
             Output::ComplexInfinity => Ok(AST::symbol("std::constant::ComplexInfinity")),

@@ -1,43 +1,75 @@
-use crate::AST;
+use crate::{traits::tex::BoxArea, ToTex, AST};
+use itertools::Itertools;
+use std::collections::BTreeMap;
 
-pub trait BoxArea {
-    fn height(&self) -> usize {
-        1
-    }
-    fn width(&self) -> usize {
-        1
+pub(crate) fn binary_map(s: &str) -> String {
+    let m = match s {
+        "+-" => "\\mp",
+        "-+" => "\\pm",
+        _ => s,
+    };
+    format!(" {} ", m)
+}
+
+pub(crate) fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String {
+    match s {
+        "sin" | "cos" => format!(r"\\{}{}", s, omit_brackets_function(&args)),
+        "arcsin" | "arccos" => format!(r"\\operatername{}", omit_brackets_function(&args)),
+        _ => {
+            println!("Unknown function: {}", s);
+            format!("\\\\{:?}", args)
+        }
     }
 }
 
-impl BoxArea for AST {
-    fn height(&self) -> usize {
-        match self {
-            AST::EmptyStatement => 0,
-            AST::NewLine => 1,
-            AST::Program(_) => 1,
-            AST::Expression { .. } => 1,
-            AST::FunctionCall { .. } => 1,
-            AST::MultiplicativeExpression { .. } => 1,
-            AST::AdditiveExpression { .. } => 1,
-            AST::List(_) => 1,
-            AST::UnaryOperators { .. } => 1,
-            AST::InfixOperators { .. } => 1,
-            _ => 1,
+fn omit_brackets_function(args: &Vec<AST>) -> String {
+    let mut out = String::new();
+    match args.len() {
+        0 => out.push_str("()"),
+        1 => {
+            if args[0].width() <= 1 {
+                out.push_str(&format!(" {}", args[0].to_tex()))
+            }
+            else {
+                if args[0].height() > 1 {
+                    out.push_str("\\left(");
+                }
+                else {
+                    out.push_str("(");
+                }
+                out.push_str(&format!("{}", args[0].to_tex()));
+                if args[0].height() > 1 {
+                    out.push_str("\\left)");
+                }
+                else {
+                    out.push_str(")");
+                }
+            }
+        }
+        _ => {
+            // must use bracts
+            let mut max = 1;
+            for i in args {
+                let h = i.height();
+                if h > max {
+                    max = h
+                }
+            }
+            if max > 1 {
+                out.push_str("\\left(");
+            }
+            else {
+                out.push_str("(");
+            }
+            let t = args.iter().map(|e| e.to_tex()).collect_vec();
+            out.push_str(&format!("{}", t.join(", ")));
+            if max > 1 {
+                out.push_str("\\right)");
+            }
+            else {
+                out.push_str(")");
+            }
         }
     }
-    fn width(&self) -> usize {
-        match self {
-            AST::EmptyStatement => 0,
-            AST::NewLine => 1,
-            AST::Program(_) => 1,
-            AST::Expression { .. } => 1,
-            AST::FunctionCall { .. } => 1,
-            AST::MultiplicativeExpression { .. } => 1,
-            AST::AdditiveExpression { .. } => 1,
-            AST::List(v) => v.len(),
-            AST::UnaryOperators { .. } => 1,
-            AST::InfixOperators { .. } => 1,
-            _ => 1,
-        }
-    }
+    return out;
 }

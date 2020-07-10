@@ -1,3 +1,3 @@
 mod fibonacci;
 
-pub use fibonacci::{*};
+pub use fibonacci::*;

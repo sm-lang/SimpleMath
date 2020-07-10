@@ -1,9 +1,8 @@
-#[allow(unused_must_use)]
-mod symbol_map;
 mod utils;
-use crate::{ToTex, AST};
-use symbol_map::*;
-pub use utils::BoxArea;
+use crate::{
+    traits::tex::utils::{binary_map, function_map},
+    ToTex, AST,
+};
 
 impl ToTex for AST {
     fn to_tex(&self) -> String {
@@ -55,6 +54,48 @@ impl ToTex for AST {
                     format!("\\\\tt{{false}}")
                 }
             }
+        }
+    }
+}
+
+pub trait BoxArea {
+    fn height(&self) -> usize {
+        1
+    }
+    fn width(&self) -> usize {
+        1
+    }
+}
+
+impl BoxArea for AST {
+    fn height(&self) -> usize {
+        match self {
+            AST::EmptyStatement => 0,
+            AST::NewLine => 1,
+            AST::Program(_) => 1,
+            AST::Expression { .. } => 1,
+            AST::FunctionCall { .. } => 1,
+            AST::MultiplicativeExpression { .. } => 1,
+            AST::AdditiveExpression { terms, .. } => terms.iter().map(|e| e.height()).min().unwrap(),
+            AST::List(_) => 1,
+            AST::UnaryOperators { .. } => 1,
+            AST::InfixOperators { .. } => 1,
+            _ => 1,
+        }
+    }
+    fn width(&self) -> usize {
+        match self {
+            AST::EmptyStatement => 0,
+            AST::NewLine => 1,
+            AST::Program(_) => 1,
+            AST::Expression { .. } => 1,
+            AST::FunctionCall { .. } => 1,
+            AST::MultiplicativeExpression { .. } => 1,
+            AST::AdditiveExpression { terms, .. } => terms.len(),
+            AST::List(v) => v.len(),
+            AST::UnaryOperators { base, prefix, suffix, .. } => base.width() + prefix.len() + suffix.len(),
+            AST::InfixOperators { infix: _, ref lhs, ref rhs, .. } => lhs.width() + rhs.width() + 1,
+            _ => 1,
         }
     }
 }
