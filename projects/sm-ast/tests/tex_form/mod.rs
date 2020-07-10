@@ -8,19 +8,24 @@ use sm_ast::{parser::ParserSettings, ToTex};
 fn test_sin() {
     let parser = ParserSettings::default();
     let tex_from = |s: &str| parser.parse(s).unwrap().to_tex();
-
     debug_assert_eq!(tex_from("sin(x)"), r"\\sin x");
-    debug_assert_eq!(tex_from("sin(x, y)"), r"\\sin(x, y)");
+    debug_assert_eq!(tex_from("sin(xy)"), r"\\sin xy");
+    debug_assert_eq!(tex_from("sin(x,y)"), r"\\sin(x, y)");
     debug_assert_eq!(tex_from("sin(x+y)"), r"\\sin(x + y)");
-    debug_assert_eq!(tex_from("sin(x*y)"), r"\\sin(x + y)");
+    // debug_assert_eq!(tex_from("sin(x y)"), r"\\sin(x y)");
+    debug_assert_eq!(tex_from("sin(x*y)"), r"\\sin(x y)");
+}
+
+#[test]
+fn test_arcsin() {
+    let parser = ParserSettings::default();
+    let tex_from = |s: &str| parser.parse(s).unwrap().to_tex();
+    debug_assert_eq!(tex_from("arcsin(x)"), r"\\arcsin x");
 }
 
 #[test]
 fn test_arcsinh() {
     let parser = ParserSettings::default();
     let tex_from = |s: &str| parser.parse(s).unwrap().to_tex();
-    debug_assert_eq!(tex_from("arcsinh(x)"), r"\\sin x");
-    debug_assert_eq!(tex_from("arcsinh(x, y)"), r"\\sin(x, y)");
-    debug_assert_eq!(tex_from("arcsinh(x+y)"), r"\\sin(x + y)");
-    debug_assert_eq!(tex_from("arcsinh(x*y)"), r"\\sin(x + y)");
+    debug_assert_eq!(tex_from("arcsinh(x)"), r"\\operatorname{arcsinh} x");
 }

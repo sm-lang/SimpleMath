@@ -9,7 +9,7 @@ impl ToTex for AST {
         match (*self).clone() {
             AST::EmptyStatement => format!(""),
             AST::NewLine => format!("\n"),
-            AST::Null => format!("\\\\tt{{null}}"),
+            AST::Null => format!(r"\\mathtt{{null}}"),
             AST::Expression { base, eos, .. } => {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
@@ -23,9 +23,9 @@ impl ToTex for AST {
                 e.join(" + ")
             }
             AST::List(v) => {
-                // todo: height = 1
+                let max = v.iter().map(|e| e.height()).max().unwrap();
                 let e: Vec<_> = v.iter().map(AST::to_tex).collect();
-                format!("\\\\left\\\\{{{}\\\\right\\\\}}", e.join(", "))
+                if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
             }
 
             AST::UnaryOperators { base, prefix, suffix, .. } => {
@@ -42,16 +42,16 @@ impl ToTex for AST {
             AST::Integer(i) => format!("{}", i),
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),
-            AST::String(s) => format!("\\text{{{}}}", s),
+            AST::String(s) => format!(r"\\text{{{}}}", s),
 
             AST::Program(_) => unimplemented!(),
             AST::FunctionCall { name, arguments, options, .. } => function_map(&name.to_tex(), arguments, options),
             AST::Boolean(b) => {
                 if b {
-                    format!("\\\\tt{{true}}")
+                    format!(r"\\mathtt{{true}}")
                 }
                 else {
-                    format!("\\\\tt{{false}}")
+                    format!(r"\\mathtt{{false}}")
                 }
             }
         }

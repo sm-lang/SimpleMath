@@ -117,10 +117,3 @@ impl CheckAttributes for AST {
         }
     }
 }
-
-pub fn is_container(s: &str) -> bool {
-    match s {
-        "Sequence" | "List" | "Range" => true,
-        _ => false,
-    }
-}

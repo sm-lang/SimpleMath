@@ -1,4 +1,5 @@
-use crate::parser::ParserSettings;
+use crate::{ast::Symbol, parser::ParserSettings, AST};
+use std::collections::{BTreeSet, HashMap};
 
 #[allow(dead_code)]
 mod forward;
@@ -13,4 +14,9 @@ pub struct Runner {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct Context {}
+pub struct Context {
+    inputs: HashMap<usize, AST>,
+    outputs: HashMap<usize, AST>,
+    // is this ok?
+    symbols: BTreeSet<Symbol>,
+}

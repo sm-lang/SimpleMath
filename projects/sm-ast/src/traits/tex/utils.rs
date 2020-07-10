@@ -6,6 +6,7 @@ pub(crate) fn binary_map(s: &str) -> String {
     let m = match s {
         "+-" => "\\mp",
         "-+" => "\\pm",
+        "*" => return String::from(" "),
         _ => s,
     };
     format!(" {} ", m)
@@ -13,8 +14,10 @@ pub(crate) fn binary_map(s: &str) -> String {
 
 pub(crate) fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String {
     match s {
-        "sin" | "cos" => format!(r"\\{}{}", s, omit_brackets_function(&args)),
-        "arcsin" | "arccos" => format!(r"\\operatername{}", omit_brackets_function(&args)),
+        "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => format!(r"\\{}{}", s, omit_brackets_function(&args)),
+        "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
+            format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&args))
+        }
         _ => {
             println!("Unknown function: {}", s);
             format!("\\\\{:?}", args)
@@ -47,14 +50,7 @@ fn omit_brackets_function(args: &Vec<AST>) -> String {
             }
         }
         _ => {
-            // must use bracts
-            let mut max = 1;
-            for i in args {
-                let h = i.height();
-                if h > max {
-                    max = h
-                }
-            }
+            let max = args.iter().map(|e| e.height()).max().unwrap();
             if max > 1 {
                 out.push_str("\\left(");
             }

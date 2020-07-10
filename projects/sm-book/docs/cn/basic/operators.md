@@ -23,7 +23,7 @@
 |   `∁`    |         ? | complement | Complement  |
 |   `∂`    |         ? | derivative | D           |
 
-
+$\operatorname{}$
 
 ## Prefix
 

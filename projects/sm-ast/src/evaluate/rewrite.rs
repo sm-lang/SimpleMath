@@ -19,7 +19,7 @@ impl AST {
                                 new.push(e.clone())
                             }
                         }
-                        AST::AdditiveExpression { terms, position } => new.push(e.clone()),
+                        AST::AdditiveExpression { .. } => new.push(e.clone()),
                         _ => new.push(e.clone()),
                     }
                 }

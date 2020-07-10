@@ -1,5 +1,5 @@
 use sm_ast::{evaluate::Runner, parser::ParserSettings, ToTex, ToWolfram, AST};
-mod tex;
+mod tex_form;
 
 #[test]
 fn test() {
@@ -16,15 +16,6 @@ fn test_parse() {
     let ast = parser.parse(input).unwrap();
     println!("{}", ast);
     println!("{}", ast.to_wolfram_string());
-}
-
-#[test]
-fn test_space_expression() {
-    let parser = ParserSettings::default();
-    let form = parser.parse("2 x y").unwrap().to_wolfram_string();
-    assert_eq!(form, "Times[2,x,y]");
-    let form = parser.parse("2 -x y").unwrap().to_wolfram_string();
-    assert_eq!(form, "Subtract[2,Times[x,y]]");
 }
 
 #[test]
