@@ -1,4 +1,5 @@
 use sm_ast::{evaluate::Runner, parser::ParserSettings, ToTex, ToWolfram, AST};
+mod parsed;
 mod tex_form;
 
 #[test]

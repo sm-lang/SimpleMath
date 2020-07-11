@@ -3,6 +3,7 @@ use crate::{
     parser::{ApplyOrSlice, ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
+use bigdecimal::BigDecimal;
 use num::{BigInt, Num};
 use sm_parser::{Pair, Parser, Rule, SMParser};
 use std::{
@@ -218,10 +219,11 @@ impl ParserSettings {
         match pair.as_rule() {
             Rule::list => self.parse_list(pair),
             Rule::Symbol => AST::symbol(pair.as_str()),
-            Rule::SpecialValue => self.parse_special(pair),
-            Rule::Decimal => unimplemented!(),
+            Rule::String => self.parse_string(pair),
+            Rule::Decimal => self.parse_decimal(pair),
             Rule::Integer => self.parse_integer(pair),
             Rule::Byte => self.parse_byte(pair),
+            Rule::SpecialValue => self.parse_special(pair),
             _ => debug_cases!(pair),
         }
     }
@@ -236,6 +238,32 @@ impl ParserSettings {
             };
         }
         return AST::List(v);
+    }
+
+    fn parse_string(&self, pairs: Pair<Rule>) -> AST {
+        let mut s = "";
+        let mut h = "";
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::StringEmpty => continue,
+                Rule::SYMBOL => h = pair.as_str(),
+                Rule::StringNormal => {
+                    for inner in pair.into_inner() {
+                        match inner.as_rule() {
+                            Rule::StringStart => continue,
+                            Rule::StringText => s = inner.as_str(),
+                            Rule::StringEnd => continue,
+                            _ => unreachable!(),
+                        }
+                    }
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        match h {
+            "" => AST::string(s),
+            _ => AST::string(s),
+        }
     }
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
@@ -255,6 +283,12 @@ impl ParserSettings {
         // It is impossible to get `from_str_radix` errors due to the constraints of the parser
         let i = BigInt::from_str_radix(pairs.as_str(), 10).unwrap();
         return AST::Integer(i);
+    }
+
+    fn parse_decimal(&self, pairs: Pair<Rule>) -> AST {
+        // It is impossible to get `from_str_radix` errors due to the constraints of the parser
+        let i = BigDecimal::from_str_radix(pairs.as_str(), 10).unwrap();
+        return AST::Decimal(i);
     }
 
     fn parse_special(&self, pairs: Pair<Rule>) -> AST {
