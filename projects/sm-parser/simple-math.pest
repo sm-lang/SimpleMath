@@ -60,8 +60,8 @@ Pass = @{"pass"}
 ///#C678DD
 Type = @{"type"}
 /*====================================================================================================================*/
-classStatement = {Class ~ assign_pair ~ short_block?}
-traitStatement = {Trait ~ assign_pair ~ short_block?}
+classStatement = {"class" ~ assign_pair ~ short_block?}
+traitStatement = {"trait" ~ assign_pair ~ short_block?}
 
 short_block = {"{" ~ short_statement* ~ "}"}
 short_statement = {
@@ -71,12 +71,9 @@ short_statement = {
   | short_annotation ~ eos?
 }
 short_annotation = {annotation_call+~short_statement}
-//!#C678DD: Trait|Class
-Trait = @{"trait"}
-Class = @{"class"}
 /*====================================================================================================================*/
 extendStatement = {
-    "implement" ~ Symbol ~ with_trait? ~ short_block
+    "extends" ~ Symbol ~ with_trait? ~ short_block
 }
 with_trait = {"with" ~ Symbol}
 //!#C678DD: Extend|With
@@ -132,7 +129,7 @@ type_hint = {Colon ~ type_expr}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
 /*====================================================================================================================*/
-data = ${dict|list|SpecialValue|Slot|Number|String|Symbol}
+data = ${dict|list|SpecialValue|Input|Output|Slot|Number|String|Symbol}
 dict = {"{" ~ key_value? ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = {"[" ~ expr? ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -142,12 +139,8 @@ key_valid =!{Integer | SYMBOL | String}
 index_range = !{expr? ~ Colon ~ expr?}
 index_step = !{expr? ~ Colon ~ expr? ~ Colon ~ expr?}
 /*====================================================================================================================*/
-///#D19A66
-SpecialValue = @{"null"|"true"|"false"}
-Slot = ${("$"|"$$")~(SYMBOL|Integer)}
-/*====================================================================================================================*/
 //!#D19A66: Integer|Decimal|Byte
-Number  = _{Decimal|Integer|Byte}
+Number  = _{Byte|Decimal|Integer}
 Decimal = ${Integer ~ Dot ~ Integer}
 Integer = @{"0"|ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 Byte    = ${
@@ -170,9 +163,12 @@ SYMBOL = @{
     XID_START ~  XID_CONTINUE*
   | Underline ~ XID_CONTINUE+
 }
+/*====================================================================================================================*/
+///#D19A66
+SpecialValue = @{"null"|"true"|"false"}
+Slot = ${("#"|"##")~(SYMBOL|Integer)}
 Input =@{"¶"+ | "¶" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 Output =@{"⁋"+ | "⁋" ~ ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
-
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = _{NEWLINE|WHITE_SPACE}

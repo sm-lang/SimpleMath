@@ -9,6 +9,9 @@ fn literal_number() {
     assert_eq!(wl_from("-1"), "Minus[1]");
     assert_eq!(wl_from("1.0"), "1.0");
     assert_eq!(wl_from("-1.0"), "Minus[1.0]");
+    assert_eq!(wl_from("0xFF"), "255");
+    assert_eq!(wl_from("0o77"), "63");
+    assert_eq!(wl_from("0b11"), "3");
 }
 
 #[test]
@@ -29,4 +32,18 @@ fn test_space_expression() {
     assert_eq!(wl_from("2 x y"), "Times[2,x,y]");
     assert_eq!(wl_from("2 -x y"), "Subtract[2,Times[x,y]]");
     assert_eq!(wl_from("2*-x y"), "Times[2,Minus[Times[x,y]]]");
+}
+
+#[test]
+fn literal_repl() {
+    let parser = ParserSettings::default();
+    let wl_from = |s: &str| parser.parse(s).unwrap().to_wolfram_string();
+    assert_eq!(wl_from("¶"), "0");
+    assert_eq!(wl_from("¶1"), "1");
+    assert_eq!(wl_from("¶¶"), "Minus[1]");
+    assert_eq!(wl_from("¶¶¶"), "1.0");
+    assert_eq!(wl_from("⁋"), "Minus[1.0]");
+    assert_eq!(wl_from("⁋1"), "255");
+    assert_eq!(wl_from("⁋⁋"), "63");
+    assert_eq!(wl_from("⁋⁋⁋"), "3");
 }

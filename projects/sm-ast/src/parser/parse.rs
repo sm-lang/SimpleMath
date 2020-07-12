@@ -224,6 +224,8 @@ impl ParserSettings {
             Rule::Integer => self.parse_integer(pair),
             Rule::Byte => self.parse_byte(pair),
             Rule::SpecialValue => self.parse_special(pair),
+            Rule::Input => self.parse_input(pair),
+            Rule::Output => self.parse_output(pair),
             _ => debug_cases!(pair),
         }
     }
@@ -264,6 +266,23 @@ impl ParserSettings {
             "" => AST::string(s),
             _ => AST::string(s),
         }
+    }
+
+    fn parse_input(&self, pairs: Pair<Rule>) -> AST {
+        let mut head = vec![];
+        let mut n = vec![];
+        for c in pairs.as_str().chars() {
+            if c == '¶' { head.push(c) } else { n.push(c) }
+        }
+        if n.len() == 0 { AST::string(format!("¶()")) } else { AST::string(format!("¶()")) }
+    }
+    fn parse_output(&self, pairs: Pair<Rule>) -> AST {
+        let mut head = vec![];
+        let mut n = vec![];
+        for c in pairs.as_str().chars() {
+            if c == '⁋' { head.push(c) } else { n.push(c) }
+        }
+        if n.len() == 0 { AST::string(format!("⁋()")) } else { AST::string(format!("⁋()")) }
     }
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {
