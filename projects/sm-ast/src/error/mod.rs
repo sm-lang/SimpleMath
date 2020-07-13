@@ -6,6 +6,9 @@ pub enum SMError {
     ParseError(String),
     EmptyContainer(String),
     Overflow,
+    Infinity,
+    ComplexInfinity,
+    Unimplemented,
 }
 
 pub type SMResult<T> = Result<T, SMError>;

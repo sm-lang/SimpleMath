@@ -22,7 +22,7 @@ impl Display for Error {
             Error::ComplexInfinity => write!(f, "ComplexInfinity"),
             Error::IOError(s) => write!(f, "IOError: {}", s),
             Error::Unimplemented => write!(f, "Unimplemented"),
-            Error::Undefined(s) => write!(f, "Undefined: {}",s),
+            Error::Undefined(s) => write!(f, "Undefined: {}", s),
         }
     }
 }
