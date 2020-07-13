@@ -1,5 +1,5 @@
+use crate::Result;
 use num::{BigInt, ToPrimitive};
-
 // ```wl
 // TemplateApply[
 // "cache.insert(`1`,BigInt::from(`2`));\n",
@@ -9,7 +9,7 @@ use num::{BigInt, ToPrimitive};
 // %//StringJoin//CopyToClipboard
 // ```
 
-use crate::Output;
+use crate::Error::{ComplexInfinity, OverFlow};
 use num::{BigUint, One};
 
 /// TODO:  Parallel Prime Swing Algorithm
@@ -18,23 +18,23 @@ pub fn factorial_fold_u(n: usize) -> BigUint {
     (1..=n).fold(BigUint::one(), |a, b| a * b)
 }
 
-pub fn factorial_i(n: &BigInt) -> Output {
+pub fn factorial_i(n: &BigInt) -> Result<BigInt> {
     match n.to_isize() {
         Some(s) => {
             if s < 0 {
-                Output::ComplexInfinity
+                Err(ComplexInfinity)
             }
             else {
-                Output::from(factorial_fold_u(s as usize))
+                Ok(BigInt::from(factorial_fold_u(s as usize)))
             }
         }
-        None => Output::OverFlow,
+        None => Err(OverFlow),
     }
 }
 
 #[test]
 fn factorial_test() {
-    println!("{}", factorial_i(&BigInt::from(100)))
+    println!("{}", factorial_i(&BigInt::from(100)).unwrap())
 }
 
 pub fn factorial_mod() {

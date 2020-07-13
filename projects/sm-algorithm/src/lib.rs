@@ -1,11 +1,12 @@
 mod cache;
 mod digits;
+mod error;
 mod gamma;
 mod linear;
 mod prime;
-mod result;
 
 pub use cache::{Cache, GlobalCache};
+pub use error::{Error, Result};
 pub use gamma::*;
 pub use linear::*;
-pub use result::Output;
+pub use prime::*;

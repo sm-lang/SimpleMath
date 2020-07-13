@@ -2,3 +2,4 @@
 
 mod prime_sum;
 mod twin_prime;
+pub use prime_sum::*;

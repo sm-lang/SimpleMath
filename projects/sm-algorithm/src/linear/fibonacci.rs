@@ -1,14 +1,14 @@
-use crate::Output;
+use crate::{error::Error::OverFlow, Result};
 use num::{BigInt, BigUint, Integer, One, ToPrimitive, Zero};
 use std::collections::BTreeMap;
 
-pub fn fibonacci_i(n: &BigInt) -> Output {
+pub fn fibonacci_i(n: &BigInt) -> Result<BigInt> {
     match n.to_isize() {
         Some(s) => {
             let u = fibonacci_fast_u(s as usize);
-            if s < 0 && s.is_even() { Output::from(-u) } else { Output::from(u) }
+            if s < 0 && s.is_even() { Ok(BigInt::from(-u)) } else { Ok(BigInt::from(u)) }
         }
-        None => Output::OverFlow,
+        None => Err(OverFlow),
     }
 }
 
