@@ -8,49 +8,74 @@ use crate::{
 };
 use num::{integer::Roots, BigInt, BigUint, Signed, ToPrimitive};
 use primal::is_prime;
-use std::{collections::BTreeMap, str::FromStr};
+use std::{collections::BTreeMap, rc::Rc, str::FromStr};
 
 fn prime_sum_s(i: u64, j: u64) -> BigUint {
-    fn memoization(v: u64, p: u64, m: &mut BTreeMap<(u64, u64), BigUint>) -> BigUint {
-        if v == 1 {
-            BigUint::from(0usize)
+    // The vast majority are clones of others so sticking them into a rc to avoid the allocations
+    let mut m: BTreeMap<(u64, u64), Rc<BigUint>> = BTreeMap::new();
+    let mut to_do = vec![(i, j)];
+    while let Some((v, p)) = to_do.pop() {
+        let result = if v == 1 {
+            Rc::new(BigUint::from(0u64))
         }
         else if v == 2 {
-            BigUint::from(2usize)
+            Rc::new(BigUint::from(2u64))
         }
         else if p == 1 {
-            BigUint::from((2 + v) * (v - 1) / 2)
+            Rc::new(BigUint::from((2 + v) * (v - 1) / 2))
+        }
+        else if m.contains_key(&(v, p)) {
+            continue;
         }
         else if p.pow(2) <= v && is_prime(p) {
-            match m.get(&(v, p)) {
-                Some(s) => s.clone(),
-                None => {
-                    let a = memoization(v, p - 1, m);
-                    let b = memoization(v / p, p - 1, m);
-                    let c = memoization(p - 1, p - 1, m);
-                    let result = a - (b - c) * p;
-                    m.insert((v, p), result.clone());
-                    result
-                }
+            let a = if let Some(a) = m.get(&(v, p - 1)) {
+                a.as_ref()
             }
+            else {
+                to_do.push((v, p));
+                to_do.push((v, p - 1));
+                continue;
+            };
+
+            let b = if let Some(b) = m.get(&(v / p, p - 1)) {
+                b.as_ref()
+            }
+            else {
+                to_do.push((v, p));
+                to_do.push((v / p, p - 1));
+                continue;
+            };
+
+            let c = if let Some(c) = m.get(&(p - 1, p - 1)) {
+                c.as_ref()
+            }
+            else {
+                to_do.push((v, p));
+                to_do.push((p - 1, p - 1));
+                continue;
+            };
+            Rc::new(a - (b - c) * p)
         }
         else {
-            match m.get(&(v, p)) {
-                Some(s) => s.clone(),
-                None => {
-                    let result = memoization(v, p - 1, m);
-                    m.insert((v, p), result.clone());
-                    result
-                }
+            if let Some(a) = m.get(&(v, p - 1)) {
+                Rc::clone(&a)
             }
-        }
+            else {
+                to_do.push((v, p));
+                to_do.push((v, p - 1));
+                continue;
+            }
+        };
+
+        m.insert((v, p), result);
     }
-    memoization(i, j, &mut BTreeMap::new())
+
+    m.get(&(i, j)).unwrap().as_ref().clone()
 }
 
 // https://oeis.org/A046731
 // ```wl
-// Import["https://oeis.org/A046731/b046731.txt","Table"]
+// data=Import["https://oeis.org/A046731/b046731.txt","Table"]
 // T="table.insert(BigInt::from_str(\"``\").unwrap(),BigInt::from_str(\"``\").unwrap());\n"
 // StringJoin[TemplateApply[T,{10^#1,#2}]&@@@data]//CopyToClipboard
 // ```
@@ -68,6 +93,7 @@ fn prime_sum_table() -> BTreeMap<BigInt, BigInt> {
     table.insert(BigInt::from_str("100000000").unwrap(),BigInt::from_str("279209790387276").unwrap());
     table.insert(BigInt::from_str("1000000000").unwrap(),BigInt::from_str("24739512092254535").unwrap());
     table.insert(BigInt::from_str("10000000000").unwrap(),BigInt::from_str("2220822432581729238").unwrap());
+    // u128
     table.insert(BigInt::from_str("100000000000").unwrap(),BigInt::from_str("201467077743744681014").unwrap());
     table.insert(BigInt::from_str("1000000000000").unwrap(),BigInt::from_str("18435588552550705911377").unwrap());
     table.insert(BigInt::from_str("10000000000000").unwrap(),BigInt::from_str("1699246443377779418889494").unwrap());
@@ -101,5 +127,5 @@ pub fn prime_sum_i(n: &BigInt) -> Result<BigInt> {
 
 #[test]
 fn test() {
-    assert_eq!(format!("{}", prime_sum_s(10000, 10000.sqrt())), "5736396");
+    assert_eq!(format!("{}", prime_sum_s(1_0000, 1_0000.sqrt())), "5736396");
 }

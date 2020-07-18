@@ -15,3 +15,8 @@ num = "0.2"
 primal = "0.3"
 
 [dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "prime_sum"
+harness = false
