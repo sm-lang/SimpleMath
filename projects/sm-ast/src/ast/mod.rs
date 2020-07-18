@@ -23,14 +23,6 @@ pub enum AST {
         options: BTreeMap<AST, AST>,
         position: Position,
     },
-    MultiplicativeExpression {
-        terms: Vec<AST>,
-        position: Position,
-    },
-    AdditiveExpression {
-        terms: Vec<AST>,
-        position: Position,
-    },
     List(Vec<AST>),
     //
     /// unary operators

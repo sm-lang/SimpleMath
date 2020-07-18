@@ -1,5 +1,4 @@
 use crate::AST;
-use num::Zero;
 
 // todo: remove redundant forward
 impl AST {
@@ -7,30 +6,34 @@ impl AST {
         match self {
             AST::Expression { base, .. } => base.rewrite(),
             AST::FunctionCall { .. } => self.clone(),
-            AST::AdditiveExpression { terms, position } => {
-                let mut new = vec![];
-                for e in terms {
-                    match e {
-                        AST::Integer(i) => {
-                            if i.is_zero() {
-                                continue;
-                            }
-                            else {
-                                new.push(e.clone())
-                            }
-                        }
-                        AST::AdditiveExpression { .. } => new.push(e.clone()),
-                        _ => new.push(e.clone()),
-                    }
-                }
-                AST::AdditiveExpression { terms: new, position: position.clone() }
-            }
-
-            AST::MultiplicativeExpression { .. } => self.clone(),
+            // ```rs
+            // AST::AdditiveExpression { terms, position } => {
+            // let mut new = vec![];
+            // for e in terms {
+            // match e {
+            // AST::Integer(i) => {
+            // if i.is_zero() {
+            // continue;
+            // }
+            // else {
+            // new.push(e.clone())
+            // }
+            // }
+            // AST::AdditiveExpression { .. } => new.push(e.clone()),
+            // _ => new.push(e.clone()),
+            // }
+            // }
+            // AST::AdditiveExpression { terms: new, position: position.clone() }
+            // }
+            //
+            // AST::MultiplicativeExpression { .. } => self.clone(),
+            // ```
             AST::List(..) => self.clone(),
             AST::UnaryOperators { .. } => self.clone(),
-            AST::InfixOperators { infix, lhs, rhs, position } => {
+            AST::InfixOperators { .. } => {
+                self.clone()
                 // ,  `Vec<&mut Box<AST>>` ->  `&mut [AST]`
+                /*
                 match infix.as_str() {
                     "+" => {
                         let terms = vec![(**lhs).clone(), (**rhs).clone()];
@@ -44,6 +47,8 @@ impl AST {
                     }
                     _ => return self.clone(),
                 }
+
+                 */
             }
             _ => self.clone(),
         }

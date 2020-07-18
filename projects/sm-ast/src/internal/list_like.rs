@@ -4,8 +4,6 @@ pub fn head(expr: &AST) -> AST {
     match expr {
         AST::Expression { .. } => unimplemented!(),
         AST::FunctionCall { .. } => unimplemented!(),
-        AST::MultiplicativeExpression { .. } => AST::symbol("Multiplicative"),
-        AST::AdditiveExpression { .. } => AST::symbol("Additive"),
         AST::List(..) => AST::symbol("List"),
         AST::UnaryOperators { .. } => unimplemented!(),
         AST::InfixOperators { .. } => unimplemented!(),

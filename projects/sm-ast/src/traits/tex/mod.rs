@@ -14,14 +14,6 @@ impl ToTex for AST {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
-            AST::MultiplicativeExpression { terms: expressions, .. } => {
-                let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
-                e.join(" ")
-            }
-            AST::AdditiveExpression { terms: expressions, .. } => {
-                let e: Vec<_> = expressions.iter().map(AST::to_tex).collect();
-                e.join(" + ")
-            }
             AST::List(v) => {
                 let max = v.iter().map(|e| e.height()).max().unwrap();
                 let e: Vec<_> = v.iter().map(AST::to_tex).collect();
@@ -75,8 +67,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::FunctionCall { .. } => 1,
-            AST::MultiplicativeExpression { .. } => 1,
-            AST::AdditiveExpression { terms, .. } => terms.iter().map(|e| e.height()).min().unwrap(),
             AST::List(_) => 1,
             AST::UnaryOperators { .. } => 1,
             AST::InfixOperators { .. } => 1,
@@ -90,8 +80,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::FunctionCall { .. } => 1,
-            AST::MultiplicativeExpression { .. } => 1,
-            AST::AdditiveExpression { terms, .. } => terms.len(),
             AST::List(v) => v.len(),
             AST::UnaryOperators { base, prefix, suffix, .. } => base.width() + prefix.len() + suffix.len(),
             AST::InfixOperators { infix: _, ref lhs, ref rhs, .. } => lhs.width() + rhs.width() + 1,

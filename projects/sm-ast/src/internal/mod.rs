@@ -1,5 +1,5 @@
 mod list_like;
-mod number_like;
+mod number_theory;
 pub use list_like::*;
 mod elementary;
 mod expr_like;
@@ -11,6 +11,5 @@ mod container;
 pub use container::*;
 mod random;
 pub use random::*;
-
 #[cfg(test)]
 mod tests;

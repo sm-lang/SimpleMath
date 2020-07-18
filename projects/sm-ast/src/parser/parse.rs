@@ -121,7 +121,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::Null;
+        return AST::EmptyStatement;
     }
 
     fn parse_dot_call(&self, lhs: AST, rhs: AST, position: Position) -> AST {
@@ -178,7 +178,8 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::MultiplicativeExpression { terms: stack, position };
+        return AST::EmptyStatement;
+        // return AST::MultiplicativeExpression { terms: stack, position };
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
@@ -312,7 +313,7 @@ impl ParserSettings {
 
     fn parse_special(&self, pairs: Pair<Rule>) -> AST {
         match pairs.as_str() {
-            "null" => AST::Null,
+            "null" => AST::symbol("std::constant:Null"),
             "true" => AST::Boolean(true),
             "false" => AST::Boolean(false),
             _ => unreachable!(),

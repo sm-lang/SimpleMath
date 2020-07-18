@@ -86,7 +86,7 @@ fn prime_sum_table() -> BTreeMap<BigInt, BigInt> {
     return table
 }
 
-pub fn prime_sum(n: BigInt) -> Result<BigInt> {
+pub fn prime_sum_i(n: &BigInt) -> Result<BigInt> {
     if let Some(s) = prime_sum_table().get(&n) {
         return Ok(s.clone());
     };
