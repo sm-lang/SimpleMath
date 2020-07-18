@@ -1,4 +1,8 @@
-use num::BigInt;
+use crate::{
+    error::Error::{Undefined, Unimplemented},
+    Result,
+};
+use num::{BigInt, Signed, ToPrimitive};
 use std::{collections::BTreeMap, str::FromStr};
 
 // https://oeis.org/A006880
@@ -39,4 +43,17 @@ fn prime_count_table() -> BTreeMap<BigInt, BigInt> {
     table.insert(BigInt::from_str("100000000000000000000000000").unwrap(), BigInt::from_str("1699246750872437141327603").unwrap());
     table.insert(BigInt::from_str("1000000000000000000000000000").unwrap(), BigInt::from_str("16352460426841680446427399").unwrap());
     return table;
+}
+
+pub fn prime_count_i(n: &BigInt) -> Result<BigInt> {
+    if let Some(s) = prime_count_table().get(&n) {
+        return Ok(s.clone());
+    };
+    if n.is_negative() {
+        return Err(Undefined(String::from("wrong def")));
+    }
+    match n.to_u64() {
+        None => Err(Unimplemented),
+        Some(_) => Err(Unimplemented),
+    }
 }

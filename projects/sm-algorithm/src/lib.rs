@@ -1,3 +1,5 @@
+#![feature(unchecked_math)]
+
 mod cache;
 mod digits;
 mod error;

@@ -13,10 +13,6 @@ edition = "2018"
 [dependencies]
 num = "0.2"
 primal = "0.3"
+itertools = "0.9"
 
 [dev-dependencies]
-criterion = "0.3"
-
-[[bench]]
-name = "prime_sum"
-harness = false
