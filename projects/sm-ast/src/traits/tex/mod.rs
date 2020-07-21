@@ -37,7 +37,10 @@ impl ToTex for AST {
             AST::String(s) => format!(r"\\text{{{}}}", s),
 
             AST::Program(_) => unimplemented!(),
-            AST::FunctionCall { name, arguments, options, .. } => function_map(&name.to_tex(), arguments, options),
+            AST::Function(s,p) => {
+                unimplemented!()
+                //function_map(&name.to_tex())
+            },
             AST::Boolean(b) => {
                 if b {
                     format!(r"\\mathtt{{true}}")
@@ -66,7 +69,7 @@ impl BoxArea for AST {
             AST::NewLine => 1,
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
-            AST::FunctionCall { .. } => 1,
+            AST::Function { .. } => 1,
             AST::List(_) => 1,
             AST::UnaryOperators { .. } => 1,
             AST::InfixOperators { .. } => 1,
@@ -79,7 +82,7 @@ impl BoxArea for AST {
             AST::NewLine => 1,
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
-            AST::FunctionCall { .. } => 1,
+            AST::Function { .. } => 1,
             AST::List(v) => v.len(),
             AST::UnaryOperators { base, prefix, suffix, .. } => base.width() + prefix.len() + suffix.len(),
             AST::InfixOperators { infix: _, ref lhs, ref rhs, .. } => lhs.width() + rhs.width() + 1,

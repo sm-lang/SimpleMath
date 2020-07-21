@@ -126,12 +126,14 @@ impl ParserSettings {
 
     fn parse_dot_call(&self, lhs: AST, rhs: AST, position: Position) -> AST {
         return match rhs {
-            AST::FunctionCall { name, arguments, options, .. } => {
+            /*
+            AST::Function { name, arguments, options, .. } => {
                 let mut args = vec![lhs];
                 args.extend(arguments);
-                AST::FunctionCall { name, arguments: args, options, position }
+                AST::Function { name, arguments: args, options, position }
             }
-            AST::Symbol(s) => AST::FunctionCall { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
+            AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
+            */
             AST::Integer(_) => unimplemented!(),
             _ => unreachable!(),
         };
@@ -156,8 +158,12 @@ impl ParserSettings {
         for s in stack {
             let position = parts.pop().unwrap();
             match s {
-                ApplyOrSlice::Apply(args, kws) => head = AST::FunctionCall { name: Box::new(head), arguments: args, options: kws, position },
-                ApplyOrSlice::Slice => {}
+
+                ApplyOrSlice::Apply(args, kws) => {
+                    unimplemented!()
+                    // head = AST::Function { name: Box::new(head), arguments: args, options: kws, position },
+                }
+                ApplyOrSlice::Slice => unimplemented!()
             }
         }
         return head;

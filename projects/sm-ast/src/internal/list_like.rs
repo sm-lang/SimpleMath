@@ -3,7 +3,7 @@ use crate::{error::SMError::EmptyContainer, SMResult, AST};
 pub fn head(expr: &AST) -> AST {
     match expr {
         AST::Expression { .. } => unimplemented!(),
-        AST::FunctionCall { .. } => unimplemented!(),
+        AST::Function { .. } => unimplemented!(),
         AST::List(..) => AST::symbol("List"),
         AST::UnaryOperators { .. } => unimplemented!(),
         AST::InfixOperators { .. } => unimplemented!(),

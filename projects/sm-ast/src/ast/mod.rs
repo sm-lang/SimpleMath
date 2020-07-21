@@ -17,12 +17,7 @@ pub enum AST {
     //
     /// function call
     /// function(name, *args, **kwargs)
-    FunctionCall {
-        name: Box<AST>,
-        arguments: Vec<AST>,
-        options: BTreeMap<AST, AST>,
-        position: Position,
-    },
+    Function(Symbol,Vec<Parameter>),
     List(Vec<AST>),
     //
     /// unary operators
@@ -91,6 +86,12 @@ pub trait CheckAttributes {
     fn is_null(&self) -> bool {
         false
     }
+}
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Parameter {
+    arguments: Vec<AST>,
+    options: BTreeMap<AST, AST>,
+    position: Position,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

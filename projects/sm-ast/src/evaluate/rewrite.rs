@@ -5,7 +5,7 @@ impl AST {
     pub fn rewrite(&self) -> AST {
         match self {
             AST::Expression { base, .. } => base.rewrite(),
-            AST::FunctionCall { .. } => self.clone(),
+            AST::Function { .. } => self.clone(),
             // ```rs
             // AST::AdditiveExpression { terms, position } => {
             // let mut new = vec![];
