@@ -18,14 +18,20 @@ impl AST {
         AST::Decimal(n.into())
     }
 
-    pub fn symbol(s: &str) -> AST {
-        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
-        let n = ns.pop().unwrap();
-        AST::Symbol(Symbol { name_space: ns, name: n })
+    pub fn symbol(s: impl AsRef<str>) -> AST {
+        AST::Symbol(Symbol::from(s.as_ref()))
     }
 
     pub fn string(s: impl Into<String>) -> AST {
         AST::String(s.into())
+    }
+}
+
+impl From<&str> for Symbol {
+    fn from(s: &str) -> Self {
+        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
+        let n = ns.pop().unwrap();
+        Symbol { name_space: ns, name: n }
     }
 }
 

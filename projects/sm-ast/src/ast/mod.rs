@@ -89,9 +89,9 @@ pub trait CheckAttributes {
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Parameter {
-    arguments: Vec<AST>,
-    options: BTreeMap<AST, AST>,
-    position: Position,
+    pub arguments: Vec<AST>,
+    pub options: BTreeMap<AST, AST>,
+    pub position: Position,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

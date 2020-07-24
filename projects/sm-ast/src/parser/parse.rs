@@ -11,6 +11,8 @@ use std::{
     fs::{read_to_string, File},
     io::Write,
 };
+use crate::ast::{Parameter,Symbol};
+
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -184,8 +186,9 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::EmptyStatement;
-        // return AST::MultiplicativeExpression { terms: stack, position };
+        let s = Symbol::from("std::times");
+        let p = Parameter {            arguments: stack,            options: Default::default(),            position        };
+        return AST::Function(s,vec![p]);
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {

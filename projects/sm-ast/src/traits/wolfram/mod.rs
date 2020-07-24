@@ -16,8 +16,9 @@ impl ToWolfram for AST {
             AST::Expression { base, .. } => base.to_wolfram(),
             //
             AST::Function(s,p) => {
-                unimplemented!()
-                /*
+                if p.len() > 1 {unimplemented!()}
+                let arguments = &p[0].arguments;
+                let options = &p[0].options;
                 let mut vec = vec![];
                 for arg in arguments {
                     vec.push(arg.to_wolfram())
@@ -25,8 +26,8 @@ impl ToWolfram for AST {
                 for (k, v) in options {
                     vec.push(WolframValue::Function(Box::from("Rule"), vec![k.to_wolfram(), v.to_wolfram()]))
                 }
-                WolframValue::Function(Box::from(function_map(&name)), vec)
-                 */
+                WolframValue::Function(Box::from(function_map(&s)), vec)
+
             }
             AST::List(v) => {
                 let v: Vec<_> = v.iter().map(|s| s.to_wolfram()).collect();
