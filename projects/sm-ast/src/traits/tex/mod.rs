@@ -37,10 +37,10 @@ impl ToTex for AST {
             AST::String(s) => format!(r"\\text{{{}}}", s),
 
             AST::Program(_) => unimplemented!(),
-            AST::Function(s,p) => {
+            AST::Function(s, p) => {
                 unimplemented!()
-                //function_map(&name.to_tex())
-            },
+                // function_map(&name.to_tex())
+            }
             AST::Boolean(b) => {
                 if b {
                     format!(r"\\mathtt{{true}}")

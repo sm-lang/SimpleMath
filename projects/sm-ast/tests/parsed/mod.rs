@@ -47,4 +47,3 @@ fn literal_repl() {
     assert_eq!(wl_from("⁋⁋"), "Output[-2]");
     assert_eq!(wl_from("⁋⁋⁋"), "Output[-3]");
 }
-

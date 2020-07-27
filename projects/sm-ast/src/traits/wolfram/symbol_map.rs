@@ -1,6 +1,5 @@
-use crate::{ToWolfram, AST};
+use crate::{ast::Symbol, ToWolfram, AST};
 use text_utils::capitalize_first_letter;
-use crate::ast::Symbol;
 
 pub fn prefix_map(s: &str) -> Box<str> {
     let m = match s {

@@ -1,5 +1,5 @@
 use crate::{
-    ast::Position,
+    ast::{Parameter, Position, Symbol},
     parser::{ApplyOrSlice, ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
@@ -10,10 +10,9 @@ use std::{
     collections::BTreeMap,
     fs::{read_to_string, File},
     io::Write,
+    iter::FromIterator,
+    str::FromStr,
 };
-use crate::ast::{Parameter,Symbol};
-use num::traits::AsPrimitive;
-
 
 macro_rules! debug_cases {
     ($i:ident) => {{
@@ -129,14 +128,12 @@ impl ParserSettings {
 
     fn parse_dot_call(&self, lhs: AST, rhs: AST, position: Position) -> AST {
         return match rhs {
-            /*
-            AST::Function { name, arguments, options, .. } => {
-                let mut args = vec![lhs];
-                args.extend(arguments);
-                AST::Function { name, arguments: args, options, position }
-            }
-            AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
-            */
+            // AST::Function { name, arguments, options, .. } => {
+            // let mut args = vec![lhs];
+            // args.extend(arguments);
+            // AST::Function { name, arguments: args, options, position }
+            // }
+            // AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
             AST::Integer(_) => unimplemented!(),
             _ => unreachable!(),
         };
@@ -161,12 +158,11 @@ impl ParserSettings {
         for s in stack {
             let position = parts.pop().unwrap();
             match s {
-
                 ApplyOrSlice::Apply(args, kws) => {
                     unimplemented!()
                     // head = AST::Function { name: Box::new(head), arguments: args, options: kws, position },
                 }
-                ApplyOrSlice::Slice => unimplemented!()
+                ApplyOrSlice::Slice => unimplemented!(),
             }
         }
         return head;
@@ -188,8 +184,8 @@ impl ParserSettings {
             };
         }
         let s = Symbol::from("std::times");
-        let p = Parameter {            arguments: stack,            options: Default::default(),            position        };
-        return AST::Function(s,vec![p]);
+        let p = Parameter { arguments: stack, options: Default::default(), position };
+        return AST::Function(s, vec![p]);
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
@@ -235,8 +231,7 @@ impl ParserSettings {
             Rule::Integer => self.parse_integer(pair),
             Rule::Byte => self.parse_byte(pair),
             Rule::SpecialValue => self.parse_special(pair),
-            Rule::Input => self.parse_input(pair),
-            Rule::Output => self.parse_output(pair),
+            Rule::REPL => self.parse_repl(pair),
             _ => debug_cases!(pair),
         }
     }
@@ -279,34 +274,21 @@ impl ParserSettings {
         }
     }
 
-    fn parse_input(&self, pairs: Pair<Rule>) -> AST {
+    fn parse_repl(&self, pairs: Pair<Rule>) -> AST {
         let position = self.get_position(pairs.as_span());
         let mut head = vec![];
         let mut n = vec![];
         for c in pairs.as_str().chars() {
-            if c == '¶' { head.push(c) } else { n.push(c) }
+            if c == '¶' || c == '⁋' { head.push(c) } else { n.push(c) }
         }
-        let input:BigInt;
-        if n.len() == 0 {
-            let s = Symbol::from("std::repl::input");
-            let p = Parameter{
-                arguments: vec![AST::integer(-(head.len() as i128))],
-                options: Default::default(),
-                position
-            };
-            AST::Function(s,vec![p])
-        } else {
-            AST::string(format!("¶()"))
-        }
-    }
-    fn parse_output(&self, pairs: Pair<Rule>) -> AST {
-        let position = self.get_position(pairs.as_span());
-        let mut head = vec![];
-        let mut n = vec![];
-        for c in pairs.as_str().chars() {
-            if c == '⁋' { head.push(c) } else { n.push(c) }
-        }
-        if n.len() == 0 { AST::string(format!("⁋()")) } else { AST::string(format!("⁋()")) }
+        let input = if n.len() == 0 { -BigInt::from(head.len()) } else { BigInt::from_str(&String::from_iter(n)).unwrap() };
+        let s = match head[0] {
+            '¶' => Symbol::from("std::repl::input"),
+            '⁋' => Symbol::from("std::repl::output"),
+            _ => unreachable!(),
+        };
+        let p = Parameter { arguments: vec![AST::integer(input)], options: Default::default(), position };
+        AST::Function(s, vec![p])
     }
 
     fn parse_byte(&self, pairs: Pair<Rule>) -> AST {

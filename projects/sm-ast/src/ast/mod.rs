@@ -17,7 +17,7 @@ pub enum AST {
     //
     /// function call
     /// function(name, *args, **kwargs)
-    Function(Symbol,Vec<Parameter>),
+    Function(Symbol, Vec<Parameter>),
     List(Vec<AST>),
     //
     /// unary operators
