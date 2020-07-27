@@ -12,6 +12,7 @@ use std::{
     io::Write,
 };
 use crate::ast::{Parameter,Symbol};
+use num::traits::AsPrimitive;
 
 
 macro_rules! debug_cases {
@@ -279,14 +280,27 @@ impl ParserSettings {
     }
 
     fn parse_input(&self, pairs: Pair<Rule>) -> AST {
+        let position = self.get_position(pairs.as_span());
         let mut head = vec![];
         let mut n = vec![];
         for c in pairs.as_str().chars() {
             if c == '¶' { head.push(c) } else { n.push(c) }
         }
-        if n.len() == 0 { AST::string(format!("¶()")) } else { AST::string(format!("¶()")) }
+        let input:BigInt;
+        if n.len() == 0 {
+            let s = Symbol::from("std::repl::input");
+            let p = Parameter{
+                arguments: vec![AST::integer(-(head.len() as i128))],
+                options: Default::default(),
+                position
+            };
+            AST::Function(s,vec![p])
+        } else {
+            AST::string(format!("¶()"))
+        }
     }
     fn parse_output(&self, pairs: Pair<Rule>) -> AST {
+        let position = self.get_position(pairs.as_span());
         let mut head = vec![];
         let mut n = vec![];
         for c in pairs.as_str().chars() {

@@ -84,7 +84,7 @@ impl Display for Symbol {
 }
 
 impl Display for Position {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}", self.file)
     }
 }
