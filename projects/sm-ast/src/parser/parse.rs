@@ -232,11 +232,13 @@ impl ParserSettings {
             Rule::Byte => self.parse_byte(pair),
             Rule::SpecialValue => self.parse_special(pair),
             Rule::REPL => self.parse_repl(pair),
+            Rule::Slot => self.parse_slot(pair),
             _ => debug_cases!(pair),
         }
     }
 
     fn parse_list(&self, pairs: Pair<Rule>) -> AST {
+        let position = self.get_position(pairs.as_span());
         let mut v = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
@@ -245,7 +247,13 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::List(v);
+        let s = Symbol::from("std::containers::List");
+        let p = Parameter{
+            arguments: v,
+            options: Default::default(),
+            position
+        };
+        return AST::Function(s,vec![p]);
     }
 
     fn parse_string(&self, pairs: Pair<Rule>) -> AST {
@@ -288,6 +296,24 @@ impl ParserSettings {
             _ => unreachable!(),
         };
         let p = Parameter { arguments: vec![AST::integer(input)], options: Default::default(), position };
+        AST::Function(s, vec![p])
+    }
+
+    fn parse_slot(&self, pairs: Pair<Rule>) -> AST {
+        let position = self.get_position(pairs.as_span());
+        let mut slot = vec![];
+        let s = if pairs.as_str().starts_with("##") { Symbol::from("std::core::slot_sequence") } else { Symbol::from("std::core::slot") };
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::SYMBOL => slot.push(AST::string(pair.as_str())),
+                Rule::Integer => {
+                    let i = BigInt::from_str(pair.as_str()).unwrap();
+                    slot.push(AST::integer(i))
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        let p = Parameter { arguments: slot, options: Default::default(), position };
         AST::Function(s, vec![p])
     }
 

@@ -1,6 +1,7 @@
 #![feature(unchecked_math)]
 
 mod cache;
+mod combinatoric;
 mod digits;
 mod error;
 mod gamma;

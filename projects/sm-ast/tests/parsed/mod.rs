@@ -1,5 +1,11 @@
 use sm_ast::{parser::ParserSettings, ToWolfram};
 
+fn wl_form(s:&str)->String{
+    let parser = ParserSettings::default();
+    parser.parse(s).unwrap().to_wolfram_string()
+}
+
+
 #[test]
 fn literal_number() {
     let parser = ParserSettings::default();
@@ -26,7 +32,7 @@ fn literal_string() {
 }
 
 #[test]
-fn test_space_expression() {
+fn space_expression() {
     let parser = ParserSettings::default();
     let wl_from = |s: &str| parser.parse(s).unwrap().to_wolfram_string();
     assert_eq!(wl_from("2 x y"), "Times[2,x,y]");
@@ -46,4 +52,31 @@ fn literal_repl() {
     assert_eq!(wl_from("⁋1"), "Output[1]");
     assert_eq!(wl_from("⁋⁋"), "Output[-2]");
     assert_eq!(wl_from("⁋⁋⁋"), "Output[-3]");
+}
+
+#[test]
+fn lambda_function() {
+    let parser = ParserSettings::default();
+    let wl_from = |s: &str| parser.parse(s).unwrap().to_wolfram_string();
+    assert_eq!(wl_from("#"), "Slot[]");
+    assert_eq!(wl_from("#1"), "Slot[1]");
+    assert_eq!(wl_from("#a"), "Slot[\"a\"]");
+}
+
+
+#[test]
+fn literal_list() {
+    assert_eq!(wl_form("[]"), "{}");
+    assert_eq!(wl_form("[1]"), "{1}");
+    assert_eq!(wl_form("[[]]"), "{{}}");
+    assert_eq!(wl_form("[[1], 2]"), "{{1},2}");
+}
+
+
+fn literal_list_advance() {
+    let input = "[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]";
+    let parser = ParserSettings::default();
+    let ast = parser.parse(input).unwrap();
+    println!("{}", ast);
+    println!("{}", ast.to_wolfram_string());
 }

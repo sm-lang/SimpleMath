@@ -4,7 +4,6 @@ pub fn head(expr: &AST) -> AST {
     match expr {
         AST::Expression { .. } => unimplemented!(),
         AST::Function { .. } => unimplemented!(),
-        AST::List(..) => AST::symbol("List"),
         AST::UnaryOperators { .. } => unimplemented!(),
         AST::InfixOperators { .. } => unimplemented!(),
         AST::Boolean(..) => AST::symbol("Boolean"),
@@ -18,7 +17,6 @@ pub fn head(expr: &AST) -> AST {
 
 pub fn length(expr: &AST) -> SMResult<AST> {
     match expr {
-        AST::List(v) => Ok(AST::integer(v.len())),
         AST::String(s) => Ok(AST::integer(s.len())),
         _ => unimplemented!(),
     }
@@ -26,10 +24,6 @@ pub fn length(expr: &AST) -> SMResult<AST> {
 
 pub fn first(expr: &AST) -> SMResult<AST> {
     match expr {
-        AST::List(v) => match v.iter().next() {
-            None => Err(EmptyContainer(String::from("Can't call `first` on empty list"))),
-            Some(s) => Ok(s.clone()),
-        },
         AST::String(s) => match s.chars().next() {
             None => Err(EmptyContainer(String::from("Can't call `first` on empty string"))),
             Some(s) => Ok(AST::string(s)),
@@ -40,10 +34,6 @@ pub fn first(expr: &AST) -> SMResult<AST> {
 
 pub fn last(expr: &AST) -> SMResult<AST> {
     match expr {
-        AST::List(v) => match v.iter().rev().next() {
-            None => Err(EmptyContainer(String::from("Can't call `last` on empty list"))),
-            Some(s) => Ok(s.clone()),
-        },
         AST::String(s) => match s.chars().rev().next() {
             None => Err(EmptyContainer(String::from("Can't call `last` on empty string"))),
             Some(s) => Ok(AST::string(s)),

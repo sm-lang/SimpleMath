@@ -14,12 +14,13 @@ impl ToTex for AST {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
+            /*
             AST::List(v) => {
                 let max = v.iter().map(|e| e.height()).max().unwrap();
                 let e: Vec<_> = v.iter().map(AST::to_tex).collect();
                 if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
             }
-
+            */
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();
                 let p = prefix.join(" ");
@@ -70,7 +71,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::Function { .. } => 1,
-            AST::List(_) => 1,
             AST::UnaryOperators { .. } => 1,
             AST::InfixOperators { .. } => 1,
             _ => 1,
@@ -83,7 +83,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::Function { .. } => 1,
-            AST::List(v) => v.len(),
             AST::UnaryOperators { base, prefix, suffix, .. } => base.width() + prefix.len() + suffix.len(),
             AST::InfixOperators { infix: _, ref lhs, ref rhs, .. } => lhs.width() + rhs.width() + 1,
             _ => 1,

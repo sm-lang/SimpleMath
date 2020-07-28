@@ -11,15 +11,6 @@ fn test() {
 }
 
 #[test]
-fn test_parse() {
-    let input = "[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]";
-    let parser = ParserSettings::default();
-    let ast = parser.parse(input).unwrap();
-    println!("{}", ast);
-    println!("{}", ast.to_wolfram_string());
-}
-
-#[test]
 fn test_add() {
     let _engine = Runner::default();
 
