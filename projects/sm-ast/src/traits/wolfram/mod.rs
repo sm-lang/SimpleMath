@@ -30,13 +30,12 @@ impl ToWolfram for AST {
                 }
                 WolframValue::Function(Box::from(function_map(&s)), vec)
             }
-            /*
-            AST::List(v) => {
-                let v: Vec<_> = v.iter().map(|s| s.to_wolfram()).collect();
-                WolframValue::Function(Box::from("List"), v)
-            }
-
-             */
+            // AST::List(v) => {
+            // let v: Vec<_> = v.iter().map(|s| s.to_wolfram()).collect();
+            // WolframValue::Function(Box::from("List"), v)
+            // }
+            //
+            //
             //
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let mut v = base.to_wolfram();

@@ -14,13 +14,11 @@ impl ToTex for AST {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
-            /*
-            AST::List(v) => {
-                let max = v.iter().map(|e| e.height()).max().unwrap();
-                let e: Vec<_> = v.iter().map(AST::to_tex).collect();
-                if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
-            }
-            */
+            // AST::List(v) => {
+            // let max = v.iter().map(|e| e.height()).max().unwrap();
+            // let e: Vec<_> = v.iter().map(AST::to_tex).collect();
+            // if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
+            // }
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let v = base.to_tex();
                 let p = prefix.join(" ");

@@ -56,12 +56,10 @@ impl Display for AST {
                 write!(f, "{}", base);
                 if *eos { write!(f, ";") } else { write!(f, "") }
             }
-            /*
-            AST::List(v) => {
-                let list = v.iter().map(|e| format!("{}", e)).collect_vec();
-                write!(f, "[{}]", list.join(", "))
-            }
-             */
+            // AST::List(v) => {
+            // let list = v.iter().map(|e| format!("{}", e)).collect_vec();
+            // write!(f, "[{}]", list.join(", "))
+            // }
             AST::Boolean(b) => {
                 if *b {
                     write!(f, "true")

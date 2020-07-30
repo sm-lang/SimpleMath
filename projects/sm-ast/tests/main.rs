@@ -2,6 +2,11 @@ use sm_ast::{evaluate::Runner, parser::ParserSettings, ToTex, ToWolfram, AST};
 mod parsed;
 mod tex_form;
 
+pub fn wl_form(s: &str) -> String {
+    let parser = ParserSettings::default();
+    parser.parse(s).unwrap().to_wolfram_string()
+}
+
 #[test]
 fn test() {
     let a = AST::symbol("a");

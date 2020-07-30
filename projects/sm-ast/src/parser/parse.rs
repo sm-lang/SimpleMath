@@ -74,7 +74,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
-                Rule::Dot => self.parse_dot_call(lhs, rhs, p.clone()),
+                Rule::Dot => self.parse_dot_call(lhs, rhs, &p),
                 _ => {
                     AST::InfixOperators {
                         infix: op.as_str().to_string(),
@@ -126,16 +126,33 @@ impl ParserSettings {
         return AST::EmptyStatement;
     }
 
-    fn parse_dot_call(&self, lhs: AST, rhs: AST, position: Position) -> AST {
+    fn parse_dot_call(&self, lhs: AST, rhs: AST, position: &Position) -> AST {
+        println!("LHS: {:?}", lhs);
+        println!("RHS: {:?}", rhs);
         return match rhs {
+            AST::Symbol(rs) => {
+                // TODO: dot call resolve
+                //let s = Symbol::from("std::infix::dot_call");
+                //let p1 = Parameter { arguments: vec![AST::string(rs.name)], options: Default::default(), position: position.clone() };
+                let p2 = Parameter { arguments: vec![lhs], options: Default::default(), position: position.clone() };
+                AST::Function(rs, vec![p2])
+            }
             // AST::Function { name, arguments, options, .. } => {
             // let mut args = vec![lhs];
             // args.extend(arguments);
             // AST::Function { name, arguments: args, options, position }
             // }
             // AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
-            AST::Integer(_) => unimplemented!(),
-            _ => unreachable!(),
+            AST::Integer(i) => {
+                let s = Symbol::from("std::core::index");
+                let p = Parameter {
+                    arguments: vec![lhs,AST::integer(i)],
+                    options: Default::default(),
+                    position: position.clone()
+                };
+                AST::Function(s,vec![p])
+            },
+            _ => panic!("Parse Error: \n    dot call only support symbol and integer!"),
         };
     }
 
@@ -169,8 +186,8 @@ impl ParserSettings {
     }
 
     fn parse_space_call(&self, pairs: Pair<Rule>) -> AST {
-        let mut stack = vec![];
         let position = self.get_position(pairs.as_span());
+        let mut stack = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::WHITESPACE => continue,
@@ -248,12 +265,8 @@ impl ParserSettings {
             };
         }
         let s = Symbol::from("std::containers::List");
-        let p = Parameter{
-            arguments: v,
-            options: Default::default(),
-            position
-        };
-        return AST::Function(s,vec![p]);
+        let p = Parameter { arguments: v, options: Default::default(), position };
+        return AST::Function(s, vec![p]);
     }
 
     fn parse_string(&self, pairs: Pair<Rule>) -> AST {

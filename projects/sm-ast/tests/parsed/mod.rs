@@ -1,10 +1,7 @@
+use crate::wl_form;
 use sm_ast::{parser::ParserSettings, ToWolfram};
 
-fn wl_form(s:&str)->String{
-    let parser = ParserSettings::default();
-    parser.parse(s).unwrap().to_wolfram_string()
-}
-
+mod call;
 
 #[test]
 fn literal_number() {
@@ -63,7 +60,6 @@ fn lambda_function() {
     assert_eq!(wl_from("#a"), "Slot[\"a\"]");
 }
 
-
 #[test]
 fn literal_list() {
     assert_eq!(wl_form("[]"), "{}");
@@ -71,7 +67,6 @@ fn literal_list() {
     assert_eq!(wl_form("[[]]"), "{{}}");
     assert_eq!(wl_form("[[1], 2]"), "{{1},2}");
 }
-
 
 fn literal_list_advance() {
     let input = "[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]";
