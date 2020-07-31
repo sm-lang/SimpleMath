@@ -8,7 +8,7 @@
 |   `⊤`    | std::constant | TopType?    |             |
 |   `⊥`    | std::constant | ButtomType? |             |
 |   `i`    | std::constant |             |             | `\i`   |
-|   `e`    | std::constant | Euler       |             | `\e`   |
+|   `ℯ`    | std::constant | Euler       |             | `\e`   |
 |   `∅`    | std::set      | Empty       |             |
 |   `ℙ`    | std::set      | Prime       |             |        |
 |   `ℕ`    | std::set      | Natural     |             |        |

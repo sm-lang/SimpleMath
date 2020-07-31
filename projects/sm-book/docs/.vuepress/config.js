@@ -70,7 +70,7 @@ module.exports = {
     themeConfig: {
         repo: 'Galaster/SimpleMath',
         editLinks: true,
-        docsDir: 'docs',
+        docsDir: 'projects/sm-book/docs',
         markdown: {
             lineNumbers: true
         },

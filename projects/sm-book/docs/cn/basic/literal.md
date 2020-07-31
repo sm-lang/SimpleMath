@@ -29,9 +29,6 @@ line two
 - 准度/准确度: `¨`
   - `1¨20` Accuracy
 
-``\` ``
-```\``  ```
-
 ## REPL only
 
 ```sm
@@ -79,7 +76,6 @@ TeXForm@sin(1 + 1)
 
 | Operator | Name | Mathematica |
 | :------: | ---: | :---------- |
-|   `@s`   |      |             |
 |   `x_`   |
 |  `x__`   |
 |  `x___`  |
