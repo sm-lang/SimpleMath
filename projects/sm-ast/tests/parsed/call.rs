@@ -19,3 +19,8 @@ fn dot_call_integer() {
 fn dot_call_panic(){
     wl_form("a.(1+1)");
 }
+
+#[test]
+fn index_call(){
+    assert_eq!(wl_form("a[1]"), "Index[a,1]");
+}

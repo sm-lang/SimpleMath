@@ -165,6 +165,10 @@ impl ParserSettings {
                 Rule::Symbol => {
                     head = AST::symbol(pair.as_str());
                 }
+                Rule::slice=> {
+                    parts.push(self.get_position(pair.as_span()));
+                    stack.push(self.parse_slice(pair))
+                },
                 Rule::apply => {
                     parts.push(self.get_position(pair.as_span()));
                     stack.push(self.parse_apply(pair))
@@ -237,6 +241,35 @@ impl ParserSettings {
         }
         return (key, value);
     }
+
+    fn parse_slice(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
+        let mut args = vec![];
+        let mut kws = BTreeMap::new();
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::index => {
+                    self.parse_index(pair)
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return ApplyOrSlice::Apply(args, kws);
+    }
+
+    fn parse_index(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
+        let mut args = vec![];
+        let mut kws = BTreeMap::new();
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::expr => {
+                    self.parse_expr(pair)
+                }
+                _ => debug_cases!(pair),
+            };
+        }
+        return ApplyOrSlice::Apply(args, kws);
+    }
+
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
         let pair = pairs.clone().into_inner().nth(0).unwrap();
