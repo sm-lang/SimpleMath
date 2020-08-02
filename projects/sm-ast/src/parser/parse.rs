@@ -132,8 +132,8 @@ impl ParserSettings {
         return match rhs {
             AST::Symbol(rs) => {
                 // TODO: dot call resolve
-                //let s = Symbol::from("std::infix::dot_call");
-                //let p1 = Parameter { arguments: vec![AST::string(rs.name)], options: Default::default(), position: position.clone() };
+                // let s = Symbol::from("std::infix::dot_call");
+                // let p1 = Parameter { arguments: vec![AST::string(rs.name)], options: Default::default(), position: position.clone() };
                 let p2 = Parameter { arguments: vec![lhs], options: Default::default(), position: position.clone() };
                 AST::Function(rs, vec![p2])
             }
@@ -145,45 +145,38 @@ impl ParserSettings {
             // AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
             AST::Integer(i) => {
                 let s = Symbol::from("std::core::index");
-                let p = Parameter {
-                    arguments: vec![lhs,AST::integer(i)],
-                    options: Default::default(),
-                    position: position.clone()
-                };
-                AST::Function(s,vec![p])
-            },
+                let p = Parameter { arguments: vec![lhs, AST::integer(i)], options: Default::default(), position: position.clone() };
+                AST::Function(s, vec![p])
+            }
             _ => panic!("Parse Error: \n    dot call only support symbol and integer!"),
         };
     }
 
     fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
         let mut head = AST::Null;
-        let mut parts = vec![];
         let mut stack = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Symbol => {
                     head = AST::symbol(pair.as_str());
                 }
-                Rule::slice=> {
-                    parts.push(self.get_position(pair.as_span()));
+                Rule::slice => {
                     stack.push(self.parse_slice(pair))
-                },
+                }
                 Rule::apply => {
-                    parts.push(self.get_position(pair.as_span()));
                     stack.push(self.parse_apply(pair))
                 }
                 _ => debug_cases!(pair),
             };
         }
+        println!("Stack {:?}", stack);
         for s in stack {
-            let position = parts.pop().unwrap();
             match s {
                 ApplyOrSlice::Apply(args, kws) => {
                     unimplemented!()
                     // head = AST::Function { name: Box::new(head), arguments: args, options: kws, position },
                 }
-                ApplyOrSlice::Slice => unimplemented!(),
+                ApplyOrSlice::Slice(_) => unimplemented!(),
             }
         }
         return head;
@@ -243,33 +236,23 @@ impl ParserSettings {
     }
 
     fn parse_slice(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
-        let mut args = vec![];
-        let mut kws = BTreeMap::new();
+        let mut slices = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::index => {
-                    self.parse_index(pair)
-                }
+                Rule::index => slices.push(self.parse_index(pair)),
                 _ => debug_cases!(pair),
             };
         }
-        return ApplyOrSlice::Apply(args, kws);
+        return ApplyOrSlice::Slice(slices);
     }
 
-    fn parse_index(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
-        let mut args = vec![];
-        let mut kws = BTreeMap::new();
-        for pair in pairs.into_inner() {
-            match pair.as_rule() {
-                Rule::expr => {
-                    self.parse_expr(pair)
-                }
-                _ => debug_cases!(pair),
-            };
+    fn parse_index(&self, pairs: Pair<Rule>) -> AST {
+        let pair = pairs.into_inner().nth(0).unwrap();
+        match pair.as_rule() {
+            Rule::expr => self.parse_expr(pair),
+            _ => debug_cases!(pair),
         }
-        return ApplyOrSlice::Apply(args, kws);
     }
-
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
         let pair = pairs.clone().into_inner().nth(0).unwrap();

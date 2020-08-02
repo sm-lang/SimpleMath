@@ -113,11 +113,11 @@ function_module = {Dot ~ (SYMBOL ~ Dot)*}
 /*====================================================================================================================*/
 expression   =  {expr~eos?}
 expr         = !{term ~ (Infix ~ term)*}
-term         =  {Prefix* ~ node ~ Suffix*}
-node         =  {"(" ~ expr ~ ")"|tuple|bracket_call|space_call|data}
+term         = ${Prefix* ~ node ~ ((!NEWLINE ~ WHITESPACE)* ~ (Suffix|slice))*}
+node         =  {"(" ~ expr ~ ")"|tuple|apply_call|space_call|data}
 tuple        =  {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"|"(" ~ ")"}
-bracket_call = ${(tuple|list|dict|String|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply|slice))+}
-space_call   = ${(bracket_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (bracket_call|Number|Symbol))+}
+apply_call   = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
+space_call   = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
 /*====================================================================================================================*/
 //!#E06C75: type_hint|generic_type|parametric_types_pair
 type_expr = _{term~ (TypeInfix ~term)*}
@@ -194,7 +194,8 @@ Prefix = @{
     Bang|Not|Plus|Minus|Star
 }
 Suffix = @{
-    DoubleBang
+    Derivative
+  | DoubleBang
   | Bang | Question
 }
 Infix = _{
@@ -208,7 +209,7 @@ Infix = _{
 
 ///#56B6C2
 Set = @{"="}
-
+Derivative = @{"'"+}
 Or = @{"|"}
 LazyOr = @{"||"}
 

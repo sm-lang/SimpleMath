@@ -10,10 +10,10 @@ pub struct ParserSettings {
     pub refine: bool,
 }
 
-#[allow(dead_code)]
+#[derive(Debug)]
 pub(crate) enum ApplyOrSlice {
     Apply(Vec<AST>, BTreeMap<AST, AST>),
-    Slice,
+    Slice(Vec<AST>),
 }
 
 /// Determines the associativity and priority of operators
