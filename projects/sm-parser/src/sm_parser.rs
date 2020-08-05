@@ -53,7 +53,7 @@ pub enum Rule {
     term,
     node,
     tuple,
-    bracket_call,
+    apply_call,
     space_call,
     type_expr,
     type_hint,
@@ -90,6 +90,7 @@ pub enum Rule {
     Suffix,
     Infix,
     Set,
+    Derivative,
     Or,
     LazyOr,
     Star,
@@ -405,12 +406,12 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn term(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::term, |state| state.sequence(|state| state.sequence(|state| state.optional(|state| self::Prefix(state).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| self::Prefix(state))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| self::node(state)).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| state.restore_on_err(|state| self::Suffix(state)).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| state.restore_on_err(|state| self::Suffix(state)))))))))))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::term, |state| state.sequence(|state| state.repeat(|state| self::Prefix(state)).and_then(|state| self::node(state)).and_then(|state| state.repeat(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| self::Suffix(state).or_else(|state| state.restore_on_err(|state| self::slice(state))))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn node(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::node, |state| state.restore_on_err(|state| state.sequence(|state| state.match_string("(").and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state)).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string(")")))).or_else(|state| state.restore_on_err(|state| self::tuple(state))).or_else(|state| state.restore_on_err(|state| self::bracket_call(state))).or_else(|state| state.restore_on_err(|state| self::space_call(state))).or_else(|state| state.restore_on_err(|state| self::data(state))))
+                    state.rule(Rule::node, |state| state.restore_on_err(|state| state.sequence(|state| state.match_string("(").and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state)).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string(")")))).or_else(|state| state.restore_on_err(|state| self::tuple(state))).or_else(|state| state.restore_on_err(|state| self::apply_call(state))).or_else(|state| state.restore_on_err(|state| self::space_call(state))).or_else(|state| state.restore_on_err(|state| self::data(state))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -419,13 +420,13 @@ impl ::pest::Parser<Rule> for SMParser {
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
-                pub fn bracket_call(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::bracket_call, |state| state.sequence(|state| state.restore_on_err(|state| self::tuple(state)).or_else(|state| state.restore_on_err(|state| self::list(state))).or_else(|state| state.restore_on_err(|state| self::dict(state))).or_else(|state| state.restore_on_err(|state| self::String(state))).or_else(|state| self::Symbol(state)).and_then(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| self::apply(state)))).and_then(|state| state.repeat(|state| state.restore_on_err(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| self::apply(state)))))))))
+                pub fn apply_call(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::apply_call, |state| state.sequence(|state| self::Symbol(state).and_then(|state| state.optional(|state| self::Derivative(state))).and_then(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| self::apply(state)))).and_then(|state| state.repeat(|state| state.restore_on_err(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| self::apply(state)))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn space_call(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::space_call, |state| state.sequence(|state| state.restore_on_err(|state| self::bracket_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state)).and_then(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| state.restore_on_err(|state| self::bracket_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state))))).and_then(|state| state.repeat(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| state.restore_on_err(|state| self::bracket_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state)))))))))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::space_call, |state| state.sequence(|state| state.restore_on_err(|state| self::apply_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state)).and_then(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| state.restore_on_err(|state| self::apply_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state))))).and_then(|state| state.repeat(|state| state.sequence(|state| state.repeat(|state| state.sequence(|state| state.lookahead(false, |state| self::NEWLINE(state)).and_then(|state| self::WHITESPACE(state)))).and_then(|state| state.restore_on_err(|state| self::apply_call(state)).or_else(|state| self::Number(state)).or_else(|state| self::Symbol(state)))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -450,12 +451,12 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn dict(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::dict, |state| state.sequence(|state| state.match_string("{").and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| state.restore_on_err(|state| self::key_value(state)))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::key_value(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::key_value(state))))))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| self::Comma(state))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("}"))))
+                    state.atomic(::pest::Atomicity::NonAtomic, |state| state.rule(Rule::dict, |state| state.sequence(|state| state.match_string("{").and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("}").or_else(|state| state.restore_on_err(|state| state.sequence(|state| self::key_value(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::key_value(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::key_value(state))))))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| self::Comma(state))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("}")))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn list(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::list, |state| state.sequence(|state| state.match_string("[").and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| state.restore_on_err(|state| self::expr(state)))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state))))))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| self::Comma(state))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("]"))))
+                    state.atomic(::pest::Atomicity::NonAtomic, |state| state.rule(Rule::list, |state| state.sequence(|state| state.match_string("[").and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("]").or_else(|state| state.restore_on_err(|state| state.sequence(|state| self::expr(state).and_then(|state| super::hidden::skip(state)).and_then(|state| state.sequence(|state| state.optional(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| super::hidden::skip(state).and_then(|state| state.restore_on_err(|state| state.sequence(|state| self::Comma(state).and_then(|state| super::hidden::skip(state)).and_then(|state| self::expr(state))))))))))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.optional(|state| self::Comma(state))).and_then(|state| super::hidden::skip(state)).and_then(|state| state.match_string("]")))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -590,7 +591,7 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Suffix(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::NonAtomic, |state| state.rule(Rule::Suffix, |state| state.restore_on_err(|state| self::slice(state)).or_else(|state| self::DoubleBang(state)).or_else(|state| self::Bang(state)).or_else(|state| self::Question(state))))
+                    state.rule(Rule::Suffix, |state| state.atomic(::pest::Atomicity::Atomic, |state| self::DoubleBang(state).or_else(|state| self::Bang(state)).or_else(|state| self::Question(state))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -601,6 +602,11 @@ impl ::pest::Parser<Rule> for SMParser {
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Set(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::Set, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("=")))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Derivative(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Derivative, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("'").and_then(|state| state.repeat(|state| state.match_string("'"))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -1036,7 +1042,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::term => rules::term(state),
             Rule::node => rules::node(state),
             Rule::tuple => rules::tuple(state),
-            Rule::bracket_call => rules::bracket_call(state),
+            Rule::apply_call => rules::apply_call(state),
             Rule::space_call => rules::space_call(state),
             Rule::type_expr => rules::type_expr(state),
             Rule::type_hint => rules::type_hint(state),
@@ -1073,6 +1079,7 @@ impl ::pest::Parser<Rule> for SMParser {
             Rule::Suffix => rules::Suffix(state),
             Rule::Infix => rules::Infix(state),
             Rule::Set => rules::Set(state),
+            Rule::Derivative => rules::Derivative(state),
             Rule::Or => rules::Or(state),
             Rule::LazyOr => rules::LazyOr(state),
             Rule::Star => rules::Star(state),
