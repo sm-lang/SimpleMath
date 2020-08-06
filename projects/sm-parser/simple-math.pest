@@ -113,10 +113,11 @@ function_module = {Dot ~ (SYMBOL ~ Dot)*}
 /*====================================================================================================================*/
 expression   =  {expr~eos?}
 expr         = !{term ~ (Infix ~ term)*}
-term         = ${Prefix* ~ node ~ ((!NEWLINE ~ WHITESPACE)* ~ (Suffix|slice))*}
+term         = ${Prefix* ~ node ~ (Suffix|(!NEWLINE ~ WHITESPACE)* ~ slice)*}
 node         =  {"(" ~ expr ~ ")"|tuple|apply_call|space_call|data}
 tuple        =  {"(" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ ")"|"(" ~ ")"}
-apply_call   = ${Symbol~ Derivative? ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
+apply_call   = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
+derivative   = ${Symbol ~ Derivative ~ (!NEWLINE ~ WHITESPACE)* ~ apply}
 space_call   = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
 /*====================================================================================================================*/
 //!#E06C75: type_hint|generic_type|parametric_types_pair
@@ -194,7 +195,8 @@ Prefix = @{
     Bang|Not|Plus|Minus|Star
 }
 Suffix = @{
-    DoubleBang
+    Derivative
+  | DoubleBang
   | Bang | Question
 }
 Infix = _{

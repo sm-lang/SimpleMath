@@ -20,6 +20,7 @@ const locale_cn = {
                     ['basic/literal', '基本语法'],
                     ['basic/operators', '运算优先级'],
                     ['basic/questions', '疑难解答'],
+                    ['basic/shortcoming', '语法问题'],
                 ]
             },
         ],
