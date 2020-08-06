@@ -14,6 +14,7 @@ use num::{BigUint, One};
 
 /// TODO:  Parallel Prime Swing Algorithm
 /// http://www.luschny.de/math/factorial/FastFactorialFunctions.htm
+/// http://www.luschny.de/math/factorial/SwingFactorialSagePython.html
 pub fn factorial_fold_u(n: usize) -> BigUint {
     (1..=n).fold(BigUint::one(), |a, b| a * b)
 }

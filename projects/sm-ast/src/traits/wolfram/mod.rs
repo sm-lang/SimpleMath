@@ -34,8 +34,6 @@ impl ToWolfram for AST {
             // let v: Vec<_> = v.iter().map(|s| s.to_wolfram()).collect();
             // WolframValue::Function(Box::from("List"), v)
             // }
-            //
-            //
             AST::UnaryOperators { base, prefix, suffix, .. } => {
                 let mut v = base.to_wolfram();
                 for o in suffix {

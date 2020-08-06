@@ -1,6 +1,14 @@
 use crate::wl_form;
 
 #[test]
+fn apply_call() {
+    assert_eq!(wl_form("a()"), "A[]");
+    assert_eq!(wl_form("a(1)"), "A[1]");
+    assert_eq!(wl_form("a(1, 2)"), "A[1,2]");
+    assert_eq!(wl_form("a(1)(2)"), "A[1][2]");
+}
+
+#[test]
 fn dot_call_method() {
     assert_eq!(wl_form("a.b"), "B[a]");
     assert_eq!(wl_form("a.b()"), "{1}");

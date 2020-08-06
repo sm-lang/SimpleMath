@@ -99,6 +99,7 @@ impl ParserSettings {
                 }
                 Rule::Suffix => suffix.push(pair.as_str().to_string()),
                 Rule::Prefix => prefix.push(pair.as_str().to_string()),
+                Rule::slice => unimplemented!(),
                 _ => debug_cases!(pair),
             };
         }
@@ -114,8 +115,8 @@ impl ParserSettings {
                 Rule::data => {
                     return self.parse_data(pair);
                 }
-                Rule::bracket_call => {
-                    return self.parse_bracket_call(pair);
+                Rule::apply_call => {
+                    return self.parse_apply_call(pair);
                 }
                 Rule::space_call => {
                     return self.parse_space_call(pair);
@@ -137,6 +138,7 @@ impl ParserSettings {
                 let p2 = Parameter { arguments: vec![lhs], options: Default::default(), position: position.clone() };
                 AST::Function(rs, vec![p2])
             }
+            AST::Function(s, p) => unimplemented!(),
             // AST::Function { name, arguments, options, .. } => {
             // let mut args = vec![lhs];
             // args.extend(arguments);
@@ -148,38 +150,22 @@ impl ParserSettings {
                 let p = Parameter { arguments: vec![lhs, AST::integer(i)], options: Default::default(), position: position.clone() };
                 AST::Function(s, vec![p])
             }
-            _ => panic!("Parse Error: \n    dot call only support symbol and integer!"),
+            _ => unreachable!(),
         };
     }
 
-    fn parse_bracket_call(&self, pairs: Pair<Rule>) -> AST {
-        let mut head = AST::Null;
+    fn parse_apply_call(&self, pairs: Pair<Rule>) -> AST {
+        let mut pairs = pairs.into_inner();
+        let head = Symbol::from(pairs.next().unwrap().as_str());
         let mut stack = vec![];
-        for pair in pairs.into_inner() {
+        for pair in pairs {
             match pair.as_rule() {
-                Rule::Symbol => {
-                    head = AST::symbol(pair.as_str());
-                }
-                Rule::slice => {
-                    stack.push(self.parse_slice(pair))
-                }
-                Rule::apply => {
-                    stack.push(self.parse_apply(pair))
-                }
+                // Rule::Symbol => unreachable!(),
+                Rule::apply => stack.push(self.parse_apply(pair)),
                 _ => debug_cases!(pair),
             };
         }
-        println!("Stack {:?}", stack);
-        for s in stack {
-            match s {
-                ApplyOrSlice::Apply(args, kws) => {
-                    unimplemented!()
-                    // head = AST::Function { name: Box::new(head), arguments: args, options: kws, position },
-                }
-                ApplyOrSlice::Slice(_) => unimplemented!(),
-            }
-        }
-        return head;
+        return AST::Function(head, stack);
     }
 
     fn parse_space_call(&self, pairs: Pair<Rule>) -> AST {
@@ -202,7 +188,8 @@ impl ParserSettings {
         return AST::Function(s, vec![p]);
     }
 
-    fn parse_apply(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
+    fn parse_apply(&self, pairs: Pair<Rule>) -> Parameter {
+        let position = self.get_position(pairs.as_span());
         let mut args = vec![];
         let mut kws = BTreeMap::new();
         for pair in pairs.into_inner() {
@@ -219,7 +206,7 @@ impl ParserSettings {
                 _ => unreachable!(),
             };
         }
-        return ApplyOrSlice::Apply(args, kws);
+        return Parameter { arguments: args, options: kws, position };
     }
 
     fn parse_apply_kv(&self, pairs: Pair<Rule>) -> (AST, AST) {
