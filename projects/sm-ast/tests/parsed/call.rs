@@ -11,9 +11,10 @@ fn apply_call() {
 #[test]
 fn dot_call_method() {
     assert_eq!(wl_form("a.b"), "B[a]");
-    assert_eq!(wl_form("a.b()"), "{1}");
-    assert_eq!(wl_form("a.b(1)"), "{{}}");
-    assert_eq!(wl_form("[1, 2].first"), "{{1},2}");
+    assert_eq!(wl_form("a.b()"), "B[a]");
+    assert_eq!(wl_form("a.b(1)"), "B[a,1]");
+    assert_eq!(wl_form("a.b(1)(2)"), "B[a,1]");
+    assert_eq!(wl_form("[1, 2].first"), "First[{1,2}]");
 }
 
 #[test]

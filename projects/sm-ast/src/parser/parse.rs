@@ -138,7 +138,12 @@ impl ParserSettings {
                 let p2 = Parameter { arguments: vec![lhs], options: Default::default(), position: position.clone() };
                 AST::Function(rs, vec![p2])
             }
-            AST::Function(s, p) => unimplemented!(),
+            AST::Function(rs, p) => {
+                let mut new = vec![lhs];
+                new.extend_from_slice(&p[0].arguments);
+                let p2 = Parameter { arguments: new, options: (&p[0].options).clone(), position: position.clone() };
+                AST::Function(rs, vec![p2])
+            }
             // AST::Function { name, arguments, options, .. } => {
             // let mut args = vec![lhs];
             // args.extend(arguments);
