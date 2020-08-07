@@ -32,4 +32,7 @@ fn dot_call_panic() {
 #[test]
 fn index_call() {
     assert_eq!(wl_form("a[1]"), "Index[a,1]");
+    assert_eq!(wl_form("a[1, 2]"), "Index[a,1,2]");
+    assert_eq!(wl_form("a[1][2]"), "Index[Index[a,1],2]");
+    assert_eq!(wl_form("a[1:2]"), "Index[a,1]");
 }

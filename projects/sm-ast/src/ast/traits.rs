@@ -3,7 +3,6 @@ use crate::{
     AST,
 };
 use bigdecimal::BigDecimal;
-use itertools::Itertools;
 use num::{BigInt, One, Zero};
 use std::{
     fmt,

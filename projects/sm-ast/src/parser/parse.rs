@@ -1,6 +1,6 @@
 use crate::{
     ast::{Parameter, Position, Symbol},
-    parser::{ApplyOrSlice, ParserSettings, CLIMBER},
+    parser::{ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
 use bigdecimal::BigDecimal;
@@ -91,19 +91,25 @@ impl ParserSettings {
         let mut base = AST::Null;
         let mut prefix = vec![];
         let mut suffix = vec![];
-        let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
-                Rule::Suffix => suffix.push(pair.as_str().to_string()),
                 Rule::Prefix => prefix.push(pair.as_str().to_string()),
-                Rule::slice => unimplemented!(),
+                Rule::Suffix => suffix.push(pair.as_str().to_string()),
+                Rule::slice => {
+                    let position = self.get_position(pair.as_span());
+                    let mut new = vec![base];
+                    new.extend_from_slice(&self.parse_slice(pair));
+                    let s = Symbol::from("std::core::Index");
+                    let p = Parameter { arguments: new, options: Default::default(), position };
+                    base = AST::Function(s, vec![p])
+                }
                 _ => debug_cases!(pair),
             };
         }
-        return if prefix.len() + suffix.len() == 0 { base } else { AST::UnaryOperators { base: Box::new(base), prefix, suffix, position } };
+        return base;
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
@@ -128,8 +134,6 @@ impl ParserSettings {
     }
 
     fn parse_dot_call(&self, lhs: AST, rhs: AST, position: &Position) -> AST {
-        println!("LHS: {:?}", lhs);
-        println!("RHS: {:?}", rhs);
         return match rhs {
             AST::Symbol(rs) => {
                 // TODO: dot call resolve
@@ -138,18 +142,13 @@ impl ParserSettings {
                 let p2 = Parameter { arguments: vec![lhs], options: Default::default(), position: position.clone() };
                 AST::Function(rs, vec![p2])
             }
-            AST::Function(rs, p) => {
+            AST::Function(rs, mut p) => {
+                let old = &mut p[0].arguments;
                 let mut new = vec![lhs];
-                new.extend_from_slice(&p[0].arguments);
-                let p2 = Parameter { arguments: new, options: (&p[0].options).clone(), position: position.clone() };
-                AST::Function(rs, vec![p2])
+                new.extend_from_slice(&old);
+                *old = new;
+                AST::Function(rs, p)
             }
-            // AST::Function { name, arguments, options, .. } => {
-            // let mut args = vec![lhs];
-            // args.extend(arguments);
-            // AST::Function { name, arguments: args, options, position }
-            // }
-            // AST::Symbol(s) => AST::Function { name: Box::new(AST::Symbol(s)), arguments: vec![lhs], options: Default::default(), position },
             AST::Integer(i) => {
                 let s = Symbol::from("std::core::index");
                 let p = Parameter { arguments: vec![lhs, AST::integer(i)], options: Default::default(), position: position.clone() };
@@ -227,15 +226,16 @@ impl ParserSettings {
         return (key, value);
     }
 
-    fn parse_slice(&self, pairs: Pair<Rule>) -> ApplyOrSlice {
+    fn parse_slice(&self, pairs: Pair<Rule>) -> Vec<AST> {
         let mut slices = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
+                Rule::Comma => continue,
                 Rule::index => slices.push(self.parse_index(pair)),
                 _ => debug_cases!(pair),
             };
         }
-        return ApplyOrSlice::Slice(slices);
+        return slices;
     }
 
     fn parse_index(&self, pairs: Pair<Rule>) -> AST {

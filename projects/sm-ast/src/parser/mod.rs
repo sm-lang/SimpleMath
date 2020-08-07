@@ -10,12 +10,6 @@ pub struct ParserSettings {
     pub refine: bool,
 }
 
-#[derive(Debug)]
-pub(crate) enum ApplyOrSlice {
-    Apply(Vec<AST>, BTreeMap<AST, AST>),
-    Slice(Vec<AST>),
-}
-
 /// Determines the associativity and priority of operators
 /// use Precedence in Mathematica
 pub const OPERATORS: &[(Rule, u32, Assoc); 7] = &[

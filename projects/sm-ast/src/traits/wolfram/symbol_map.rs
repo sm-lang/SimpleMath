@@ -1,4 +1,4 @@
-use crate::{ast::Symbol, ToWolfram, AST};
+use crate::ast::Symbol;
 use text_utils::capitalize_first_letter;
 
 pub fn prefix_map(s: &str) -> Box<str> {
