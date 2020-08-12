@@ -1,6 +1,4 @@
-use crate::AST;
 use sm_parser::{Assoc, PrecClimber, Rule};
-use std::collections::BTreeMap;
 mod parse;
 mod traits;
 

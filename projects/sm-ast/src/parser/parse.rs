@@ -239,11 +239,32 @@ impl ParserSettings {
     }
 
     fn parse_index(&self, pairs: Pair<Rule>) -> AST {
-        let pair = pairs.into_inner().nth(0).unwrap();
-        match pair.as_rule() {
-            Rule::expr => self.parse_expr(pair),
-            _ => debug_cases!(pair),
+        let position = self.get_position(pairs.as_span());
+        let mut start = AST::integer(1);
+        let mut end = AST::symbol("std::core::All");
+        let mut step = AST::integer(1);
+        for pair in pairs.into_inner() {
+            match pair.as_rule() {
+                Rule::Colon => continue,
+                Rule::Start => {
+                    let e = pair.into_inner().nth(0).unwrap();
+                    start = self.parse_expr(e)
+                }
+                Rule::End => {
+                    let e = pair.into_inner().nth(0).unwrap();
+                    end = self.parse_expr(e)
+                }
+                Rule::Step => {
+                    let e = pair.into_inner().nth(0).unwrap();
+                    step = self.parse_expr(e);
+                }
+                Rule::expr => return self.parse_expr(pair),
+                _ => unreachable!(),
+            };
         }
+        let s = Symbol::from("std::core::Span");
+        let p = Parameter { arguments: vec![start, end, step], options: Default::default(), position };
+        return AST::Function(s, vec![p]);
     }
 
     fn parse_data(&self, pairs: Pair<Rule>) -> AST {
