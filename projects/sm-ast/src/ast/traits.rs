@@ -3,6 +3,7 @@ use crate::{
     AST,
 };
 use bigdecimal::BigDecimal;
+use itertools::Itertools;
 use num::{BigInt, One, Zero};
 use std::{
     fmt,
@@ -28,9 +29,15 @@ impl AST {
 
 impl From<&str> for Symbol {
     fn from(s: &str) -> Self {
-        let mut ns: Vec<_> = s.split("::").map(String::from).collect();
+        let mut ns = s.split("::").map(String::from).collect_vec();
         let n = ns.pop().unwrap();
         Symbol { name_space: ns, name: n }
+    }
+}
+
+impl From<String> for Symbol {
+    fn from(s: String) -> Self {
+        Symbol::from(s.as_ref())
     }
 }
 

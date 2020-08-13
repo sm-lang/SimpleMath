@@ -9,7 +9,7 @@ pub enum SMError {
     Infinity,
     ComplexInfinity,
     Unimplemented,
-    Unreachable(String)
+    Unreachable(String),
 }
 
 pub type SMResult<T> = Result<T, SMError>;

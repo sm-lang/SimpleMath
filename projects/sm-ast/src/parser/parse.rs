@@ -1,6 +1,6 @@
 use crate::{
     ast::{Parameter, Position, Symbol},
-    parser::{ParserSettings, CLIMBER},
+    parser::{prefix_map, suffix_map, ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
 use bigdecimal::BigDecimal;
@@ -90,14 +90,21 @@ impl ParserSettings {
     fn parse_term(&self, pairs: Pair<Rule>) -> AST {
         let mut base = AST::Null;
         let mut prefix = vec![];
-        let mut suffix = vec![];
+        let mut ps = vec![];
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::node => {
                     base = self.parse_node(pair);
                 }
-                Rule::Prefix => prefix.push(pair.as_str().to_string()),
-                Rule::Suffix => suffix.push(pair.as_str().to_string()),
+                Rule::Prefix => {
+                    ps.push(self.get_position(pair.as_span()));
+                    prefix.push(pair.as_str().to_string())
+                }
+                Rule::Suffix => {
+                    let position = self.get_position(pair.as_span());
+                    let p = Parameter { arguments: vec![base], options: Default::default(), position };
+                    base = AST::Function(suffix_map(pair.as_str()), vec![p])
+                }
                 Rule::slice => {
                     let position = self.get_position(pair.as_span());
                     let mut new = vec![base];
@@ -108,6 +115,10 @@ impl ParserSettings {
                 }
                 _ => debug_cases!(pair),
             };
+        }
+        for (a, b) in prefix.iter().rev().zip(ps.iter().rev()) {
+            let p = Parameter { arguments: vec![base], options: Default::default(), position: b.clone() };
+            base = AST::Function(prefix_map(a), vec![p])
         }
         return base;
     }
