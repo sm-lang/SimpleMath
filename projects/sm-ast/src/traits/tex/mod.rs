@@ -1,6 +1,7 @@
 mod utils;
 use crate::{
-    traits::tex::utils::{binary_map, function_map},
+    ast::Parameter,
+    traits::tex::utils::{binary_map, omit_brackets_function},
     ToTex, AST,
 };
 
@@ -37,7 +38,15 @@ impl ToTex for AST {
 
             AST::Program(_) => unimplemented!(),
             AST::Function(s, p) => {
-                unimplemented!()
+                match s.name.as_ref() {
+                    "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => {
+                        format!(r"\\{}{}", s, omit_brackets_function(&p[0].arguments))
+                    }
+                    "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
+                        format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&p[0].arguments))
+                    }
+                    _ => unimplemented!(),
+                }
                 // function_map(&name.to_tex())
             }
             AST::Boolean(b) => {
@@ -49,6 +58,12 @@ impl ToTex for AST {
                 }
             }
         }
+    }
+}
+
+impl ToTex for Parameter {
+    fn to_tex(&self) -> String {
+        unimplemented!()
     }
 }
 

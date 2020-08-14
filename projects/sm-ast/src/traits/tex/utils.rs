@@ -1,6 +1,5 @@
 use crate::{traits::tex::BoxArea, ToTex, AST};
 use itertools::Itertools;
-use std::collections::BTreeMap;
 
 pub(crate) fn binary_map(s: &str) -> String {
     let m = match s {
@@ -12,20 +11,7 @@ pub(crate) fn binary_map(s: &str) -> String {
     format!(" {} ", m)
 }
 
-pub(crate) fn function_map(s: &str, args: Vec<AST>, _kws: BTreeMap<AST, AST>) -> String {
-    match s {
-        "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => format!(r"\\{}{}", s, omit_brackets_function(&args)),
-        "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
-            format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&args))
-        }
-        _ => {
-            println!("Unknown function: {}", s);
-            format!("\\\\{:?}", args)
-        }
-    }
-}
-
-fn omit_brackets_function(args: &Vec<AST>) -> String {
+pub(crate) fn omit_brackets_function(args: &Vec<AST>) -> String {
     let mut out = String::new();
     match args.len() {
         0 => out.push_str("()"),
