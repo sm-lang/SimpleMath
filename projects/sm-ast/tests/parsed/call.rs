@@ -1,5 +1,6 @@
 use crate::wl_form;
 
+#[test]
 fn apply_call() {
     assert_eq!(wl_form("a()"), "A[]");
     assert_eq!(wl_form("a(1)"), "A[1]");
@@ -7,6 +8,7 @@ fn apply_call() {
     assert_eq!(wl_form("a(1)(2)"), "A[1][2]");
 }
 
+#[test]
 fn dot_call_method() {
     assert_eq!(wl_form("a.b"), "B[a]");
     assert_eq!(wl_form("a.b()"), "B[a]");
@@ -42,6 +44,7 @@ fn index_range() {
     assert_eq!(wl_form("a[4:5]"), "Index[a,Span[4,5,1]]");
 }
 
+#[test]
 fn index_range_step() {
     assert_eq!(wl_form("a[::]"), "Index[a,Span[1,All,1]]");
     assert_eq!(wl_form("a[::-1]"), "Index[a,Span[1,All,-1]]");

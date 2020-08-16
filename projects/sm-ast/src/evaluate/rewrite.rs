@@ -29,7 +29,6 @@ impl AST {
             // AST::MultiplicativeExpression { .. } => self.clone(),
             // ```
             // AST::List(..) => self.clone(),
-            AST::UnaryOperators { .. } => self.clone(),
             AST::InfixOperators { .. } => {
                 self.clone()
                 // ,  `Vec<&mut Box<AST>>` ->  `&mut [AST]`

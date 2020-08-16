@@ -18,13 +18,6 @@ pub enum AST {
     /// function call
     /// function(name, *args, **kwargs)
     Function(Symbol, Vec<Parameter>),
-    /// unary operators
-    UnaryOperators {
-        base: Box<AST>,
-        prefix: Vec<String>,
-        suffix: Vec<String>,
-        position: Position,
-    },
     /// - `InfixOperators`
     InfixOperators {
         infix: String,
