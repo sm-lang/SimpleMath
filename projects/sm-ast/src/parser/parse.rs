@@ -1,6 +1,6 @@
 use crate::{
     ast::{Parameter, Position, Symbol},
-    parser::{prefix_map, suffix_map, ParserSettings, CLIMBER},
+    parser::{infix_map, prefix_map, suffix_map, ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
 use bigdecimal::BigDecimal;
@@ -64,7 +64,7 @@ impl ParserSettings {
 
     #[rustfmt::skip]
     fn parse_expr(&self, pairs: Pair<Rule>) -> AST {
-        let p = self.get_position(pairs.as_span());
+        let position = self.get_position(pairs.as_span());
 
         CLIMBER.climb(
             pairs.into_inner(),
@@ -74,14 +74,14 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             },
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
-                Rule::Dot => self.parse_dot_call(lhs, rhs, &p),
+                Rule::Dot => self.parse_dot_call(lhs, rhs, &position),
                 _ => {
-                    AST::InfixOperators {
-                        infix: op.as_str().to_string(),
-                        lhs: Box::new(lhs),
-                        rhs: Box::new(rhs),
-                        position: p.clone(),
-                    }
+                    let p = Parameter{
+                        arguments: vec![lhs,rhs],
+                        options: Default::default(),
+                        position: position.clone()
+                    };
+                    AST::Function(infix_map(op.as_str()),vec![p])
                 }
             },
         )
@@ -198,7 +198,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        let s = Symbol::from("std::times");
+        let s = Symbol::from("std::infix::times");
         let p = Parameter { arguments: stack, options: Default::default(), position };
         return AST::Function(s, vec![p]);
     }
@@ -243,7 +243,7 @@ impl ParserSettings {
             match pair.as_rule() {
                 Rule::Comma => continue,
                 Rule::index => slices.push(self.parse_index(pair)),
-                _ => debug_cases!(pair),
+                _ => unreachable!(),
             };
         }
         return slices;
@@ -287,7 +287,7 @@ impl ParserSettings {
             Rule::Decimal => self.parse_decimal(pair),
             Rule::Integer => self.parse_integer(pair),
             Rule::Byte => self.parse_byte(pair),
-            Rule::SpecialValue => self.parse_special(pair),
+            Rule::Special => self.parse_special(pair),
             Rule::REPL => self.parse_repl(pair),
             Rule::Slot => self.parse_slot(pair),
             _ => debug_cases!(pair),
@@ -310,19 +310,20 @@ impl ParserSettings {
     }
 
     fn parse_string(&self, pairs: Pair<Rule>) -> AST {
-        let mut s = "";
-        let mut h = "";
+        let (mut s, mut h) = ("", "");
         for pair in pairs.into_inner() {
             match pair.as_rule() {
-                Rule::StringEmpty => continue,
                 Rule::SYMBOL => h = pair.as_str(),
                 Rule::StringNormal => {
+                    let h = pair.as_str();
+                    s = &h[1..h.len() - 1]
+                }
+                Rule::StringBlock => {
                     for inner in pair.into_inner() {
                         match inner.as_rule() {
-                            Rule::StringStart => continue,
+                            Rule::Quotation => continue,
                             Rule::StringText => s = inner.as_str(),
-                            Rule::StringEnd => continue,
-                            _ => unreachable!(),
+                            _ => debug_cases!(inner),
                         }
                     }
                 }

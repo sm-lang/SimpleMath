@@ -2,7 +2,7 @@ use sm_parser::{Assoc, PrecClimber, Rule};
 mod ops;
 mod parse;
 mod traits;
-use ops::{prefix_map, suffix_map};
+pub use ops::{infix_map, prefix_map, suffix_map};
 
 #[derive(Debug, Clone)]
 pub struct ParserSettings {

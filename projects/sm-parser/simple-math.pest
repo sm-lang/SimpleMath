@@ -129,7 +129,7 @@ type_hint = {Colon ~ type_expr}
 //TypeSuffix = @{Question}
 TypeInfix = @{Or}
 /*====================================================================================================================*/
-data = ${dict|list|SpecialValue|REPL|Slot|Number|String|Symbol}
+data = ${dict|list|Special|REPL|Slot|Number|String|Symbol}
 dict = !{"{" ~ "}" | "{" ~ key_value ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = !{"[" ~ "]" | "[" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -153,15 +153,12 @@ Byte    = ${
   | ^"0o" ~ (Underline? ~ ASCII_OCT_DIGIT)+
   | ^"0x" ~ (Underline? ~ ASCII_HEX_DIGIT)+
 }
-Positive = @{ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 /*====================================================================================================================*/
 ///#98C379
-String       = ${SYMBOL? ~ (StringNormal|StringEmpty)}
-StringNormal =  {StringStart ~ StringText ~ StringEnd}
-StringEmpty  =  {Quotation{2}}
-StringText   =  {(!(Quotation ~ PEEK) ~ ANY)*}
-StringStart  = @{Quotation{1}~PUSH(Quotation*)}
-StringEnd    = @{POP ~ Quotation{1}}
+String       = ${SYMBOL? ~ (StringBlock|StringNormal)}
+StringNormal = @{Quotation ~ (Escape ~ (Quotation|Escape)|!Quotation ~ ANY)* ~ Quotation}
+StringBlock  = ${Quotation{3} ~ PUSH(Quotation*) ~ StringText ~ POP ~ Quotation{3}}
+StringText   = @{(!(Quotation{3} ~ PEEK) ~ ANY)+}
 /*====================================================================================================================*/
 ///#61AFEF
 Symbol = ${SYMBOL ~ (Proportion ~ SYMBOL)*}
@@ -171,17 +168,10 @@ SYMBOL = @{
 }
 /*====================================================================================================================*/
 ///#D19A66
-SpecialValue = @{"null"|"true"|"false"}
-Slot = ${
-    "##" ~ Positive?
-  | "#" ~ (SYMBOL|Integer)?
-}
-REPL =@{
-    "¶" ~ Positive
-  | "⁋" ~ Positive
-  | "¶"+
-  | "⁋"+
-}
+Special  = @{"null"|"true"|"false"}
+Slot     = ${"##" ~ Positive?|"#" ~ (SYMBOL|Integer)?}
+REPL     = @{"¶" ~ Positive|"¶"+| "⁋" ~ Positive|"⁋"+}
+Positive = @{ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = _{NEWLINE|WHITE_SPACE}
@@ -221,7 +211,7 @@ LazyOr = @{"||"}
 
 Star =@{"*"}
 Slash =@{"/"}
-Solidus = @{"\\"}
+Escape = @{"\\"}
 
 Proportion = @{"::"|"∷"}//U+2237
 Comma = @{","|"，"} //U+FF0C
