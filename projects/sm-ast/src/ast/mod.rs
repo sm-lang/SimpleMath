@@ -18,14 +18,6 @@ pub enum AST {
     /// function call
     /// function(name, *args, **kwargs)
     Function(Symbol, Vec<Parameter>),
-    /// - `InfixOperators`
-    InfixOperators {
-        infix: String,
-        lhs: Box<AST>,
-        rhs: Box<AST>,
-        position: Position,
-    },
-
     //
     /// the source of all evil
     Null,

@@ -1,9 +1,6 @@
 mod utils;
-use crate::{
-    ast::Parameter,
-    traits::tex::utils::{binary_map, omit_brackets_function},
-    ToTex, AST,
-};
+use crate::{ast::Parameter, traits::tex::utils::omit_brackets_function, ToTex, AST};
+use itertools::Itertools;
 
 impl ToTex for AST {
     fn to_tex(&self) -> String {
@@ -15,34 +12,26 @@ impl ToTex for AST {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)
             }
-            // AST::List(v) => {
-            // let max = v.iter().map(|e| e.height()).max().unwrap();
-            // let e: Vec<_> = v.iter().map(AST::to_tex).collect();
-            // if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
-            // }
-            AST::InfixOperators { infix, lhs, rhs, .. } => {
-                let l = lhs.to_tex();
-                let r = rhs.to_tex();
-                format!("{}{}{}", l, binary_map(&infix), r)
-            }
             AST::Integer(i) => format!("{}", i),
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),
             AST::String(s) => format!(r"\\text{{{}}}", s),
 
             AST::Program(_) => unimplemented!(),
-            AST::Function(s, p) => {
-                match s.name.as_ref() {
-                    "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => {
-                        format!(r"\\{}{}", s, omit_brackets_function(&p[0].arguments))
-                    }
-                    "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
-                        format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&p[0].arguments))
-                    }
-                    _ => unimplemented!(),
+            AST::Function(s, p) => match s.name.as_ref() {
+                "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => {
+                    format!(r"\\{}{}", s, omit_brackets_function(&p[0].arguments))
                 }
-                // function_map(&name.to_tex())
-            }
+                "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
+                    format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&p[0].arguments))
+                }
+                "List" => {
+                    let max = p[0].arguments.iter().map(|e| e.height()).max().unwrap();
+                    let e = &p[0].arguments.iter().map(AST::to_tex).collect_vec();
+                    if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
+                }
+                _ => unimplemented!(),
+            },
             AST::Boolean(b) => {
                 if b {
                     format!(r"\\mathtt{{true}}")
@@ -78,7 +67,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::Function { .. } => 1,
-            AST::InfixOperators { .. } => 1,
             _ => 1,
         }
     }
@@ -89,7 +77,6 @@ impl BoxArea for AST {
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
             AST::Function { .. } => 1,
-            AST::InfixOperators { infix: _, ref lhs, ref rhs, .. } => lhs.width() + rhs.width() + 1,
             _ => 1,
         }
     }

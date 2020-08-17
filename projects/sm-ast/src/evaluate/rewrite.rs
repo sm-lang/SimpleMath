@@ -29,26 +29,6 @@ impl AST {
             // AST::MultiplicativeExpression { .. } => self.clone(),
             // ```
             // AST::List(..) => self.clone(),
-            AST::InfixOperators { .. } => {
-                self.clone()
-                // ,  `Vec<&mut Box<AST>>` ->  `&mut [AST]`
-                /*
-                match infix.as_str() {
-                    "+" => {
-                        let terms = vec![(**lhs).clone(), (**rhs).clone()];
-                        let ast = AST::AdditiveExpression { terms, position: (*position).clone() };
-                        ast.rewrite()
-                    }
-                    "*" | "×" => {
-                        let terms = vec![(**lhs).clone(), (**rhs).clone()];
-                        let ast = AST::MultiplicativeExpression { terms, position: (*position).clone() };
-                        ast.rewrite()
-                    }
-                    _ => return self.clone(),
-                }
-
-                 */
-            }
             _ => self.clone(),
         }
     }

@@ -1,7 +1,6 @@
-use crate::AST;
-use wolfram_wxf::{ToWolfram, WolframValue};
+use crate::{ast::Symbol, AST};
 use text_utils::capitalize_first_letter;
-use crate::ast::Symbol;
+use wolfram_wxf::{ToWolfram, WolframValue};
 
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
@@ -29,7 +28,6 @@ impl ToWolfram for AST {
                 }
                 WolframValue::Function(Box::from(function_map(&s)), vec)
             }
-            AST::InfixOperators { infix, lhs, rhs, .. } => WolframValue::Function(Box::from(infix), vec![lhs.to_wolfram(), rhs.to_wolfram()]),
             //
             AST::Null => WolframValue::new_symbol("None"),
             AST::Boolean(b) => {

@@ -32,4 +32,3 @@ pub fn infix_map(s: &str) -> Symbol {
     };
     Symbol::from(String::from("std::infix::") + m)
 }
-

@@ -4,7 +4,6 @@ pub fn head(expr: &AST) -> AST {
     match expr {
         AST::Expression { .. } => unimplemented!(),
         AST::Function { .. } => unimplemented!(),
-        AST::InfixOperators { .. } => unimplemented!(),
         AST::Boolean(..) => AST::symbol("Boolean"),
         AST::Integer(..) => AST::symbol("Integer"),
         AST::Decimal(..) => AST::symbol("Decimal"),
