@@ -1,6 +1,7 @@
 use crate::{ast::Symbol, AST};
 use text_utils::capitalize_first_letter;
 use wolfram_wxf::{ToWolfram, WolframValue};
+use itertools::Itertools;
 
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
@@ -8,8 +9,8 @@ impl ToWolfram for AST {
             AST::EmptyStatement | AST::NewLine => WolframValue::Skip,
             //
             AST::Program(s) => {
-                let v: Vec<_> = s.iter().map(|s| s.to_wolfram()).collect();
-                WolframValue::Function(Box::from("CompoundExpression"), v)
+                let v = s.iter().map(|s| s.to_wolfram()).collect_vec();
+                WolframValue::function("CompoundExpression", v)
             }
             AST::Expression { base, .. } => base.to_wolfram(),
             //
@@ -24,18 +25,17 @@ impl ToWolfram for AST {
                     vec.push(arg.to_wolfram())
                 }
                 for (k, v) in options {
-                    vec.push(WolframValue::Function(Box::from("Rule"), vec![k.to_wolfram(), v.to_wolfram()]))
+                    vec.push(WolframValue::function("Rule", vec![k.to_wolfram(), v.to_wolfram()]))
                 }
-                WolframValue::Function(Box::from(function_map(&s)), vec)
+                WolframValue::function(&*function_map(&s), vec.into())
             }
             //
-            AST::Null => WolframValue::new_symbol("None"),
             AST::Boolean(b) => {
                 if b {
-                    WolframValue::new_symbol("True")
+                    WolframValue::symbol("True")
                 }
                 else {
-                    WolframValue::new_symbol("False")
+                    WolframValue::symbol("False")
                 }
             }
             AST::Integer(i) => WolframValue::BigInteger(i),

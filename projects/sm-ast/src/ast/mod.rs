@@ -19,8 +19,6 @@ pub enum AST {
     /// function(name, *args, **kwargs)
     Function(Symbol, Vec<Parameter>),
     //
-    /// the source of all evil
-    Null,
     /// true or false
     Boolean(bool),
     Integer(BigInt),

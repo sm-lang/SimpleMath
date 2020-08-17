@@ -7,7 +7,6 @@ impl ToTex for AST {
         match (*self).clone() {
             AST::EmptyStatement => format!(""),
             AST::NewLine => format!("\n"),
-            AST::Null => format!(r"\\mathtt{{null}}"),
             AST::Expression { base, eos, .. } => {
                 let s = if eos { ";" } else { "" };
                 format!("{}{}", base.to_tex(), s)

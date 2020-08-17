@@ -43,12 +43,12 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return Ok(AST::Null);
+        return Ok(AST::EmptyStatement);
     }
 
     fn parse_expression(&self, pairs: Pair<Rule>) -> AST {
         let mut eos = false;
-        let mut base = AST::Null;
+        let mut base = AST::EmptyStatement;
         let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
@@ -76,10 +76,7 @@ impl ParserSettings {
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
                 Rule::Dot => self.parse_dot_call(lhs, rhs, &position),
                 _ => {
-                    let p = Parameter{
-                        arguments: vec![lhs,rhs],
-                        options: Default::default(),
-                        position: position.clone()
+                    let p = Parameter{                        arguments: vec![lhs,rhs],                        options: Default::default(),                       position: position.clone()
                     };
                     AST::Function(infix_map(op.as_str()),vec![p])
                 }
@@ -88,7 +85,7 @@ impl ParserSettings {
     }
 
     fn parse_term(&self, pairs: Pair<Rule>) -> AST {
-        let mut base = AST::Null;
+        let mut base = AST::EmptyStatement;
         let mut prefix = vec![];
         let mut ps = vec![];
         for pair in pairs.into_inner() {
@@ -214,7 +211,7 @@ impl ParserSettings {
                 Rule::apply_kv => {
                     let (k, v) = self.parse_apply_kv(pair);
                     match k {
-                        AST::Null => args.push(v),
+                        AST::EmptyStatement => args.push(v),
                         _ => kws.insert(k, v).unwrap_none(),
                     }
                 }
@@ -225,7 +222,7 @@ impl ParserSettings {
     }
 
     fn parse_apply_kv(&self, pairs: Pair<Rule>) -> (AST, AST) {
-        let (mut key, mut value) = (AST::Null, AST::Null);
+        let (mut key, mut value) = (AST::EmptyStatement, AST::EmptyStatement);
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::Colon => continue,
