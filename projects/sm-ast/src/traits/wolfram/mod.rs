@@ -1,7 +1,7 @@
 use crate::{ast::Symbol, AST};
+use itertools::Itertools;
 use text_utils::capitalize_first_letter;
 use wolfram_wxf::{ToWolfram, WolframValue};
-use itertools::Itertools;
 
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
@@ -14,20 +14,19 @@ impl ToWolfram for AST {
             }
             AST::Expression { base, .. } => base.to_wolfram(),
             //
-            AST::Function(s, p) => {
-                if p.len() > 1 {
-                    unimplemented!()
+            AST::Function(s, ps) => {
+                let mut head = WolframValue::symbol(function_map(&s));
+                for p in ps {
+                    let mut vec = vec![];
+                    for arg in p.arguments {
+                        vec.push(arg.to_wolfram())
+                    }
+                    for (k, v) in p.options {
+                        vec.push(WolframValue::function("Rule", vec![k.to_wolfram(), v.to_wolfram()]))
+                    }
+                    head = WolframValue::Function(Box::new(head), vec)
                 }
-                let arguments = &p[0].arguments;
-                let options = &p[0].options;
-                let mut vec = vec![];
-                for arg in arguments {
-                    vec.push(arg.to_wolfram())
-                }
-                for (k, v) in options {
-                    vec.push(WolframValue::function("Rule", vec![k.to_wolfram(), v.to_wolfram()]))
-                }
-                WolframValue::function(&*function_map(&s), vec.into())
+                return head;
             }
             //
             AST::Boolean(b) => {

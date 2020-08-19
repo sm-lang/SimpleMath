@@ -1,4 +1,4 @@
-use crate::{parser::ParserSettings, Runner, SMResult};
+use crate::{parser::ParserSettings, Runner, SMResult, ToTex, AST};
 
 impl Default for Runner {
     fn default() -> Self {
@@ -7,9 +7,21 @@ impl Default for Runner {
 }
 
 impl Runner {
-    pub fn evaluate(&mut self, input: &str) -> SMResult<()> {
-        let parsed = self.parser.parse(input)?;
-        let _refined = parsed.rewrite();
+    pub(crate) fn parse(&mut self, s: &str) -> SMResult<()> {
+        self.ctx.index += 1;
+        self.ctx.inputs.insert(self.ctx.index, String::from(s)).unwrap();
         Ok(())
+    }
+
+    pub fn evaluate(&mut self, input: &str) -> SMResult<String> {
+        self.parse(input)?;
+        self.forward()?;
+        let s = format!("{}", self.ctx.outputs.get(&self.ctx.index).unwrap());
+        Ok(s)
+    }
+
+    pub fn last(&self) -> SMResult<AST> {
+        let o = self.ctx.outputs.get(&self.ctx.index).unwrap();
+        Ok(o.clone())
     }
 }

@@ -3,14 +3,10 @@ use crate::{error::SMError::EmptyContainer, SMResult, AST};
 pub fn head(expr: &AST) -> AST {
     match expr {
         AST::Expression { .. } => unimplemented!(),
-        AST::Function(s,p) => {
-            match p.len(){
-                0=> AST::symbol("std::core::Symbol"),
-                1=>AST::Symbol(s.clone()),
-                _ => {
-                    AST::Function(s.clone(),(&p[0..p.len()-1]).to_vec())
-                }
-            }
+        AST::Function(s, p) => match p.len() {
+            0 => AST::symbol("std::core::Symbol"),
+            1 => AST::Symbol(s.clone()),
+            _ => AST::Function(s.clone(), (&p[0..p.len() - 1]).to_vec()),
         },
         AST::Boolean(..) => AST::symbol("std::core::Boolean"),
         AST::Integer(..) => AST::symbol("std::core::Integer"),

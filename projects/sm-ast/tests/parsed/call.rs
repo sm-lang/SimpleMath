@@ -13,7 +13,7 @@ fn dot_call_method() {
     assert_eq!(wl_form("a.b"), "B[a]");
     assert_eq!(wl_form("a.b()"), "B[a]");
     assert_eq!(wl_form("a.b(1)"), "B[a,1]");
-    assert_eq!(wl_form("a.b(1)(2)"), "B[a,1]");
+    assert_eq!(wl_form("a.b(1)(2)"), "B[a,1][2]");
     assert_eq!(wl_form("[1, 2].first"), "First[{1,2}]");
 }
 
@@ -48,8 +48,8 @@ fn index_range() {
 #[test]
 fn index_range_step() {
     assert_eq!(wl_form("a[::]"), "Index[a,Span[1,All,1]]");
-    assert_eq!(wl_form("a[::-1]"), "Index[a,Span[1,All,-1]]");
-    assert_eq!(wl_form("a[:-1:]"), "Index[a,Span[1,-1,1]]");
+    assert_eq!(wl_form("a[::-1]"), "Index[a,Span[1,All,Minus[1]]]");
+    assert_eq!(wl_form("a[:-1:]"), "Index[a,Span[1,Minus[1],1]]");
     assert_eq!(wl_form("a[1::]"), "Index[a,Span[1,All,1]]");
     assert_eq!(wl_form("a[:3:2]"), "Index[a,Span[1,3,2]]");
 }

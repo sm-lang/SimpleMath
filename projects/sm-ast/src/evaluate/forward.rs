@@ -1,9 +1,27 @@
 use crate::{
     ast::{Position, Symbol},
-    internal, Context, AST,
+    internal, Context, Runner, SMResult, AST,
 };
 use num::{traits::Pow, ToPrimitive};
 use std::collections::BTreeMap;
+
+impl Runner {
+    pub(crate) fn forward(&mut self) -> SMResult<()> {
+        let input = self.ctx.inputs.get(&self.ctx.index).unwrap();
+        let ast = self.parser.parse(input)?;
+        let output = match &ast {
+            AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => ast,
+            AST::EmptyStatement => unimplemented!(),
+            AST::NewLine => unimplemented!(),
+            AST::Program(_) => unimplemented!(),
+            AST::Expression { .. } => unimplemented!(),
+            AST::Function(_, _) => unimplemented!(),
+        };
+        self.ctx.outputs.insert(self.ctx.index, output).unwrap();
+        Ok(())
+    }
+}
+
 // fn evaluate_list_omit(v: &mut Vec<AST>, ctx: &mut Context) -> Vec<AST> {
 // let mut new = Vec::with_capacity(v.len());
 // for e in v {
