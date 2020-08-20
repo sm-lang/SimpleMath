@@ -1,4 +1,4 @@
-use crate::{parser::ParserSettings, Runner, SMResult, ToTex, AST};
+use crate::{parser::ParserSettings, Runner, SMResult, AST};
 
 impl Default for Runner {
     fn default() -> Self {
@@ -9,7 +9,15 @@ impl Default for Runner {
 impl Runner {
     pub(crate) fn parse(&mut self, s: &str) -> SMResult<()> {
         self.ctx.index += 1;
-        self.ctx.inputs.insert(self.ctx.index, String::from(s)).unwrap();
+        self.ctx.inputs.insert(self.ctx.index, String::from(s));
+        Ok(())
+    }
+
+    pub(crate) fn forward(&mut self) -> SMResult<()> {
+        let input = self.ctx.inputs.get(&self.ctx.index).unwrap();
+        let ast = self.parser.parse(input)?;
+        let output = ast.forward(&mut self.ctx);
+        self.ctx.outputs.insert(self.ctx.index, output);
         Ok(())
     }
 

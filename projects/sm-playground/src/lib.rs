@@ -1,17 +1,20 @@
-use sm_ast::{parser::ParserSettings, Runner, SMError, ToTex, AST};
+use lazy_static::lazy_static;
+use sm_ast::{Runner, ToTex};
+use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-pub fn new_runner() -> Runner {
-    Runner::default()
+lazy_static! {
+    static ref RUNNER: Mutex<Runner> = Mutex::new(Runner::default());
 }
 
 #[wasm_bindgen]
-pub fn result(r: &mut Runner, input: &str) -> String {
+pub fn result(input: &str) -> String {
+    let r = &mut RUNNER.lock().unwrap();
     r.evaluate(input).unwrap()
 }
 
 #[wasm_bindgen]
-pub fn result_tex(r: &Runner) -> String {
+pub fn result_tex() -> String {
+    let r = &mut RUNNER.lock().unwrap();
     r.last().unwrap().to_tex()
 }

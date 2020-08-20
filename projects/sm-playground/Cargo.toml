@@ -1,7 +1,7 @@
 [package]
 name = "sm_playground"
 publish = false
-version = "0.0.3"
+version = "0.0.5"
 authors = ["Aster <galaster@foxmail.com>"]
 description = "Arc Readable Configuration Parser via Pest"
 license = "MPL-2.0"
@@ -16,6 +16,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 wasm-bindgen = "0.2.67"
+lazy_static = "1.4"
 
 [dependencies.sm_ast]
 version = "0.1.0"

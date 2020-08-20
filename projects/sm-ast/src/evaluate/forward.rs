@@ -1,24 +1,23 @@
-use crate::{
-    ast::{Position, Symbol},
-    internal, Context, Runner, SMResult, AST,
-};
+use crate::{ast::{Parameter, Symbol}, internal, Context, AST, SMError, SMResult};
 use num::{traits::Pow, ToPrimitive};
-use std::collections::BTreeMap;
 
-impl Runner {
-    pub(crate) fn forward(&mut self) -> SMResult<()> {
-        let input = self.ctx.inputs.get(&self.ctx.index).unwrap();
-        let ast = self.parser.parse(input)?;
-        let output = match &ast {
-            AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => ast,
-            AST::EmptyStatement => unimplemented!(),
-            AST::NewLine => unimplemented!(),
+impl AST {
+    pub fn forward(&self, ctx: &mut Context) -> SMResult<AST> {
+        let out = match self {
+            AST::EmptyStatement | AST::NewLine | AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => {
+                self.clone()
+            }
             AST::Program(_) => unimplemented!(),
-            AST::Expression { .. } => unimplemented!(),
-            AST::Function(_, _) => unimplemented!(),
+            AST::Expression { base, .. } => base.forward(ctx),
+            AST::Function(s, p) => match p.len() {
+                0 => AST::Symbol(s.clone()),
+                1 => evaluate_function(s, p[0].clone(), ctx),
+                _ => {
+                    return Err(SMError::Unimplemented(format!("Unimplemented Function: forward at line {}", line!())));
+                }
+            },
         };
-        self.ctx.outputs.insert(self.ctx.index, output).unwrap();
-        Ok(())
+        Ok(out)
     }
 }
 
@@ -52,18 +51,22 @@ impl Runner {
 // }
 // return new;
 // }
-fn evaluate_function(f: &Symbol, args: &Vec<AST>, _kws: &BTreeMap<AST, AST>, _position: Position, _: &mut Context) -> AST {
-    match f.name.as_str() {
+fn evaluate_function(f: &Symbol, p: Parameter, ctx: &mut Context) -> SMResult<AST> {
+    let args = p.arguments;
+    let out = match f.name.as_str() {
         "first" => internal::first(&args[0]).unwrap(),
         "last" => internal::last(&args[0]).unwrap(),
         "length" => internal::length(&args[0]).unwrap(),
         "factorial" => internal::factorial(&args[0]).unwrap(),
         "fibonacci" => internal::fibonacci(&args[0]).unwrap(),
+        "plus" => evaluate_additive(&args, ctx),
+        "times" => evaluate_multiplicative(&args, ctx),
+        "power" => evaluate_power(&args, ctx),
         _ => {
-            println!("{:?}", f);
-            unimplemented!()
+            return Err(SMError::Unimplemented(format!("Unimplemented Function: evaluate_function at line {}", line!())));
         }
-    }
+    };
+    Ok(out)
 }
 
 fn evaluate_additive(vec: &[AST], _: &mut Context) -> AST {

@@ -8,7 +8,7 @@ pub enum SMError {
     Overflow,
     Infinity,
     ComplexInfinity,
-    Unimplemented,
+    Unimplemented(String),
     Unreachable(String),
 }
 
