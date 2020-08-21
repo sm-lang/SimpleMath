@@ -16,7 +16,7 @@ impl Runner {
     pub(crate) fn forward(&mut self) -> SMResult<()> {
         let input = self.ctx.inputs.get(&self.ctx.index).unwrap();
         let ast = self.parser.parse(input)?;
-        let output = ast.forward(&mut self.ctx);
+        let output = ast.forward(&mut self.ctx)?;
         self.ctx.outputs.insert(self.ctx.index, output);
         Ok(())
     }

@@ -10,11 +10,17 @@ lazy_static! {
 #[wasm_bindgen]
 pub fn result(input: &str) -> String {
     let r = &mut RUNNER.lock().unwrap();
-    r.evaluate(input).unwrap()
+    match r.evaluate(input) {
+        Ok(o) => o,
+        Err(e) => format!("{:?}", e),
+    }
 }
 
 #[wasm_bindgen]
 pub fn result_tex() -> String {
     let r = &mut RUNNER.lock().unwrap();
-    r.last().unwrap().to_tex()
+    match r.last() {
+        Ok(o) => o.to_tex(),
+        Err(e) => format!("{:?}", e),
+    }
 }

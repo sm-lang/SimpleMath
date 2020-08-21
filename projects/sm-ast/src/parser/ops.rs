@@ -22,12 +22,12 @@ pub fn suffix_map(s: &str) -> Symbol {
 
 pub fn infix_map(s: &str) -> Symbol {
     let m = match s {
-        "+" => "Plus",
-        "-" => "Subtract",
-        "*" => "Times",
-        "/" => "Divide",
-        "//" => "Quotient",
-        "^" => "Power",
+        "+" => "plus",
+        "-" => "subtract",
+        "*" => "times",
+        "/" => "divide",
+        "//" => "quotient",
+        "^" => "power",
         _ => s,
     };
     Symbol::from(String::from("std::infix::") + m)

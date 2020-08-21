@@ -24,7 +24,8 @@ impl From<Algorithm> for SMError {
             Algorithm::OverFlow => Overflow,
             Algorithm::ComplexInfinity => ComplexInfinity,
             Algorithm::IOError(s) => IOError(s),
-            _ => SMError::Unimplemented,
+            Algorithm::Unimplemented => SMError::Unimplemented(String::from("Unimplemented Algorithm")),
+            _ => SMError::Unknown,
         }
     }
 }

@@ -1,14 +1,19 @@
-use crate::{traits::tex::BoxArea, ToTex, AST};
+use crate::{
+    ast::{Parameter, Symbol},
+    traits::tex::BoxArea,
+    ToTex, AST,
+};
 use itertools::Itertools;
 
-pub(crate) fn binary_map(s: &str) -> String {
-    let m = match s {
-        "+-" => "\\mp",
-        "-+" => "\\pm",
-        "*" => return String::from(" "),
-        _ => s,
+pub(crate) fn infix_tex(s: &Symbol, p: &Parameter) -> String {
+    let lhs = &p.arguments[0];
+    let rhs = &p.arguments[1];
+    let ops = match s.name.as_str() {
+        "plus" => "+",
+        "times" => return String::from(" "),
+        _ => &s.name,
     };
-    format!(" {} ", m)
+    format!("{} {} {}", lhs, ops, rhs)
 }
 
 pub(crate) fn omit_brackets_function(args: &Vec<AST>) -> String {

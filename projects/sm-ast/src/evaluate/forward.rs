@@ -1,19 +1,24 @@
-use crate::{ast::{Parameter, Symbol}, internal, Context, AST, SMError, SMResult};
+use crate::{
+    ast::{Parameter, Symbol},
+    internal, Context, SMError, SMResult, AST,
+};
 use num::{traits::Pow, ToPrimitive};
 
+type S = SMResult<AST>;
+
 impl AST {
-    pub fn forward(&self, ctx: &mut Context) -> SMResult<AST> {
+    pub fn forward(&self, ctx: &mut Context) -> S {
         let out = match self {
             AST::EmptyStatement | AST::NewLine | AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => {
                 self.clone()
             }
             AST::Program(_) => unimplemented!(),
-            AST::Expression { base, .. } => base.forward(ctx),
+            AST::Expression { base, .. } => base.forward(ctx)?,
             AST::Function(s, p) => match p.len() {
                 0 => AST::Symbol(s.clone()),
-                1 => evaluate_function(s, p[0].clone(), ctx),
+                1 => evaluate_function(s, p[0].clone(), ctx)?,
                 _ => {
-                    return Err(SMError::Unimplemented(format!("Unimplemented Function: forward at line {}", line!())));
+                    return Err(SMError::Unimplemented(unimplemented_function!()));
                 }
             },
         };
@@ -51,7 +56,7 @@ impl AST {
 // }
 // return new;
 // }
-fn evaluate_function(f: &Symbol, p: Parameter, ctx: &mut Context) -> SMResult<AST> {
+fn evaluate_function(f: &Symbol, p: Parameter, ctx: &mut Context) -> S {
     let args = p.arguments;
     let out = match f.name.as_str() {
         "first" => internal::first(&args[0]).unwrap(),
@@ -59,45 +64,45 @@ fn evaluate_function(f: &Symbol, p: Parameter, ctx: &mut Context) -> SMResult<AS
         "length" => internal::length(&args[0]).unwrap(),
         "factorial" => internal::factorial(&args[0]).unwrap(),
         "fibonacci" => internal::fibonacci(&args[0]).unwrap(),
-        "plus" => evaluate_additive(&args, ctx),
-        "times" => evaluate_multiplicative(&args, ctx),
-        "power" => evaluate_power(&args, ctx),
+        "plus" => evaluate_additive(&args, ctx)?,
+        "times" => evaluate_multiplicative(&args, ctx)?,
+        "power" => evaluate_power(&args, ctx)?,
         _ => {
-            return Err(SMError::Unimplemented(format!("Unimplemented Function: evaluate_function at line {}", line!())));
+            return Err(SMError::Unimplemented(unimplemented_function!()));
         }
     };
     Ok(out)
 }
 
-fn evaluate_additive(vec: &[AST], _: &mut Context) -> AST {
-    match vec {
+fn evaluate_additive(vec: &[AST], _: &mut Context) -> S {
+    let out = match vec {
         [AST::Integer(lhs), AST::Integer(rhs)] => AST::Integer(lhs + rhs),
         _ => {
-            println!("{:?}", vec);
-            unimplemented!()
+            return Err(SMError::Unimplemented(unimplemented_function!()));
         }
-    }
+    };
+    Ok(out)
 }
 
-fn evaluate_multiplicative(vec: &[AST], _: &mut Context) -> AST {
-    match vec {
+fn evaluate_multiplicative(vec: &[AST], _: &mut Context) -> S {
+    let out = match vec {
         [AST::Integer(lhs), AST::Integer(rhs)] => AST::Integer(lhs * rhs),
         _ => {
-            println!("{:?}", vec);
-            unimplemented!()
+            return Err(SMError::Unimplemented(unimplemented_function!()));
         }
-    }
+    };
+    Ok(out)
 }
 
-fn evaluate_power(vec: &[AST], _: &mut Context) -> AST {
-    match vec {
+fn evaluate_power(vec: &[AST], _: &mut Context) -> S {
+    let out = match vec {
         [AST::Integer(lhs), AST::Integer(rhs)] => match rhs.to_u64() {
             None => AST::Integer(lhs.clone()),
             Some(s) => AST::Integer(lhs.pow(s)),
         },
         _ => {
-            println!("{:?}", vec);
-            unimplemented!()
+            return Err(SMError::Unimplemented(unimplemented_function!()));
         }
-    }
+    };
+    Ok(out)
 }

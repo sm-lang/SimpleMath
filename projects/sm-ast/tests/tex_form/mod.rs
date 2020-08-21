@@ -12,7 +12,7 @@ fn test_sin() {
     debug_assert_eq!(tex_from("sin(xy)"), r"\\sin xy");
     debug_assert_eq!(tex_from("sin(x,y)"), r"\\sin(x, y)");
     debug_assert_eq!(tex_from("sin(x+y)"), r"\\sin(x + y)");
-    // debug_assert_eq!(tex_from("sin(x y)"), r"\\sin(x y)");
+    debug_assert_eq!(tex_from("sin(x y)"), r"\\sin(x y)");
     debug_assert_eq!(tex_from("sin(x*y)"), r"\\sin(x y)");
 }
 

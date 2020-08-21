@@ -1,6 +1,7 @@
 #![feature(option_unwrap_none)]
 
 mod ast;
+#[macro_use]
 mod error;
 pub mod evaluate;
 

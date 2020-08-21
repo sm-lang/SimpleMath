@@ -65,7 +65,6 @@ impl ParserSettings {
     #[rustfmt::skip]
     fn parse_expr(&self, pairs: Pair<Rule>) -> AST {
         let position = self.get_position(pairs.as_span());
-
         CLIMBER.climb(
             pairs.into_inner(),
             |pair: Pair<Rule>| match pair.as_rule() {
@@ -76,9 +75,12 @@ impl ParserSettings {
             |lhs: AST, op: Pair<Rule>, rhs: AST| match op.as_rule() {
                 Rule::Dot => self.parse_dot_call(lhs, rhs, &position),
                 _ => {
-                    let p = Parameter{                        arguments: vec![lhs,rhs],                        options: Default::default(),                       position: position.clone()
+                    let p = Parameter {
+                        arguments: vec![lhs, rhs],
+                        options: Default::default(),
+                        position: position.clone(),
                     };
-                    AST::Function(infix_map(op.as_str()),vec![p])
+                    AST::Function(infix_map(op.as_str()), vec![p])
                 }
             },
         )
