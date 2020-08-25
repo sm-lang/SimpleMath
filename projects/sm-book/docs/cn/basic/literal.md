@@ -1,4 +1,15 @@
+Simple Math 的基本类型只有 5 个:
 
+- 符号 (Symbol)
+- 文本 (String)
+- 整数 (Integr)
+- 小数 (Decimal)
+- 真值 (Boolean)
+
+外加两种常用容器:
+
+- 列表 (List)
+- 映射 (Dict)
 
 ## Symbol
 
@@ -29,23 +40,10 @@ line two
 - 准度/准确度: `¨`
   - `1¨20` Accuracy
 
-## REPL only
+## Booleans
 
-```sm
-¶1: 1 + 1
-⁋1: 2
-```
+真值只有两个, `true` 和 `false`
 
-- 输入
-  - 上个输入 `¶`
-  - 第 n 个输入 `¶n`
-  - 上上个输入 `¶¶`
-  - 上上上个输入 `¶¶¶` 以此类推
-- 输出
-  - 上个输出 `⁋`
-  - 第 n 个输出 `⁋n`
-  - 上上个输出 `⁋⁋`
-  - 上上上个输出 `⁋⁋⁋` 以此类推
 
 ## Function
 

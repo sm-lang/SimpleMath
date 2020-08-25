@@ -5,7 +5,7 @@ pub fn prefix_map(s: &str) -> Symbol {
         "+" => "plus",
         "-" => "minus",
         "*" => "unpack",
-        "!" => "Not",
+        "!" => "not",
         _ => unreachable!(),
     };
     Symbol::from(String::from("std::prefix::") + m)

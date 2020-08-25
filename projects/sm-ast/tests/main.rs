@@ -1,30 +1,20 @@
-use sm_ast::{evaluate::Runner, parser::ParserSettings, ToTex, ToWolfram, AST};
-mod parsed;
-mod tex_form;
+use sm_ast::{parser::ParserSettings, ToTex, ToWolfram};
+
+mod display;
+mod tex;
+mod wolfram;
 
 pub fn wl_form(s: &str) -> String {
     let parser = ParserSettings::default();
     parser.parse(s).unwrap().to_wolfram_string()
 }
 
-#[test]
-fn test() {
-    let a = AST::symbol("a");
-    let expr = a;
-    println!("{}", expr.to_wolfram_string());
-    println!("{}", expr.to_tex());
+pub fn tex_form(s: &str) -> String {
+    let parser = ParserSettings::default();
+    parser.parse(s).unwrap().to_tex()
 }
 
-#[test]
-fn test_add() {
-    let _engine = Runner::default();
-
+pub fn display_form(s: &str) -> String {
     let parser = ParserSettings::default();
-    let ast = parser.parse("0 + 1 + 2 x").unwrap();
-    println!("{}", ast);
-    println!("{}", ast.to_wolfram_string());
-
-    let refined = ast.rewrite();
-    println!("{}", refined);
-    println!("{}", refined.to_wolfram_string());
+    format!("{}", parser.parse(s).unwrap())
 }

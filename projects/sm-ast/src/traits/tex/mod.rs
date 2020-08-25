@@ -10,7 +10,6 @@ pub trait BoxArea {
     fn width(&self) -> usize { 1 }
 }
 
-
 impl ToTex for AST {
     fn to_tex(&self) -> String {
         match (*self).clone() {
@@ -28,25 +27,22 @@ impl ToTex for AST {
             AST::Program(_) => unimplemented!(),
             AST::Function(s, p) => {
                 match s.name_space.iter().map(|e| e.as_str()).collect_vec().as_slice() {
-                    ["std", "prefix"] => return infix_tex(&s, &p[0]),
+                    ["std", "prefix"] => unimplemented!(),
+                    ["std", "infix"] => return infix_tex(&s, &p[0]),
+                    ["std", "suffix"] => unimplemented!(),
                     _ => (),
                 }
                 match s.name.as_ref() {
                     "sin" | "cos" | "tan" | "cot" | "sec" | "csc" | "arcsin" | "arccos" | "arctan" => {
-                        format!(r"\\{}{}", s, omit_brackets_function(&p[0].arguments))
+                        format!(r"\\{}{}", s, omit_brackets_function(&p[0]))
                     }
                     "arccot" | "arcsec" | "arccsc" | "arcsinh" | "arccosh" | "arctanh" | "arccoth" | "arcsech" | "arccsch" => {
-                        format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&p[0].arguments))
+                        format!(r"\\operatorname{{{}}}{}", s, omit_brackets_function(&p[0]))
                     }
                     "List" => {
                         let max = p[0].arguments.iter().map(|e| e.height()).max().unwrap();
                         let e = &p[0].arguments.iter().map(AST::to_tex).collect_vec();
                         if max > 1 { format!(r"\\left\\{{{}\\right\\}}", e.join(", ")) } else { format!(r"\\{{{}\\}}", e.join(", ")) }
-                    }
-                    "plus" => {
-                        let lhs = &p[0].arguments[0];
-                        let rhs = &p[0].arguments[1];
-                        format!("{} + {}", lhs, rhs)
                     }
                     _ => {
                         let inner = p.iter().map(|e| e.to_tex()).collect_vec().join("");
@@ -67,7 +63,6 @@ impl ToTex for Parameter {
     }
 }
 
-
 impl BoxArea for AST {
     fn height(&self) -> usize {
         match self {
@@ -85,8 +80,25 @@ impl BoxArea for AST {
             AST::NewLine => 1,
             AST::Program(_) => 1,
             AST::Expression { .. } => 1,
-            AST::Function { .. } => 1,
+            AST::Function(s, p) => match s.name_space.iter().map(|e| e.as_str()).collect_vec().as_slice() {
+                ["std", "prefix"] => unimplemented!(),
+                ["std", "infix"] => p[0].arguments.len(),
+                ["std", "suffix"] => unimplemented!(),
+                _ => 1,
+            },
             _ => 1,
         }
+    }
+}
+
+impl BoxArea for Parameter {
+    fn height(&self) -> usize {
+        if self.arguments.len() == 0 {
+            return 1;
+        };
+        self.arguments.iter().map(|e| e.height()).max().unwrap()
+    }
+    fn width(&self) -> usize {
+        self.arguments.len()
     }
 }

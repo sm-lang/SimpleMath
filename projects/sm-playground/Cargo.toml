@@ -24,6 +24,3 @@ path = "../sm-ast"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
-
-[profile.release]
-opt-level = 'z'

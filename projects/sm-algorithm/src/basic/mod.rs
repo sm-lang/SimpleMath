@@ -1,12 +1,32 @@
-use num::{integer::{gcd, ExtendedGcd}, traits::Pow, BigInt, Integer, One, Zero, ToPrimitive};
+use num::{integer::{gcd, ExtendedGcd}, traits::Pow, BigInt, Integer, One, Zero, ToPrimitive, BigUint};
 use crate::Result;
-use crate::error::Error::OverFlow;
+use crate::error::Error::{OverFlow, Indeterminate};
+use num::bigint::Sign;
 
-
+pub fn power_iu(a: &BigInt, b: &BigUint) -> Result<BigInt> {
+    if a.is_zero()&&b.is_zero(){
+        return Err(Indeterminate)
+    }
+   else if a.is_zero()||b.is_zero(){
+        return Ok(BigInt::zero())
+    }
+    else if a.is_one(){
+        return Ok(BigInt::one())
+    }
+    else if b.is_one(){
+        return Ok(BigInt::from_biguint(Sign::Plus,b.clone()))
+    }
+    match b.to_u32() {
+        None => { Err(OverFlow) }
+        Some(u) => {
+            Ok(a.pow(u))
+        }
+    }
+}
 
 #[test]
 fn test_power() {
-    assert_eq!(BigInt::from(2).pow(16u64), BigInt::from(65536));
+    assert_eq!(BigInt::from(-2).pow(16u64), BigInt::from(65536));
 }
 
 #[test]

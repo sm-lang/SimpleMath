@@ -1,7 +1,7 @@
 use crate::{
     ast::{Parameter, Symbol},
     traits::tex::BoxArea,
-    ToTex, AST,
+    ToTex,
 };
 use itertools::Itertools;
 
@@ -10,14 +10,15 @@ pub(crate) fn infix_tex(s: &Symbol, p: &Parameter) -> String {
     let rhs = &p.arguments[1];
     let ops = match s.name.as_str() {
         "plus" => "+",
-        "times" => return String::from(" "),
+        "times" => return format!("{} {}", lhs, rhs),
         _ => &s.name,
     };
     format!("{} {} {}", lhs, ops, rhs)
 }
 
-pub(crate) fn omit_brackets_function(args: &Vec<AST>) -> String {
+pub(crate) fn omit_brackets_function(p: &Parameter) -> String {
     let mut out = String::new();
+    let args = &p.arguments;
     match args.len() {
         0 => out.push_str("()"),
         1 => {
@@ -25,14 +26,15 @@ pub(crate) fn omit_brackets_function(args: &Vec<AST>) -> String {
                 out.push_str(&format!(" {}", args[0].to_tex()))
             }
             else {
-                if args[0].height() > 1 {
+                let max = p.height();
+                if max > 1 {
                     out.push_str("\\left(");
                 }
                 else {
                     out.push_str("(");
                 }
                 out.push_str(&format!("{}", args[0].to_tex()));
-                if args[0].height() > 1 {
+                if max > 1 {
                     out.push_str("\\left)");
                 }
                 else {
@@ -41,7 +43,7 @@ pub(crate) fn omit_brackets_function(args: &Vec<AST>) -> String {
             }
         }
         _ => {
-            let max = args.iter().map(|e| e.height()).max().unwrap();
+            let max = p.height();
             if max > 1 {
                 out.push_str("\\left(");
             }

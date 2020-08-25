@@ -59,11 +59,11 @@ impl AST {
 fn evaluate_function(f: &Symbol, p: Parameter, ctx: &mut Context) -> S {
     let args = p.arguments;
     let out = match f.name.as_str() {
-        "first" => internal::first(&args[0]).unwrap(),
-        "last" => internal::last(&args[0]).unwrap(),
-        "length" => internal::length(&args[0]).unwrap(),
-        "factorial" => internal::factorial(&args[0]).unwrap(),
-        "fibonacci" => internal::fibonacci(&args[0]).unwrap(),
+        "first" => internal::first(&args[0])?,
+        "last" => internal::last(&args[0])?,
+        "length" => internal::length(&args[0])?,
+        "factorial" => internal::factorial(&args[0])?,
+        "fibonacci" => internal::fibonacci(&args[0])?,
         "plus" => evaluate_additive(&args, ctx)?,
         "times" => evaluate_multiplicative(&args, ctx)?,
         "power" => evaluate_power(&args, ctx)?,
