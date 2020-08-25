@@ -1,7 +1,8 @@
 #![feature(unchecked_math)]
 
+mod basic;
 mod cache;
-mod combinatoric;
+mod combinatorics;
 mod digits;
 mod error;
 mod gamma;
@@ -13,3 +14,4 @@ pub use error::{Error, Result};
 pub use gamma::*;
 pub use linear::*;
 pub use prime::*;
+pub use basic::*;
