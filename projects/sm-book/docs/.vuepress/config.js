@@ -13,11 +13,21 @@ const locale_cn = {
     sidebar: {
         "/cn/": [
             {
+                title: '简介',
+                collapsable: false,
+                children: [
+                    ['starter/', '安装与运行'],
+                    ['starter/literal', '基本语法'],
+                    ['starter/function', '函数调用'],
+                    ['starter/repl', '交互式环境'],
+                ]
+            },
+            {
                 title: '入门',
                 collapsable: false,
                 children: [
                     ['basic/', '安装与运行'],
-                    ['basic/literal', '基本语法'],
+                    ['basic/function', '函数进阶'],
                     ['basic/operators', '运算优先级'],
                     ['basic/questions', '疑难解答'],
                     ['basic/shortcoming', '语法问题'],
