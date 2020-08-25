@@ -13,7 +13,7 @@ const locale_cn = {
     sidebar: {
         "/cn/": [
             {
-                title: '简介',
+                title: '概览',
                 collapsable: false,
                 children: [
                     ['starter/', '安装与运行'],
@@ -26,11 +26,24 @@ const locale_cn = {
                 title: '入门',
                 collapsable: false,
                 children: [
-                    ['basic/', '安装与运行'],
-                    ['basic/function', '函数进阶'],
-                    ['basic/operators', '运算优先级'],
+                    ['basic/', '其他语法'],
+                    ['basic/function', '函数综述'],
                     ['basic/questions', '疑难解答'],
-                    ['basic/shortcoming', '语法问题'],
+                ]
+            },
+            {
+                title: '进阶',
+                collapsable: false,
+                children: [
+                    ['advance/', '进阶知识'],
+                ]
+            },
+            {
+                title: '开发',
+                collapsable: false,
+                children: [
+                    ['deveoper/operators', '运算优先级'],
+                    ['deveoper/shortcoming', '语法问题'],
                 ]
             },
         ],
@@ -106,6 +119,14 @@ module.exports = {
                         scopeName: 'source.sm',
                         path: path.resolve(__dirname, 'public/sm.tmLanguage.json'),
                         aliases: []
+                    },
+                    {
+                        id: 'wolfram',
+                        scopeName: 'source.wolfram',
+                        path: path.resolve(__dirname, 'public/wl.tmLanguage.json'),
+                        aliases: [
+                            'wl'
+                        ]
                     }
                 ]
             }
