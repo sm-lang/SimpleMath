@@ -9,7 +9,7 @@
 
 在 wolfram 中可以定义以 Slot 为 Caller 的函数
 
-```
+```wl
 #[a + 1]&
 ```
 
@@ -31,7 +31,7 @@ wolfram 中的 caller 可以是任意的
 
 wolfram 中合法但是 simple math 中非法的例子
 
-```
+```wl
 1[2]
 True[2]
 "2"[2]
@@ -41,7 +41,7 @@ True[2]
 
 ### 复杂导函数
 
-```
+```wl
 f'[x]'[y]
 Derivative[1][Derivative[1][f][x]][y]
 ```
@@ -55,12 +55,14 @@ sm 中的 derivative 是特设模式, 无法扩展
 
 ### 多重复合函数
 
-
+```sm
 sin^2(x)
 
 sin^-1(x)
-
 ```
+
+
+```wl
 f^2[x]
 ```
 

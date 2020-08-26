@@ -28,6 +28,9 @@ const locale_cn = {
                 children: [
                     ['basic/', '其他语法'],
                     ['basic/function', '函数综述'],
+                    ['basic/lambda', '匿名函数'],
+                    ['basic/control', '控制流'],
+                    ['basic/scope', '作用域'],
                     ['basic/questions', '疑难解答'],
                 ]
             },
@@ -42,8 +45,9 @@ const locale_cn = {
                 title: '开发',
                 collapsable: false,
                 children: [
-                    ['deveoper/operators', '运算优先级'],
-                    ['deveoper/shortcoming', '语法问题'],
+                    ['developer/', '实现细节'],
+                    ['developer/operators', '运算优先级'],
+                    ['developer/shortcoming', '语法问题'],
                 ]
             },
         ],
