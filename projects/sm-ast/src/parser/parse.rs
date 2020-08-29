@@ -13,15 +13,8 @@ use std::{
     iter::FromIterator,
     str::FromStr,
 };
+use crate::ast::Expression;
 
-macro_rules! debug_cases {
-    ($i:ident) => {{
-        println!("Rule::{:?}=>continue,", $i.as_rule());
-        println!("Span: {:?}", $i.as_span());
-        println!("Text: {}", $i.as_str());
-        unreachable!();
-    }};
-}
 
 impl ParserSettings {
     pub fn parse_file(&self, path_from: &str, path_to: &str) -> SMResult<()> {
@@ -31,13 +24,17 @@ impl ParserSettings {
         file.write_all(&s.to_wolfram_bytes())?;
         return Ok(());
     }
+    pub fn parse_repl(&self, _text: &str) -> Vec<Expression> {
+        unimplemented!()
+    }
+
     pub fn parse(&self, text: &str) -> SMResult<AST> {
         let pairs = SMParser::parse(Rule::program, text)?;
         for pair in pairs {
             match pair.as_rule() {
                 Rule::EOI => continue,
                 Rule::expression => {
-                    return Ok(self.parse_expression(pair));
+                    return Ok(self.parse_expression(pair).0);
                 }
                 Rule::COMMENT => continue,
                 _ => debug_cases!(pair),
@@ -46,10 +43,9 @@ impl ParserSettings {
         return Ok(AST::EmptyStatement);
     }
 
-    fn parse_expression(&self, pairs: Pair<Rule>) -> AST {
+    fn parse_expression(&self, pairs: Pair<Rule>) -> (AST, bool) {
         let mut eos = false;
         let mut base = AST::EmptyStatement;
-        let position = self.get_position(pairs.as_span());
         for pair in pairs.into_inner() {
             match pair.as_rule() {
                 Rule::expr => {
@@ -59,7 +55,7 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        return AST::Expression { base: Box::new(base), eos, position };
+        return (base, eos);
     }
 
     #[rustfmt::skip]
@@ -214,7 +210,7 @@ impl ParserSettings {
                     let (k, v) = self.parse_apply_kv(pair);
                     match k {
                         AST::EmptyStatement => args.push(v),
-                        _ => kws.insert(k, v).unwrap_none(),
+                        _ => { kws.insert(k, v); }
                     }
                 }
                 _ => unreachable!(),
@@ -287,7 +283,7 @@ impl ParserSettings {
             Rule::Integer => self.parse_integer(pair),
             Rule::Byte => self.parse_byte(pair),
             Rule::Special => self.parse_special(pair),
-            Rule::REPL => self.parse_repl(pair),
+            Rule::REPL => self.parse_in_out(pair),
             Rule::Slot => self.parse_slot(pair),
             _ => debug_cases!(pair),
         }
@@ -335,7 +331,7 @@ impl ParserSettings {
         }
     }
 
-    fn parse_repl(&self, pairs: Pair<Rule>) -> AST {
+    fn parse_in_out(&self, pairs: Pair<Rule>) -> AST {
         let position = self.get_position(pairs.as_span());
         let mut head = vec![];
         let mut n = vec![];

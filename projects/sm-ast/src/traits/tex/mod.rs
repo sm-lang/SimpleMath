@@ -14,17 +14,11 @@ impl ToTex for AST {
     fn to_tex(&self) -> String {
         match (*self).clone() {
             AST::EmptyStatement => format!(""),
-            AST::NewLine => format!("\n"),
-            AST::Expression { base, eos, .. } => {
-                let s = if eos { ";" } else { "" };
-                format!("{}{}", base.to_tex(), s)
-            }
+            AST::Program(_) => unimplemented!(),
             AST::Integer(i) => format!("{}", i),
             AST::Decimal(f) => format!("{}", f),
             AST::Symbol(s) => format!("{}", s.name),
             AST::String(s) => format!(r"\\text{{{}}}", s),
-
-            AST::Program(_) => unimplemented!(),
             AST::Function(s, p) => {
                 match s.name_space.iter().map(|e| e.as_str()).collect_vec().as_slice() {
                     ["std", "prefix"] => unimplemented!(),
@@ -67,9 +61,7 @@ impl BoxArea for AST {
     fn height(&self) -> usize {
         match self {
             AST::EmptyStatement => 0,
-            AST::NewLine => 1,
             AST::Program(_) => 1,
-            AST::Expression { .. } => 1,
             AST::Function { .. } => 1,
             _ => 1,
         }
@@ -77,9 +69,7 @@ impl BoxArea for AST {
     fn width(&self) -> usize {
         match self {
             AST::EmptyStatement => 0,
-            AST::NewLine => 1,
             AST::Program(_) => 1,
-            AST::Expression { .. } => 1,
             AST::Function(s, p) => match s.name_space.iter().map(|e| e.as_str()).collect_vec().as_slice() {
                 ["std", "prefix"] => unimplemented!(),
                 ["std", "infix"] => p[0].arguments.len(),

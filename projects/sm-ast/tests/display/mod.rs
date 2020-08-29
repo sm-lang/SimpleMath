@@ -1,6 +1,6 @@
 use crate::display_form;
 
-
+#[test]
 fn literals() {
     assert_eq!(display_form("a"), "a");
     assert_eq!(display_form("0"), "0");

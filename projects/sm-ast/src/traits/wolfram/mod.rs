@@ -1,18 +1,16 @@
 use crate::{ast::Symbol, AST};
-use itertools::Itertools;
 use text_utils::capitalize_first_letter;
 use wolfram_wxf::{ToWolfram, WolframValue};
+use crate::ast::Expression;
 
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
         match (*self).clone() {
-            AST::EmptyStatement | AST::NewLine => WolframValue::Skip,
+            AST::EmptyStatement => WolframValue::Skip,
             //
             AST::Program(s) => {
-                let v = s.iter().map(|s| s.to_wolfram()).collect_vec();
-                WolframValue::function("CompoundExpression", v)
+                WolframValue::function("CompoundExpression", s)
             }
-            AST::Expression { base, .. } => base.to_wolfram(),
             //
             AST::Function(s, ps) => {
                 let mut head = WolframValue::symbol(function_map(&s));
@@ -28,20 +26,19 @@ impl ToWolfram for AST {
                 }
                 return head;
             }
-            //
-            AST::Boolean(b) => {
-                if b {
-                    WolframValue::symbol("True")
-                }
-                else {
-                    WolframValue::symbol("False")
-                }
-            }
+            #[rustfmt::skip]
+            AST::Boolean(b) => if b { WolframValue::symbol("True") } else { WolframValue::symbol("False") },
             AST::Integer(i) => WolframValue::BigInteger(i),
             AST::Decimal(f) => WolframValue::BigDecimal(Box::from(format!("{}", f))),
             AST::Symbol(s) => WolframValue::Symbol(Box::from(s.name)),
             AST::String(s) => WolframValue::String(Box::from(s)),
         }
+    }
+}
+
+impl ToWolfram for Expression {
+    fn to_wolfram(&self) -> WolframValue {
+        unimplemented!()
     }
 }
 

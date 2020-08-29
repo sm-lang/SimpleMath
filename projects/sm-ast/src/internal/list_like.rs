@@ -2,7 +2,6 @@ use crate::{error::SMError::EmptyContainer, SMResult, AST};
 
 pub fn head(expr: &AST) -> AST {
     match expr {
-        AST::Expression { .. } => unimplemented!(),
         AST::Function(s, p) => match p.len() {
             0 => AST::symbol("std::core::Symbol"),
             1 => AST::Symbol(s.clone()),

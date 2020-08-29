@@ -26,3 +26,13 @@ macro_rules! unimplemented_function {
         format!("Unimplemented Function: {} at line {}", &name[..name.len() - 3], line!())
     }};
 }
+
+#[macro_export]
+macro_rules! debug_cases {
+    ($i:ident) => {{
+        println!("Rule::{:?}=>continue,", $i.as_rule());
+        println!("Span: {:?}", $i.as_span());
+        println!("Text: {}", $i.as_str());
+        unreachable!();
+    }};
+}

@@ -4,7 +4,6 @@ use crate::AST;
 impl AST {
     pub fn rewrite(&self) -> AST {
         match self {
-            AST::Expression { base, .. } => base.rewrite(),
             AST::Function { .. } => self.clone(),
             // ```rs
             // AST::AdditiveExpression { terms, position } => {

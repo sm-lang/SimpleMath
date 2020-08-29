@@ -9,6 +9,7 @@ use std::{
     fmt,
     fmt::{Display, Formatter},
 };
+use crate::ast::SymbolKind;
 
 impl AST {
     pub fn integer(n: impl Into<BigInt>) -> AST {
@@ -25,13 +26,30 @@ impl AST {
     pub fn string(s: impl Into<String>) -> AST {
         AST::String(s.into())
     }
+    pub fn prefix(s: &str, o: &str) -> AST {
+        let mut s = Symbol::from(s);
+        s.kind == SymbolKind::Prefix(Box::from(o));
+        AST::Symbol(s)
+    }
+
+    pub fn infix(s: &str, o: &str, p: u8) -> AST {
+        let mut s = Symbol::from(s);
+        s.kind == SymbolKind::Infix(Box::from(o), p);
+        AST::Symbol(s)
+    }
+    pub fn suffix(s: &str, o: &str) -> AST {
+        let mut s = Symbol::from(s);
+        s.kind == SymbolKind::Suffix(Box::from(o));
+        AST::Symbol(s)
+    }
+
 }
 
 impl From<&str> for Symbol {
     fn from(s: &str) -> Self {
         let mut ns = s.split("::").map(String::from).collect_vec();
         let n = ns.pop().unwrap();
-        Symbol { name_space: ns, name: n }
+        Symbol { name_space: ns, name: n, kind: SymbolKind::Normal, attributes: 0 }
     }
 }
 
@@ -43,7 +61,7 @@ impl From<String> for Symbol {
 
 impl Default for Symbol {
     fn default() -> Self {
-        Self { name_space: vec![], name: "".to_string() }
+        Self { name_space: vec![], name: "".to_string(), kind: SymbolKind::Normal, attributes: 0 }
     }
 }
 
@@ -57,23 +75,15 @@ impl Default for Position {
 impl Display for AST {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            AST::Expression { base, eos, .. } => {
-                write!(f, "{}", base);
-                if *eos { write!(f, ";") } else { write!(f, "") }
-            }
-            AST::Boolean(b) => {
-                if *b {
-                    write!(f, "true")
-                }
-                else {
-                    write!(f, "false")
-                }
-            }
+            AST::EmptyStatement => { unimplemented!() }
+            AST::Program(_) => { unimplemented!() }
+            AST::Function(_, _) => { unimplemented!() }
+            #[rustfmt::skip]
+            AST::Boolean(b) => if *b { write!(f, "true") } else { write!(f, "false") }
             AST::Integer(n) => write!(f, "{}", n),
             AST::Decimal(n) => write!(f, "{}", n),
             AST::Symbol(s) => write!(f, "{}", s),
             AST::String(s) => write!(f, "{}", s),
-            _ => write!(f, "{:?}", self),
         }
     }
 }
