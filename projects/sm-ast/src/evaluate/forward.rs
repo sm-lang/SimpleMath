@@ -9,9 +9,7 @@ type S = SMResult<AST>;
 impl AST {
     pub fn forward(&self, ctx: &mut Context) -> S {
         let out = match self {
-            AST::EmptyStatement | AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => {
-                self.clone()
-            }
+            AST::EmptyStatement | AST::Boolean(..) | AST::Integer(..) | AST::Decimal(..) | AST::Symbol(..) | AST::String(..) => self.clone(),
             AST::Program(_) => unimplemented!(),
             AST::Function(s, p) => match p.len() {
                 0 => AST::Symbol(s.clone()),

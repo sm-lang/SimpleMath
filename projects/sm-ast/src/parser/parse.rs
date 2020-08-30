@@ -1,5 +1,5 @@
 use crate::{
-    ast::{Parameter, Position, Symbol},
+    ast::{Expression, Parameter, Position, Symbol},
     parser::{infix_map, prefix_map, suffix_map, ParserSettings, CLIMBER},
     SMResult, ToWolfram, AST,
 };
@@ -13,8 +13,6 @@ use std::{
     iter::FromIterator,
     str::FromStr,
 };
-use crate::ast::Expression;
-
 
 impl ParserSettings {
     pub fn parse_file(&self, path_from: &str, path_to: &str) -> SMResult<()> {
@@ -210,7 +208,9 @@ impl ParserSettings {
                     let (k, v) = self.parse_apply_kv(pair);
                     match k {
                         AST::EmptyStatement => args.push(v),
-                        _ => { kws.insert(k, v); }
+                        _ => {
+                            kws.insert(k, v);
+                        }
                     }
                 }
                 _ => unreachable!(),

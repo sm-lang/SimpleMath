@@ -22,48 +22,6 @@ pub enum AST {
     String(String),
 }
 
-pub trait CheckAttributes {
-    fn is_function(&self) -> bool {
-        false
-    }
-    fn is_string(&self) -> bool {
-        false
-    }
-    fn is_power(&self) -> bool {
-        false
-    }
-    fn is_number(&self) -> bool {
-        false
-    }
-    fn is_complex(&self) -> bool {
-        false
-    }
-    fn is_integer(&self) -> bool {
-        false
-    }
-    fn is_positive(&self) -> bool {
-        false
-    }
-    fn is_negative(&self) -> bool {
-        false
-    }
-    fn is_zero(&self) -> bool {
-        false
-    }
-    fn is_one(&self) -> bool {
-        false
-    }
-    fn is_negative_one(&self) -> bool {
-        false
-    }
-    fn is_boolean(&self) -> bool {
-        false
-    }
-    fn is_null(&self) -> bool {
-        false
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Parameter {
     pub arguments: Vec<AST>,
@@ -80,16 +38,8 @@ pub struct Position {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Expression {
-    Source {
-        raw: String,
-        input: AST,
-        eos: bool,
-    },
-    Executed {
-        raw: String,
-        input: AST,
-        output: AST,
-    },
+    Source { raw: String, input: AST, eos: bool },
+    Executed { raw: String, input: AST, output: AST },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -98,7 +48,7 @@ pub struct Symbol {
     pub name: String,
     pub kind: SymbolKind,
     /// maybe use bit flag
-    pub attributes: u64
+    pub attributes: u64,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -113,5 +63,3 @@ pub enum SymbolKind {
     Infix(Box<str>, u8),
     Suffix(Box<str>),
 }
-
-

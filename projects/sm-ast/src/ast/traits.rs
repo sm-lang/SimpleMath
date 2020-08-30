@@ -1,5 +1,5 @@
 use crate::{
-    ast::{CheckAttributes, Position, Symbol},
+    ast::{Parameter, Position, Symbol, SymbolKind},
     AST,
 };
 use bigdecimal::BigDecimal;
@@ -9,40 +9,46 @@ use std::{
     fmt,
     fmt::{Display, Formatter},
 };
-use crate::ast::SymbolKind;
 
-impl AST {
-    pub fn integer(n: impl Into<BigInt>) -> AST {
-        AST::Integer(n.into())
+impl Display for AST {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            AST::EmptyStatement => unimplemented!(),
+            AST::Program(_) => unimplemented!(),
+            AST::Function(v, p) =>{
+                match &v.kind {
+                    SymbolKind::Normal => unimplemented!(),
+                    SymbolKind::Alias => unimplemented!(),
+                    SymbolKind::Prefix(o) => if is_unary(p) {
+                        return write!(f, "{0}{1}", o,p[0].arguments[0])
+                    },
+                    SymbolKind::Infix(_, _) => unimplemented!(),
+                    SymbolKind::Suffix(o) => if is_unary(p) {
+                        return write!(f, "{1}{0}", o,p[0].arguments[0])
+                    },
+                }
+                write!(f,"")
+            },
+            #[rustfmt::skip]
+            AST::Boolean(b) => if *b { write!(f, "true") } else { write!(f, "false") },
+            AST::Integer(n) => write!(f, "{}", n),
+            AST::Decimal(n) => write!(f, "{}", n),
+            AST::Symbol(s) => write!(f, "{}", s),
+            AST::String(s) => write!(f, "{}", s),
+        }
     }
-    pub fn decimal(n: impl Into<BigDecimal>) -> AST {
-        AST::Decimal(n.into())
-    }
+}
 
-    pub fn symbol(s: impl AsRef<str>) -> AST {
-        AST::Symbol(Symbol::from(s.as_ref()))
+impl Display for Symbol {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        if self.name_space.len() == 0 { write!(f, "{}", self.name) } else { write!(f, "{}::{}", self.name_space.join("::"), self.name) }
     }
+}
 
-    pub fn string(s: impl Into<String>) -> AST {
-        AST::String(s.into())
+impl Display for Position {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}", self.file)
     }
-    pub fn prefix(s: &str, o: &str) -> AST {
-        let mut s = Symbol::from(s);
-        s.kind == SymbolKind::Prefix(Box::from(o));
-        AST::Symbol(s)
-    }
-
-    pub fn infix(s: &str, o: &str, p: u8) -> AST {
-        let mut s = Symbol::from(s);
-        s.kind == SymbolKind::Infix(Box::from(o), p);
-        AST::Symbol(s)
-    }
-    pub fn suffix(s: &str, o: &str) -> AST {
-        let mut s = Symbol::from(s);
-        s.kind == SymbolKind::Suffix(Box::from(o));
-        AST::Symbol(s)
-    }
-
 }
 
 impl From<&str> for Symbol {
@@ -71,66 +77,105 @@ impl Default for Position {
     }
 }
 
-#[allow(unused_must_use)]
-impl Display for AST {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+impl AST {
+    pub fn integer(n: impl Into<BigInt>) -> AST {
+        AST::Integer(n.into())
+    }
+    pub fn decimal(n: impl Into<BigDecimal>) -> AST {
+        AST::Decimal(n.into())
+    }
+
+    pub fn symbol(s: impl AsRef<str>) -> AST {
+        AST::Symbol(Symbol::from(s.as_ref()))
+    }
+
+    pub fn string(s: impl Into<String>) -> AST {
+        AST::String(s.into())
+    }
+}
+
+#[allow(dead_code)]
+impl AST {
+    pub(crate) fn is_string(&self) -> bool {
         match self {
-            AST::EmptyStatement => { unimplemented!() }
-            AST::Program(_) => { unimplemented!() }
-            AST::Function(_, _) => { unimplemented!() }
-            #[rustfmt::skip]
-            AST::Boolean(b) => if *b { write!(f, "true") } else { write!(f, "false") }
-            AST::Integer(n) => write!(f, "{}", n),
-            AST::Decimal(n) => write!(f, "{}", n),
-            AST::Symbol(s) => write!(f, "{}", s),
-            AST::String(s) => write!(f, "{}", s),
-        }
-    }
-}
-
-impl Display for Symbol {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        if self.name_space.len() == 0 { write!(f, "{}", self.name) } else { write!(f, "{}::{}", self.name_space.join("::"), self.name) }
-    }
-}
-
-impl Display for Position {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self.file)
-    }
-}
-
-impl CheckAttributes for AST {
-    fn is_string(&self) -> bool {
-        match &self {
             AST::String(..) => true,
             _ => false,
         }
     }
-    fn is_zero(&self) -> bool {
+    pub(crate) fn is_zero(&self) -> bool {
         match self {
             AST::Integer(i) => i.is_zero(),
             AST::Decimal(n) => n.is_zero(),
             _ => false,
         }
     }
-    fn is_one(&self) -> bool {
+    pub(crate) fn is_one(&self) -> bool {
         match self {
             AST::Integer(i) => i.is_one(),
             AST::Decimal(n) => n.is_one(),
             _ => false,
         }
     }
-    fn is_boolean(&self) -> bool {
-        match &self {
+    pub(crate) fn is_boolean(&self) -> bool {
+        match self {
             AST::Boolean(..) => true,
             _ => false,
         }
     }
-    fn is_null(&self) -> bool {
-        match &self {
+    pub(crate) fn is_null(&self) -> bool {
+        match self {
             AST::Symbol(s) => s.name == "Null",
             _ => false,
         }
     }
+    pub(crate) fn is_function(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_power(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_number(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_complex(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_integer(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_positive(&self) -> bool {
+        false
+    }
+    pub(crate) fn is_negative(&self) -> bool {
+        false
+    }
+}
+
+#[allow(dead_code)]
+impl Symbol {
+    pub(crate) fn is_prefix(&self) -> bool {
+        match self.kind {
+            SymbolKind::Prefix(..) => true,
+            _ => false,
+        }
+    }
+    pub(crate) fn is_infix(&self) -> bool {
+        match self.kind {
+            SymbolKind::Infix(..) => true,
+            _ => false,
+        }
+    }
+    pub(crate) fn is_suffix(&self) -> bool {
+        match self.kind {
+            SymbolKind::Suffix(..) => true,
+            _ => false,
+        }
+    }
+}
+
+pub(crate) fn is_unary(p: &[Parameter]) -> bool {
+    if p.len() == 1 {
+        if p[0].arguments.len() == 1 { return true; }
+    }
+    false
 }

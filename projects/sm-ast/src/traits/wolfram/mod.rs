@@ -1,16 +1,16 @@
-use crate::{ast::Symbol, AST};
+use crate::{
+    ast::{Expression, Symbol},
+    AST,
+};
 use text_utils::capitalize_first_letter;
 use wolfram_wxf::{ToWolfram, WolframValue};
-use crate::ast::Expression;
 
 impl ToWolfram for AST {
     fn to_wolfram(&self) -> WolframValue {
         match (*self).clone() {
             AST::EmptyStatement => WolframValue::Skip,
             //
-            AST::Program(s) => {
-                WolframValue::function("CompoundExpression", s)
-            }
+            AST::Program(s) => WolframValue::function("CompoundExpression", s),
             //
             AST::Function(s, ps) => {
                 let mut head = WolframValue::symbol(function_map(&s));
