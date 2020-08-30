@@ -10,10 +10,11 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
         crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
     <script type="module">
-        import init, { rs_render } from "https://cdn.jsdelivr.net/npm/sm_playground@0.0.1/sm_playground.js"
+        import init, { result, result_tex } from "https://cdn.jsdelivr.net/npm/sm_playground@0.0.3/sm_playground.js"
         async function run() {
             await init();
-            window.rs_render = rs_render
+            window.forward = result;
+            window.forward_tex = result_tex;
         }
         run();
     </script>
@@ -22,37 +23,54 @@
 <body>
     <main>
         <div class="cell">
-            <button onClick="calculateArea()">Evaluate</button>
-            <button onClick="calculateArea()">Copy Raw</button>
-            <button onClick="calculateArea()">Copy Out</button>
-            <button onClick="calculateArea()">Copy TeX</button><br>
-            <textarea id="demo-input" spellcheck="false" rows="4">2a*3b</textarea>
-            <pre><code id="demo-output" class="language-js">6a^2</code></pre>
-            <label for="output">TeXForm: </label>
-            <div id="demo-tex">$$6a^2$$</div>
+            <button onClick="calculateArea(1)">Evaluate</button>
+            <button onClick="calculateArea(1)">Copy Raw</button>
+            <button onClick="calculateArea(1)">Copy Out</button>
+            <button onClick="calculateArea(1)">Copy TeX</button><br>
+            <textarea id="demo-input-1" spellcheck="false" rows="4">2a*3b</textarea>
+            <pre><code id="demo-output-1" class="language-js">6a^2</code></pre>
+            <label for="demo-tex-1">TeXForm: </label>
+            <div id="demo-tex-1">$$6a^2$$</div>
         </div>
         <hr>
         <div class="cell">
-            <button onClick="calculateArea()">Evaluate</button>
-            <button onClick="calculateArea()">Copy Raw</button>
-            <button onClick="calculateArea()">Copy Out</button>
-            <button onClick="calculateArea()">Copy TeX</button><br>
-            <textarea id="demo-input" spellcheck="false" rows="4">expand((1+x)^2)</textarea>
-            <pre><code id="demo-output" class="language-js">1 + 2 x + x^2</code></pre>
-            <label for="output">TeXForm: </label>
-            <div id="demo-tex">$$1 + 2 x + x^2$$</div>
+            <button onClick="calculateArea(2)">Evaluate</button>
+            <button onClick="calculateArea(2)">Copy Raw</button>
+            <button onClick="calculateArea(2)">Copy Out</button>
+            <button onClick="calculateArea(2)">Copy TeX</button><br>
+            <textarea id="demo-input-2" spellcheck="false" rows="4">expand((1+x)^2)</textarea>
+            <pre><code id="demo-output-2" class="language-js">1 + 2 x + x^2</code></pre>
+            <label for="demo-tex-2">TeXForm: </label>
+            <div id="demo-tex-2">$$1 + 2 x + x^2$$</div>
         </div>
+        <hr>
+        <div class="cell">
+            <button onClick="calculateArea(3)">Evaluate</button>
+            <button onClick="calculateArea(3)">Copy Raw</button>
+            <button onClick="calculateArea(3)">Copy Out</button>
+            <button onClick="calculateArea(3)">Copy TeX</button><br>
+            <textarea id="demo-input-3" spellcheck="false"
+                rows="4">[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]</textarea>
+            <pre><code id="demo-output-3" class="language-js">[[1], 2, 2, 3, 4]</code></pre>
+            <label for="demo-tex-3">TeXForm: </label>
+            <div id="demo-tex-3">$$\{\{1\}, 2, 2, 3, 4\}$$</div>
+        </div>
+
     </main>
 </body>
 
 <script>
-    function calculateArea() {
-        const base = document.getElementById('demo-input').value;
-        const out = document.getElementById('demo-output').innerText;
-        katex.render(out, document.getElementById('demo-tex'), {
-            throwOnError: false,
-            displayMode: true,
-        });
+    function calculateArea(i) {
+        const input = document.getElementById('demo-input-' + i).value;
+        document.getElementById('demo-output-' + i).innerText = forward(input)
+        katex.render(
+            forward_tex(input),
+            document.getElementById('demo-tex-' + i),
+            {
+                throwOnError: false,
+                displayMode: true,
+            }
+        );
     }
 </script>
 

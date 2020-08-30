@@ -1,11 +1,21 @@
 use wasm_bindgen::prelude::*;
+use sm_ast::parser::ParserSettings;
+use sm_ast::{Runner, ToTex};
 
-#[wasm_bindgen]
-extern {
-    pub fn alert(s: &str);
+
+fn forward(input: &str) -> Runner {
+    let parser = ParserSettings::default();
+    let mut runner = Runner::from(parser.parse(input));
+    runner.forward();
+    return runner;
 }
 
 #[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
+pub fn result(input: &str) -> String {
+    format!("{}", forward(input).ast)
+}
+
+#[wasm_bindgen]
+pub fn result_tex(input: &str) -> String {
+    format!("{}", forward(input).ast.to_tex())
 }
