@@ -49,7 +49,7 @@ fn literal_list() {
     assert_eq!(wl_form("[[1], 2]"), "{{1},2}");
 }
 
-#[test]
+#[allow(dead_code)]
 fn literal_list_advance() {
     let input = "[[1], 2, Nothing, Sequence(2, Sequence(3, 4))]";
     let parser = ParserSettings::default();

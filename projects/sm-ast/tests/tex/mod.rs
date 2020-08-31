@@ -22,8 +22,9 @@ fn test_arcsinh() {
     assert_eq!(tex_form("arcsinh(x)"), r"\\operatorname{arcsinh} x");
 }
 
+#[test]
 fn test_complex() {
-    assert_eq!(tex_form("1+2+3"), r"\\operatorname{arcsinh} x");
-    assert_eq!(tex_form("1+2*3"), r"\\operatorname{arcsinh} x");
-    assert_eq!(tex_form("(1+2)*3"), r"\\operatorname{arcsinh} x");
+    assert_eq!(tex_form("1+2+3"), r"1+2 + 3");
+    assert_eq!(tex_form("1+2*3"), r"1 + 2*3");
+    assert_eq!(tex_form("(1+2)*3"), r"1+2 3");
 }

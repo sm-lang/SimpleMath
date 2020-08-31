@@ -117,24 +117,14 @@ impl ParserSettings {
     }
 
     fn parse_node(&self, pairs: Pair<Rule>) -> AST {
-        for pair in pairs.into_inner() {
-            match pair.as_rule() {
-                Rule::expr => {
-                    return self.parse_expr(pair);
-                }
-                Rule::data => {
-                    return self.parse_data(pair);
-                }
-                Rule::apply_call => {
-                    return self.parse_apply_call(pair);
-                }
-                Rule::space_call => {
-                    return self.parse_space_call(pair);
-                }
-                _ => debug_cases!(pair),
-            };
+        let pair = pairs.clone().into_inner().nth(0).unwrap();
+        match pair.as_rule() {
+            Rule::expr => self.parse_expr(pair),
+            Rule::data => self.parse_data(pair),
+            Rule::apply_call => self.parse_apply_call(pair),
+            Rule::space_call => self.parse_space_call(pair),
+            _ => debug_cases!(pair),
         }
-        return AST::EmptyStatement;
     }
 
     fn parse_dot_call(&self, lhs: AST, rhs: AST, position: &Position) -> AST {
@@ -191,9 +181,8 @@ impl ParserSettings {
                 _ => debug_cases!(pair),
             };
         }
-        let s = Symbol::from("std::infix::times");
         let p = Parameter { arguments: stack, options: Default::default(), position };
-        return AST::Function(s, vec![p]);
+        return AST::Function(infix_map("*"), vec![p]);
     }
 
     fn parse_apply(&self, pairs: Pair<Rule>) -> Parameter {

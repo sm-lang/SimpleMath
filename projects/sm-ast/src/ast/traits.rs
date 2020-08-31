@@ -15,20 +15,33 @@ impl Display for AST {
         match self {
             AST::EmptyStatement => unimplemented!(),
             AST::Program(_) => unimplemented!(),
-            AST::Function(v, p) =>{
-                match &v.kind {
+            AST::Function(s, ps) => {
+                match &s.kind {
                     SymbolKind::Normal => unimplemented!(),
                     SymbolKind::Alias => unimplemented!(),
-                    SymbolKind::Prefix(o) => if is_unary(p) {
-                        return write!(f, "{0}{1}", o,p[0].arguments[0])
-                    },
-                    SymbolKind::Infix(_, _) => unimplemented!(),
-                    SymbolKind::Suffix(o) => if is_unary(p) {
-                        return write!(f, "{1}{0}", o,p[0].arguments[0])
-                    },
+                    SymbolKind::Prefix(o) => {
+                        if is_unary(ps) {
+                            return write!(f, "{0}{1}", o, ps[0].arguments[0]);
+                        }
+                    }
+                    SymbolKind::Infix(o, p) => {
+                        if is_multiary(ps) {
+                            let mut v = vec![];
+                            for arg in &ps[0].arguments {
+                                if arg.precedence() < *p { v.push(format!("({})", arg)) } else { v.push(format!("{}", arg)) }
+                            }
+                            // let j = if o.as_ref() == "*" { v.join(" ") } else { v.join(&format!(" {} ", o)) };
+                            return write!(f, "{0}", v.join(o));
+                        }
+                    }
+                    SymbolKind::Suffix(o) => {
+                        if is_unary(ps) {
+                            return write!(f, "{1}{0}", o, ps[0].arguments[0]);
+                        }
+                    }
                 }
-                write!(f,"")
-            },
+                write!(f, "")
+            }
             #[rustfmt::skip]
             AST::Boolean(b) => if *b { write!(f, "true") } else { write!(f, "false") },
             AST::Integer(n) => write!(f, "{}", n),
@@ -91,6 +104,14 @@ impl AST {
 
     pub fn string(s: impl Into<String>) -> AST {
         AST::String(s.into())
+    }
+    pub(crate) fn precedence(&self) -> u8 {
+        if let AST::Function(v, ..) = self {
+            if let SymbolKind::Infix(_, p) = v.kind {
+                return p;
+            }
+        }
+        return 255;
     }
 }
 
@@ -171,11 +192,40 @@ impl Symbol {
             _ => false,
         }
     }
+    pub(crate) fn is_times(&self) -> bool {
+        self.to_string() == "std::infix::times"
+    }
 }
 
 pub(crate) fn is_unary(p: &[Parameter]) -> bool {
     if p.len() == 1 {
-        if p[0].arguments.len() == 1 { return true; }
+        if p[0].is_unary() {
+            return true;
+        }
     }
     false
+}
+
+pub(crate) fn is_multiary(p: &[Parameter]) -> bool {
+    if p.len() == 1 {
+        if p[0].is_multiary() {
+            return true;
+        }
+    }
+    false
+}
+
+impl Parameter {
+    pub(crate) fn is_unary(&self) -> bool {
+        if self.arguments.len() == 1 && self.options.len() == 0 {
+            return true;
+        }
+        false
+    }
+    pub(crate) fn is_multiary(&self) -> bool {
+        if self.arguments.len() > 1 && self.options.len() == 0 {
+            return true;
+        }
+        false
+    }
 }

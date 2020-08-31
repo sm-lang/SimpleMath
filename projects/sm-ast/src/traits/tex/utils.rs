@@ -9,7 +9,7 @@ pub(crate) fn infix_tex(s: &Symbol, p: &Parameter) -> String {
     let lhs = &p.arguments[0];
     let rhs = &p.arguments[1];
     let ops = match s.name.as_str() {
-        "plus" => "+",
+        "add" => "+",
         "times" => return format!("{} {}", lhs, rhs),
         _ => &s.name,
     };
