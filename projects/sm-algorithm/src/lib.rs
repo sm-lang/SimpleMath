@@ -9,9 +9,9 @@ mod gamma;
 mod linear;
 mod prime;
 
+pub use basic::*;
 pub use cache::{Cache, GlobalCache};
 pub use error::{Error, Result};
 pub use gamma::*;
 pub use linear::*;
 pub use prime::*;
-pub use basic::*;

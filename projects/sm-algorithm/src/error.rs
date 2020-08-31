@@ -21,7 +21,7 @@ impl Display for Error {
         match self {
             Error::IOError(s) => write!(f, "IOError: {}", s),
             Error::Undefined(s) => write!(f, "Undefined: {}", s),
-            _ => write!(f,"{:?}",self)
+            _ => write!(f, "{:?}", self),
         }
     }
 }

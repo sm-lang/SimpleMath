@@ -1,26 +1,30 @@
-use num::{integer::{gcd, ExtendedGcd}, traits::Pow, BigInt, Integer, One, Zero, ToPrimitive, BigUint};
-use crate::Result;
-use crate::error::Error::{OverFlow, Indeterminate};
-use num::bigint::Sign;
+use crate::{
+    error::Error::{Indeterminate, OverFlow},
+    Result,
+};
+use num::{
+    bigint::Sign,
+    integer::{gcd, ExtendedGcd},
+    traits::Pow,
+    BigInt, BigUint, Integer, One, ToPrimitive, Zero,
+};
 
 pub fn power_iu(a: &BigInt, b: &BigUint) -> Result<BigInt> {
-    if a.is_zero()&&b.is_zero(){
-        return Err(Indeterminate)
+    if a.is_zero() && b.is_zero() {
+        return Err(Indeterminate);
     }
-   else if a.is_zero()||b.is_zero(){
-        return Ok(BigInt::zero())
+    else if a.is_zero() || b.is_zero() {
+        return Ok(BigInt::zero());
     }
-    else if a.is_one(){
-        return Ok(BigInt::one())
+    else if a.is_one() {
+        return Ok(BigInt::one());
     }
-    else if b.is_one(){
-        return Ok(BigInt::from_biguint(Sign::Plus,b.clone()))
+    else if b.is_one() {
+        return Ok(BigInt::from_biguint(Sign::Plus, b.clone()));
     }
     match b.to_u32() {
-        None => { Err(OverFlow) }
-        Some(u) => {
-            Ok(a.pow(u))
-        }
+        None => Err(OverFlow),
+        Some(u) => Ok(a.pow(u)),
     }
 }
 
@@ -83,7 +87,9 @@ pub fn is_coprime(x: BigInt, y: BigInt) -> bool {
 
 /// Chinese remainder theorem
 pub fn chinese_remainder(u: &[BigInt], m: &[BigInt]) -> Option<BigInt> {
-    if u.len() != m.len() { return None; }
+    if u.len() != m.len() {
+        return None;
+    }
     let mut v = Vec::with_capacity(u.len());
     for (i, (u_i, m_i)) in u.iter().zip(m.iter()).enumerate() {
         let c_i = modulo_inverse(&m[0..i].iter().fold(BigInt::one(), |p, v| p * v % m_i), &m_i.clone())?;

@@ -1,5 +1,3 @@
-
-
 ## Constant
 
 | Operator | Namespace     | Name        | Mathematica | Input  |
@@ -20,8 +18,8 @@
 
 ## Function
 
-| Operator | Namespace |       Name | Mathematica | Input |
-| :------: | --------: | ---------: | :---------- | :---- |
+| Operator | Namespace | Name | Mathematica | Input |
+| :------: | --------: | ---: | ----------- |: | :---- |
 |   `∁`    |         ? | complement | Complement  |
 |   `∂`    |         ? | derivative | D           |
 
@@ -29,20 +27,19 @@ $\operatorname{}$
 
 ## Prefix
 
-| Operator | Name | Precedence | Mathematica | Input |
-| :------: | ---: | ---------: | :---------- | :---- |
-|   `+`    |      |            |             |
-|   `!`    |
-|   `¬`    |
-|    ?     |
-
+| Operator |    Name | Precedence | Mathematica | Input |
+| :------: | ------: | ---------: | :---------- | :---- |
+|   `+`    |  `plus` |            |             |
+|   `!`    | `minus` |
+|   `¬`    |   `not` |
+|   `?`    |         |            |             |
+|   `??`   |         |            |             |
 
 ## Suffix
 
-| Operator | Name | Precedence | Mathematica | Input |
-| :------: | ---: | ---------: | :---------- | :---- |
-|   `?`    |      |            |             |
-|   `°`    |      |            | Degree      |
+| Operator |     Name | Precedence | Mathematica | Input |
+| :------: | -------: | ---------: | :---------- | :---- |
+|   `°`    | `degree` |            | Degree      |
 |   `⊺`    |
 |   `⊹`    |
 |    ?     |
@@ -50,69 +47,71 @@ $\operatorname{}$
 ## Infix
 
 
-| Operator |             Name | Precedence | Mathematica       | Input  |
-| :------: | ---------------: | ---------: | :---------------- | :----- |
-|   `.`    |       `dot_call` |        900 |                   | `.`    |
-|   `+`    |       `additive` |        310 | Plus `+`          | `+`    |
-|   `-`    |       `additive` |            |                   | `-`    |
-|   `*`    | `multiplicative` |            |                   | `*`    |
-|   `×`    |          `cross` |        500 | Cross `×`         | `\*`   |
-|   `·`    |            `dot` |        490 | Dot `.`           | `\.`   |
-|   `=>`   |                ? |
-|  `<=>`   |                ? |
-|   `>>`   |          export? |
-|   `≫`    | ---------------- | ---------- | ----------------- | `\>>`  |
-|   `<<`   |           input? |
-|   `≪`    | ---------------- | ---------- | ----------------- | `\<<`  |
-|   `>`    |        `greater` |
-|   `<`    |           `less` |
-|   `>=`   |  `greater_equal` |
-|   `<=`   |     `less_equal` |
-|   `==`   |           equal? |
-|   `≈`    |          approx? |
-|  `===`   |      equivalent? |
-|   `≡`    | ---------------- | ---------- | ----------------- | `\>>`  |
-|   `!=`   |        not_equal |
-|   `≠`    | ---------------- | ---------- | ----------------- | `\!=`  |
-|  `=!=`   |                ? |
-|   `≢`    | ---------------- | ---------- | ----------------- | `\!==` |
-|   `∈`    |         element? |        250 | Element `∈`       |
-|   `^`    |                ? |            |                   |
-|   `/`    |                ? |        470 | Divide `/`        |
-|   `//`   |                ? |            | Quotient          |
-|   `÷`    |                ? |            | QuotientRemainder |
-|   `<>`   |            join? |        670 | Join              |
-|   `/@`   |                ? |            |                   |
-|   `/*`   |                ? |            |                   |
-|   `@`    |                ? |            |                   |
-|   `@@`   |                ? |            |                   |
-|  `@@@`   |                ? |            |                   |
-|   `@*`   |                ? |            |                   |
-|   `|>`   |                ? |         70 | Postfix `//`      |
-|   `->`   |                ? |        120 | Rule `//`         |
-|   `:>`   |                ? |        120 | RuleDelayed `//`  |
-|   `√`    |            surd? |
-|   `∧`    |        logic_or? |
-|   `∨`    |       logit_and? |
-|   `∩`    |          set_or? |
-|   `∪`    |         set_and? |
-|   `⊻`    |                ? |
-|   `⊼`    |                ? |
-|   `⊽`    |                ? |
-|   `⋖`    |                ? |
-|   `⋗`    |                ? |
-|   `±`    |     `plus_minus` | ---------- | ----------------- | `\+-`  |
-|   `∓`    |     `minus_plus` | ---------- | ----------------- | `\-+`  |
+| Operator |            Name | Precedence | Mathematica       | Input  |
+| :------: | --------------: | ---------: | :---------------- | :----- |
+|   `.`    |      `dot_call` |        900 |                   | `.`    |
+|   `<<`   |         import? |        720 | Get               | `<<`   |
+|   `≪`    |                 |            | `\<<`             | `\<<`  |
+|   `@`    |               ? |        640 | Prefix            |
+|   `@*`   |               ? |        625 | Composition       |
+|   `/*`   |               ? |        624 | RightComposition  |
+|   `/@`   |               ? |        620 | Map               |
+|   `@@`   |               ? |        620 | Apply             |
+|  `@@@`   |               ? |        620 | Apply             |
+|   `++`   |          `join` |        600 | Join `<>`         | `++`   |
+|   `×`    |         `cross` |        500 | Cross `×`         | `\*`   |
+|   `·`    |           `dot` |        490 | Dot `.`           | `\.`   |
+|   `/`    |        `divide` |        470 | Divide `/`        | `/`    |
+|   `*`    |         `times` |        400 | Times             | `*`    |
+|   `+`    |           `add` |        310 | Plus `+`          | `+`    |
+|   `-`    |      `subtract` |        310 | Subtract          | `-`    |
+|   `∈`    |       `element` |        250 | Element `∈`       | `\in`  |
+|   `->`   |               ? |        120 | Rule `->`         | `->`   |
+|   `->`   |                 |            |                   | `\to`  |
+|  `:->`   |               ? |        120 | RuleDelayed `:>`  | `:->`  |
+|   `|>`   |               ? |         70 | Postfix `//`      | `|>`   |
+|   `=>`   |               ? |
+|  `<=>`   |               ? |
+|   `>>`   |         export? |
+|   `<>`   |                 |            |                   | `<>`   |
+|   `≫`    |         export? |         30 | Put               | `\>>`  |
+|   `>`    |       `greater` |
+|   `<`    |          `less` |
+|   `>=`   | `greater_equal` |
+|   `<=`   |    `less_equal` |
+|   `==`   |          equal? |
+|   `≈`    |         approx? |
+|  `===`   |     equivalent? |
+|   `≡`    |                 |            | `\>>`             |
+|   `!=`   |       not_equal |
+|   `≠`    |                 |            | `\!=`             |
+|  `=!=`   |               ? |
+|   `≢`    |                 |            |                   | `\!==` |
+|   `^`    |               ? |            |                   |
+|   `//`   |               ? |        670 | Quotient          |
+|   `÷`    |               ? |        670 | QuotientRemainder |
+|   `√`    |           surd? |
+|   `∧`    |       logic_or? |
+|   `∨`    |      logit_and? |
+|   `∩`    |         set_or? |
+|   `∪`    |        set_and? |
+|   `⊻`    |               ? |
+|   `⊼`    |               ? |
+|   `⊽`    |               ? |
+|   `⋖`    |               ? |
+|   `⋗`    |               ? |
+|   `±`    |    `plus_minus` |            |                   | `\+-`  |
+|   `∓`    |    `minus_plus` |            |                   | `\-+`  |
 
-## Infix
+## Assign
 
 | Operator |      Name | Precedence | Mathematica  |
 | :------: | --------: | ---------: | :----------- |
 |   `?=`   |         ? |
 |   `≟`    |         ? |            |              |
-|   `:=`   |         ? |
+|   `:=`   |         ? |         40 | SetDelayed   |
 |   `≔`    |         ? |            |              |
-|   `=`    |         ? |            |              |
+|   `=`    |         ? |         40 | Set          |
 |   `+=`   |    add_by |            | AddTo        |
 |   `-=`   |  minus_by |            | SubtractFrom |
 |   `*=`   |  times_by |            | TimesBy      |
